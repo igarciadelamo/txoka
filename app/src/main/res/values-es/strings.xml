@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Txoka</string>
+
+    <string name="action_back">Atrás</string>
+    <string name="action_received">Recibidos</string>
+    <string name="action_settings">Ajustes</string>
+
+    <string name="received_title">Recibidos</string>
+    <string name="received_placeholder">Aquí aparecerán los contactos que recibas</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_placeholder">Ajustes próximamente</string>
+
+    <string name="share_placeholder">Aquí aparecerá tu tarjeta</string>
+</resources>
