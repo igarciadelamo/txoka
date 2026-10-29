@@ -3,8 +3,26 @@
     <string name="app_name">Txoka</string>
 
     <string name="action_back">Back</string>
+    <string name="action_edit_profile">Edit profile</string>
     <string name="action_received">Received</string>
+    <string name="action_save">Save</string>
     <string name="action_settings">Settings</string>
+
+    <string name="card_colour">Card colour</string>
+    <string name="card_colour_custom">Custom colour</string>
+    <string name="card_colour_custom_error">Use six hex digits, for example #4F46E5</string>
+    <string name="card_colour_custom_hint">#4F46E5</string>
+
+    <string name="error_email_invalid">Enter a valid email address</string>
+    <string name="error_name_required">Name is required</string>
+    <string name="error_phone_invalid">Enter a valid phone number</string>
+
+    <string name="field_email">Email</string>
+    <string name="field_name">Name</string>
+    <string name="field_phone">Phone</string>
+
+    <string name="profile_title_create">Your card</string>
+    <string name="profile_title_edit">Edit profile</string>
 
     <string name="received_title">Received</string>
     <string name="received_placeholder">Contacts you receive will appear here</string>
@@ -12,5 +30,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_placeholder">Settings coming soon</string>
 
-    <string name="share_placeholder">Your card will appear here</string>
+    <string name="share_email">Share email</string>
+    <string name="share_hint">Hold this phone near the other one</string>
+    <string name="share_phone">Share phone</string>
 </resources>

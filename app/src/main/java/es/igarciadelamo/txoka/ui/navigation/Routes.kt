@@ -10,3 +10,6 @@ data object ReceivedRoute
 
 @Serializable
 data object SettingsRoute
+
+@Serializable
+data object ProfileEditorRoute
