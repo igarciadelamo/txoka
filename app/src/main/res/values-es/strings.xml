@@ -22,6 +22,8 @@
     <string name="field_name">Nombre</string>
     <string name="field_phone">Teléfono</string>
 
+    <string name="phone_country">País</string>
+    <string name="phone_country_search">Buscar país</string>
     <string name="profile_card_footer">Así la verán los demás. Aún no se ha guardado.</string>
     <string name="profile_name_placeholder">Tu nombre</string>
     <string name="profile_title_create">Tu tarjeta</string>

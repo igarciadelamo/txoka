@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.profile.CardPalette
+import es.igarciadelamo.txoka.domain.profile.PhoneCountries
+import es.igarciadelamo.txoka.domain.profile.PhoneCountry
 import es.igarciadelamo.txoka.domain.profile.PhoneNumbers
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.RgbColor
+import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +24,7 @@ data class ProfileEditorUiState(
     val name: String = "",
     val phone: String = "",
     val email: String = "",
+    val country: PhoneCountry = PhoneCountries.byIsoOrFallback(PhoneCountries.FALLBACK_REGION),
     val sharePhone: Boolean = false,
     val shareEmail: Boolean = false,
     val card: CardPalette = CardPalette.Default,
@@ -46,11 +50,20 @@ data class ProfileEditorUiState(
 }
 
 @HiltViewModel
-class ProfileEditorViewModel @Inject constructor(private val repository: ProfileRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(ProfileEditorUiState())
-    val uiState: StateFlow<ProfileEditorUiState> = _uiState.asStateFlow()
+class ProfileEditorViewModel @Inject constructor(
+    private val repository: ProfileRepository,
+    regionSource: SimRegionSource,
+) : ViewModel() {
+    private val deviceCountry: PhoneCountry = PhoneCountries.byIsoOrFallback(
+        PhoneCountries.resolveRegion(
+            simRegion = regionSource.simRegion(),
+            networkRegion = regionSource.networkRegion(),
+            localeRegion = Locale.getDefault().country,
+        ),
+    )
 
-    private val defaultRegion: String = Locale.getDefault().country
+    private val _uiState = MutableStateFlow(ProfileEditorUiState(country = deviceCountry))
+    val uiState: StateFlow<ProfileEditorUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -80,6 +93,10 @@ class ProfileEditorViewModel @Inject constructor(private val repository: Profile
                 emailError = false,
             )
         }
+    }
+
+    fun onCountrySelected(country: PhoneCountry) {
+        _uiState.update { it.copy(country = country, phoneError = false) }
     }
 
     fun onSharePhoneChange(enabled: Boolean) {
@@ -112,7 +129,7 @@ class ProfileEditorViewModel @Inject constructor(private val repository: Profile
         val name = state.name.trim()
         val email = state.email.trim()
         val rawPhone = state.phone.trim()
-        val phone = if (rawPhone.isEmpty()) null else PhoneNumbers.toE164(rawPhone, defaultRegion)
+        val phone = if (rawPhone.isEmpty()) null else PhoneNumbers.toE164(rawPhone, state.country.iso)
 
         val nameError = name.isEmpty()
         val phoneError = rawPhone.isNotEmpty() && phone == null
@@ -152,6 +169,7 @@ class ProfileEditorViewModel @Inject constructor(private val repository: Profile
         name = profile.name,
         phone = profile.phone.orEmpty(),
         email = profile.email.orEmpty(),
+        country = profile.phone?.let { PhoneCountries.countryOf(it, country) } ?: country,
         sharePhone = profile.sharePhone,
         shareEmail = profile.shareEmail,
         card = profile.card,

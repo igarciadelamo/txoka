@@ -10,7 +10,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import es.igarciadelamo.txoka.data.profile.DataStoreProfileRepository
+import es.igarciadelamo.txoka.data.profile.TelephonyRegionSource
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
+import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import javax.inject.Singleton
 
 private val Context.profileDataStore: DataStore<Preferences> by preferencesDataStore(name = "profile")
@@ -26,4 +28,8 @@ object DataModule {
     @Singleton
     fun provideProfileRepository(dataStore: DataStore<Preferences>): ProfileRepository =
         DataStoreProfileRepository(dataStore)
+
+    @Provides
+    @Singleton
+    fun provideSimRegionSource(source: TelephonyRegionSource): SimRegionSource = source
 }

@@ -55,8 +55,8 @@ Pending: transport abstraction, protocol versioning, payload allowlist, card the
 
 ## Known limitations
 
-- Phone numbers typed without a country prefix are parsed against the device locale region
-  (`Locale.getDefault().country`). Reading the SIM region is pending.
+- Phone numbers typed without a country prefix use the country picked in the editor. It defaults
+  to the SIM region, then the network, then the device locale and finally Spain.
 - Pending: AID conflicts with other NDEF apps, screen-on requirement, Tap to Share, vendor
   behaviours.
 

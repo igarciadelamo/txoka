@@ -22,6 +22,8 @@
     <string name="field_name">Name</string>
     <string name="field_phone">Phone</string>
 
+    <string name="phone_country">Country</string>
+    <string name="phone_country_search">Search country</string>
     <string name="profile_card_footer">This is how others will see it. Nothing is saved yet.</string>
     <string name="profile_name_placeholder">Your name</string>
     <string name="profile_title_create">Your card</string>
