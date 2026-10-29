@@ -7,6 +7,7 @@ import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import es.igarciadelamo.txoka.domain.protocol.VCardParseResult
@@ -66,8 +67,11 @@ class MainActivity : ComponentActivity() {
     /** Opens the confirmation screen when the system launches us from a `text/vcard` tag. */
     private fun handleNdefIntent(intent: Intent?) {
         if (intent?.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
-        @Suppress("DEPRECATION")
-        val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES) ?: return
+        val messages = IntentCompat.getParcelableArrayExtra(
+            intent,
+            NfcAdapter.EXTRA_NDEF_MESSAGES,
+            android.nfc.NdefMessage::class.java,
+        ) ?: return
         val raw = (messages.firstOrNull() as? android.nfc.NdefMessage)?.toByteArray() ?: return
         val vCard = TxokaNdefMessage.decode(raw) ?: return
         val parsed = VCardSerializer.decode(vCard)
