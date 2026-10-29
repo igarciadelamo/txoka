@@ -8,15 +8,23 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.igarciadelamo.txoka.ui.navigation.TxokaNavHost
+import es.igarciadelamo.txoka.ui.receive.ReceiveConfirmScreen
+import es.igarciadelamo.txoka.ui.receive.ReceiveViewModel
 
 @Composable
-fun TxokaApp(modifier: Modifier = Modifier, viewModel: AppViewModel = hiltViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+fun TxokaApp(modifier: Modifier = Modifier, viewModel: ReceiveViewModel = hiltViewModel()) {
+    val pending by viewModel.pending.collectAsStateWithLifecycle()
 
-    // The stored profile only drives the share screen content, so the app always starts on the hub.
-    if (!state.isLoading) {
-        TxokaNavHost(profile = state.profile, modifier = modifier)
-    } else {
-        Box(modifier = modifier.fillMaxSize())
+    Box(modifier = modifier.fillMaxSize()) {
+        TxokaNavHost()
+
+        // A received card covers the current screen so the user decides before anything else.
+        pending?.let { payload ->
+            ReceiveConfirmScreen(
+                payload = payload,
+                onSave = viewModel::save,
+                onDiscard = viewModel::discard,
+            )
+        }
     }
 }

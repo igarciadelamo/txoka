@@ -29,9 +29,13 @@
     <string name="profile_title_create">Tu tarjeta</string>
     <string name="profile_title_edit">Editar perfil</string>
 
+    <string name="action_discard">Descartar</string>
+    <string name="action_save_contact">Guardar contacto</string>
+    <string name="receive_title">Nuevo contacto</string>
     <string name="received_title">Recibidos</string>
     <string name="received_placeholder">Aquí aparecerán los contactos que recibas</string>
 
+    <string name="settings_demo_card">Simular una tarjeta recibida</string>
     <string name="settings_title">Ajustes</string>
     <string name="settings_placeholder">Ajustes próximamente</string>
 

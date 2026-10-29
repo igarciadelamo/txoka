@@ -13,7 +13,7 @@ you receive. Everything stays on the device: no backend, no internet permission.
 | 1 | Own profile, card palette and onboarding | Done |
 | 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Done |
 | 3 | HCE emitter service | Done |
-| 4 | Receiving: reader mode, intent filter, confirmation | Planned |
+| 4 | Receiving: reader mode, intent filter, confirmation | Done |
 | 5 | Room, received contacts list | Planned |
 | 6 | Polish, documentation, manual test matrix | Planned |
 
@@ -85,6 +85,12 @@ Pending: transport abstraction, protocol versioning, payload allowlist, card the
   Txoka to Txoka does not depend on that chooser.
 - The NDEF AID is not registered as `requireDeviceUnlock` in the manifest; the unlock rule is
   enforced per APDU instead, because the switch can change at runtime.
+- Reading an emulated card needs an app that handles `NDEF_DISCOVERED` for `text/vcard`. Without
+  Txoka installed the phone will not offer to save the contact on its own; *pending device test* for
+  vendor Contacts apps that still handle the legacy Beam filter.
+- Reader mode and HCE run at the same time on the same device; *pending device test* to confirm both
+  work on the same radio.
+- Received cards live in memory until Room arrives in the next milestone.
 - Pending: Tap to Share interactions and vendor specific behaviour.
 
 Items that cannot be verified without hardware are listed here as *pending device test*.

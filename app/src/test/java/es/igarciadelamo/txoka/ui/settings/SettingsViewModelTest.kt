@@ -2,6 +2,8 @@ package es.igarciadelamo.txoka.ui.settings
 
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
+import es.igarciadelamo.txoka.nfc.FakeTransport
+import es.igarciadelamo.txoka.nfc.IncomingCards
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
@@ -25,6 +27,7 @@ class SettingsViewModelTest {
             profileRepository = FakeProfileRepository(Profile(name = "Isidro")),
             settingsRepository = FakeShareSettingsRepository(),
             nfcAvailability = FakeNfcAvailability(),
+            fakeTransport = FakeTransport(IncomingCards()),
         )
         advanceUntilIdle()
 
@@ -39,6 +42,7 @@ class SettingsViewModelTest {
                 ShareSettings(sharingEnabled = false, requireDeviceUnlock = true),
             ),
             nfcAvailability = FakeNfcAvailability(),
+            fakeTransport = FakeTransport(IncomingCards()),
         )
         advanceUntilIdle()
 
@@ -54,6 +58,7 @@ class SettingsViewModelTest {
             profileRepository = FakeProfileRepository(null),
             settingsRepository = FakeShareSettingsRepository(),
             nfcAvailability = FakeNfcAvailability(),
+            fakeTransport = FakeTransport(IncomingCards()),
         )
         advanceUntilIdle()
 
@@ -72,6 +77,7 @@ class SettingsViewModelTest {
             profileRepository = FakeProfileRepository(null),
             settingsRepository = FakeShareSettingsRepository(),
             nfcAvailability = availability,
+            fakeTransport = FakeTransport(IncomingCards()),
         )
         advanceUntilIdle()
 

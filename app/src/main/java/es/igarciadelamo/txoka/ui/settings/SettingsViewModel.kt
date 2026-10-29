@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
+import es.igarciadelamo.txoka.nfc.FakeTransport
 import es.igarciadelamo.txoka.nfc.NfcAvailability
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ class SettingsViewModel @Inject constructor(
     profileRepository: ProfileRepository,
     private val settingsRepository: ShareSettingsRepository,
     private val nfcAvailability: NfcAvailability,
+    private val fakeTransport: FakeTransport,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsUiState(nfc = nfcAvailability.status()))
     val state: StateFlow<SettingsUiState> = _state.asStateFlow()
@@ -56,5 +58,10 @@ class SettingsViewModel @Inject constructor(
 
     fun onRequireUnlockChanged(enabled: Boolean) {
         viewModelScope.launch { settingsRepository.setRequireDeviceUnlock(enabled) }
+    }
+
+    /** Debug only: pushes a demo card through the same confirmation flow as a real tag. */
+    fun onSimulateIncomingCard() {
+        fakeTransport.emitDemoCard()
     }
 }
