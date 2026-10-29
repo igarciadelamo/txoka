@@ -12,9 +12,11 @@ import dagger.hilt.components.SingletonComponent
 import es.igarciadelamo.txoka.data.profile.DataStoreProfileRepository
 import es.igarciadelamo.txoka.data.profile.DataStoreShareSettingsRepository
 import es.igarciadelamo.txoka.data.profile.TelephonyRegionSource
+import es.igarciadelamo.txoka.data.received.InMemoryReceivedContactRepository
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
 import es.igarciadelamo.txoka.domain.profile.SimRegionSource
+import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import javax.inject.Singleton
 
 private val Context.profileDataStore: DataStore<Preferences> by preferencesDataStore(name = "profile")
@@ -35,6 +37,11 @@ object DataModule {
     @Singleton
     fun provideShareSettingsRepository(dataStore: DataStore<Preferences>): ShareSettingsRepository =
         DataStoreShareSettingsRepository(dataStore)
+
+    @Provides
+    @Singleton
+    fun provideReceivedContactRepository(repository: InMemoryReceivedContactRepository): ReceivedContactRepository =
+        repository
 
     @Provides
     @Singleton

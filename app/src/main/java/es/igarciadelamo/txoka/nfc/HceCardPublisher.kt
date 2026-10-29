@@ -6,6 +6,7 @@ import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
 import es.igarciadelamo.txoka.domain.protocol.NdefMessage
+import es.igarciadelamo.txoka.domain.protocol.VCardPayload
 import es.igarciadelamo.txoka.domain.protocol.VCardSerializer
 import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,19 @@ class HceCardPublisher @Inject constructor(
                 cardFor(profile, settings)
             }.collect { card -> responder.update(card) }
         }
+    }
+
+    /** Publishes an explicit payload, used by the transport contract and by the demo mode. */
+    suspend fun publish(payload: VCardPayload?) {
+        val settings = settingsRepository.settings.first()
+        responder.update(
+            payload?.let { card ->
+                HceCard(
+                    ndef = NdefMessage.encode(VCardSerializer.encode(card)),
+                    requireUnlock = settings.requireDeviceUnlock,
+                )
+            },
+        )
     }
 
     /** One-shot refresh, also used by tests to avoid depending on the collection timing. */
