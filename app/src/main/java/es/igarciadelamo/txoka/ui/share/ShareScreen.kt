@@ -5,7 +5,6 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -43,9 +41,8 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 @Composable
 fun ShareScreen(
     profile: Profile?,
-    state: ShareUiState,
-    onSharingChanged: (Boolean) -> Unit,
-    onRequireUnlockChanged: (Boolean) -> Unit,
+    sharingEnabled: Boolean,
+    nfc: NfcStatus,
     onOpenReceived: () -> Unit,
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
@@ -55,7 +52,7 @@ fun ShareScreen(
     val context = LocalContext.current
 
     if (profile != null) {
-        KeepScreenOn(enabled = state.sharingEnabled)
+        KeepScreenOn(enabled = sharingEnabled)
     }
 
     Scaffold(
@@ -107,24 +104,16 @@ fun ShareScreen(
                 if (profile == null) {
                     NoCardState(onCreateCard = onCreateCard)
                 } else {
-                    ShareCardState(profile = profile, sharingEnabled = state.sharingEnabled)
+                    ShareCardState(profile = profile, sharingEnabled = sharingEnabled, nfc = nfc)
                 }
             }
 
-            if (state.nfc != NfcStatus.Enabled) {
+            if (nfc != NfcStatus.Enabled) {
                 NfcBanner(
-                    status = state.nfc,
+                    status = nfc,
                     onOpenNfcSettings = {
                         context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS))
                     },
-                )
-            }
-
-            if (profile != null) {
-                ShareControls(
-                    state = state,
-                    onSharingChanged = onSharingChanged,
-                    onRequireUnlockChanged = onRequireUnlockChanged,
                 )
             }
         }
@@ -132,19 +121,22 @@ fun ShareScreen(
 }
 
 @Composable
-private fun ShareCardState(profile: Profile, sharingEnabled: Boolean, modifier: Modifier = Modifier) {
+private fun ShareCardState(profile: Profile, sharingEnabled: Boolean, nfc: NfcStatus, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ContactCard(profile = profile)
-        Text(
-            text = stringResource(if (sharingEnabled) R.string.share_hint else R.string.share_hint_disabled),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        // Without NFC there is nothing to switch on, so the banner below already explains it.
+        if (nfc != NfcStatus.Unavailable) {
+            Text(
+                text = stringResource(if (sharingEnabled) R.string.share_hint else R.string.share_hint_disabled),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -175,46 +167,6 @@ private fun NoCardState(onCreateCard: () -> Unit, modifier: Modifier = Modifier)
         Button(onClick = onCreateCard) {
             Text(text = stringResource(R.string.action_create_card))
         }
-    }
-}
-
-@Composable
-private fun ShareControls(
-    state: ShareUiState,
-    onSharingChanged: (Boolean) -> Unit,
-    onRequireUnlockChanged: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        SwitchRow(
-            label = stringResource(R.string.share_toggle),
-            checked = state.sharingEnabled,
-            onCheckedChange = onSharingChanged,
-        )
-        SwitchRow(
-            label = stringResource(R.string.share_require_unlock),
-            checked = state.requireUnlock,
-            enabled = state.sharingEnabled,
-            onCheckedChange = onRequireUnlockChanged,
-        )
-    }
-}
-
-@Composable
-private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, enabled: Boolean = true) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }
 
@@ -250,9 +202,8 @@ private fun ShareScreenPreview() {
                 email = "isidro@example.com",
                 card = CardPalette.Default,
             ),
-            state = ShareUiState(),
-            onSharingChanged = {},
-            onRequireUnlockChanged = {},
+            sharingEnabled = true,
+            nfc = NfcStatus.Enabled,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
@@ -266,9 +217,8 @@ private fun ShareScreenNoCardPreview() {
     TxokaTheme {
         ShareScreen(
             profile = null,
-            state = ShareUiState(nfc = NfcStatus.Disabled),
-            onSharingChanged = {},
-            onRequireUnlockChanged = {},
+            sharingEnabled = false,
+            nfc = NfcStatus.Disabled,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
