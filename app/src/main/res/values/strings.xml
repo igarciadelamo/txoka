@@ -29,9 +29,13 @@
     <string name="profile_title_create">Your card</string>
     <string name="profile_title_edit">Edit profile</string>
 
+    <string name="action_discard">Discard</string>
+    <string name="action_save_contact">Save contact</string>
+    <string name="receive_title">New contact</string>
     <string name="received_title">Received</string>
     <string name="received_placeholder">Contacts you receive will appear here</string>
 
+    <string name="settings_demo_card">Simulate an incoming card</string>
     <string name="settings_title">Settings</string>
     <string name="settings_placeholder">Settings coming soon</string>
 

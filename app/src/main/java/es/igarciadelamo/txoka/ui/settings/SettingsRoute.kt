@@ -27,6 +27,7 @@ fun SettingsRoute(
         onEditProfile = onEditProfile,
         onSharingChanged = viewModel::onSharingChanged,
         onRequireUnlockChanged = viewModel::onRequireUnlockChanged,
+        onSimulateIncomingCard = viewModel::onSimulateIncomingCard,
         modifier = modifier,
     )
 }

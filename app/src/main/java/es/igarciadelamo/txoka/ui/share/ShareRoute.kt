@@ -8,11 +8,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import es.igarciadelamo.txoka.domain.profile.Profile
 
 @Composable
 fun ShareRoute(
-    profile: Profile?,
     onOpenReceived: () -> Unit,
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
@@ -27,7 +25,7 @@ fun ShareRoute(
     }
 
     ShareScreen(
-        profile = profile,
+        profile = state.profile,
         sharingEnabled = state.sharingEnabled,
         nfc = state.nfc,
         onOpenReceived = onOpenReceived,

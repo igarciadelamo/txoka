@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import es.igarciadelamo.txoka.BuildConfig
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -45,6 +47,7 @@ fun SettingsScreen(
     onSharingChanged: (Boolean) -> Unit,
     onRequireUnlockChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    onSimulateIncomingCard: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -68,31 +71,7 @@ fun SettingsScreen(
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        text = stringResource(
-                            if (state.hasProfile) R.string.action_edit_profile else R.string.action_create_card,
-                        ),
-                    )
-                },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onEditProfile),
-            )
+            ProfileRow(hasProfile = state.hasProfile, onEditProfile = onEditProfile)
 
             // Sharing controls make no sense on a device without NFC hardware.
             if (state.nfc != NfcStatus.Unavailable) {
@@ -110,11 +89,64 @@ fun SettingsScreen(
                 )
             }
 
+            if (BuildConfig.DEBUG) {
+                HorizontalDivider()
+                DemoRow(onSimulateIncomingCard = onSimulateIncomingCard)
+            }
+
             if (state.nfc == NfcStatus.Disabled) {
-                NfcDisabledNotice(onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) })
+                NfcDisabledNotice(
+                    onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
+                )
             }
         }
     }
+}
+
+@Composable
+private fun ProfileRow(hasProfile: Boolean, onEditProfile: () -> Unit) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(
+                    if (hasProfile) R.string.action_edit_profile else R.string.action_create_card,
+                ),
+            )
+        },
+        leadingContent = {
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+        },
+        trailingContent = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onEditProfile),
+    )
+}
+
+@Composable
+private fun DemoRow(onSimulateIncomingCard: () -> Unit) {
+    ListItem(
+        headlineContent = { Text(text = stringResource(R.string.settings_demo_card)) },
+        leadingContent = {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onSimulateIncomingCard),
+    )
 }
 
 @Composable

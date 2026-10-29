@@ -3,6 +3,7 @@ package es.igarciadelamo.txoka.ui.share
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
+import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeShareSettingsRepository
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,7 +21,7 @@ class ShareViewModelTest {
     @Test
     fun `reflects the stored settings`() = runTest {
         val repository = FakeShareSettingsRepository(ShareSettings(sharingEnabled = false, requireDeviceUnlock = true))
-        val viewModel = ShareViewModel(repository, FakeNfcAvailability())
+        val viewModel = ShareViewModel(FakeProfileRepository(), repository, FakeNfcAvailability())
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -31,7 +32,7 @@ class ShareViewModelTest {
     @Test
     fun `persists the sharing switches`() = runTest {
         val repository = FakeShareSettingsRepository(ShareSettings(sharingEnabled = true))
-        val viewModel = ShareViewModel(repository, FakeNfcAvailability())
+        val viewModel = ShareViewModel(FakeProfileRepository(), repository, FakeNfcAvailability())
         advanceUntilIdle()
 
         viewModel.onSharingChanged(false)
@@ -45,7 +46,7 @@ class ShareViewModelTest {
     @Test
     fun `refreshes the nfc status on demand`() = runTest {
         val availability = FakeNfcAvailability(NfcStatus.Enabled)
-        val viewModel = ShareViewModel(FakeShareSettingsRepository(), availability)
+        val viewModel = ShareViewModel(FakeProfileRepository(), FakeShareSettingsRepository(), availability)
         advanceUntilIdle()
         assertEquals(NfcStatus.Enabled, viewModel.state.value.nfc)
 
