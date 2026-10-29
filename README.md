@@ -10,7 +10,7 @@ you receive. Everything stays on the device: no backend, no internet permission.
 | Milestone | Scope | Status |
 | --- | --- | --- |
 | 0 | Project scaffolding, Hilt, navigation, lint and CI | Done |
-| 1 | Own profile and onboarding | Planned |
+| 1 | Own profile, card palette and onboarding | Done |
 | 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Planned |
 | 3 | HCE emitter service | Planned |
 | 4 | Receiving: reader mode, intent filter, confirmation | Planned |
@@ -55,8 +55,10 @@ Pending: transport abstraction, protocol versioning, payload allowlist, card the
 
 ## Known limitations
 
-Pending: AID conflicts with other NDEF apps, screen-on requirement, Tap to Share, vendor
-behaviours.
+- Phone numbers typed without a country prefix are parsed against the device locale region
+  (`Locale.getDefault().country`). Reading the SIM region is pending.
+- Pending: AID conflicts with other NDEF apps, screen-on requirement, Tap to Share, vendor
+  behaviours.
 
 Items that cannot be verified without hardware are listed here as *pending device test*.
 
