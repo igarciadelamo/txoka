@@ -3,8 +3,31 @@
     <string name="app_name">Txoka</string>
 
     <string name="action_back">Atrás</string>
+    <string name="action_create_card">Crear tarjeta</string>
+    <string name="action_edit_profile">Editar perfil</string>
     <string name="action_received">Recibidos</string>
+    <string name="action_save">Guardar</string>
     <string name="action_settings">Ajustes</string>
+
+    <string name="card_colour">Color de la tarjeta</string>
+    <string name="card_colour_custom">Color personalizado</string>
+    <string name="card_colour_custom_error">Usa seis dígitos hexadecimales, por ejemplo #4F46E5</string>
+    <string name="card_colour_custom_hint">#4F46E5</string>
+
+    <string name="error_email_invalid">Introduce un email válido</string>
+    <string name="error_name_required">El nombre es obligatorio</string>
+    <string name="error_phone_invalid">Introduce un teléfono válido</string>
+
+    <string name="field_email">Email</string>
+    <string name="field_name">Nombre</string>
+    <string name="field_phone">Teléfono</string>
+
+    <string name="phone_country">País</string>
+    <string name="phone_country_search">Buscar país</string>
+    <string name="profile_card_footer">Así la verán los demás. Aún no se ha guardado.</string>
+    <string name="profile_name_placeholder">Tu nombre</string>
+    <string name="profile_title_create">Tu tarjeta</string>
+    <string name="profile_title_edit">Editar perfil</string>
 
     <string name="received_title">Recibidos</string>
     <string name="received_placeholder">Aquí aparecerán los contactos que recibas</string>
@@ -12,5 +35,9 @@
     <string name="settings_title">Ajustes</string>
     <string name="settings_placeholder">Ajustes próximamente</string>
 
-    <string name="share_placeholder">Aquí aparecerá tu tarjeta</string>
+    <string name="share_email">Incluir el email al compartir</string>
+    <string name="share_hint">Acerca este móvil al otro para compartir</string>
+    <string name="share_no_card_body">Créala para empezar a compartir tu contacto por NFC.</string>
+    <string name="share_no_card_title">Aún no tienes tarjeta</string>
+    <string name="share_phone">Incluir el teléfono al compartir</string>
 </resources>

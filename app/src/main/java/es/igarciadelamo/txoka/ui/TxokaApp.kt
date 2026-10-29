@@ -1,10 +1,22 @@
 package es.igarciadelamo.txoka.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.igarciadelamo.txoka.ui.navigation.TxokaNavHost
 
 @Composable
-fun TxokaApp(modifier: Modifier = Modifier) {
-    TxokaNavHost(modifier = modifier)
+fun TxokaApp(modifier: Modifier = Modifier, viewModel: AppViewModel = hiltViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    // The stored profile only drives the share screen content, so the app always starts on the hub.
+    if (!state.isLoading) {
+        TxokaNavHost(profile = state.profile, modifier = modifier)
+    } else {
+        Box(modifier = modifier.fillMaxSize())
+    }
 }
