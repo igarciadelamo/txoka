@@ -37,7 +37,15 @@
 
     <string name="share_email">Include email when sharing</string>
     <string name="share_hint">Hold this phone near the other one</string>
+    <string name="hce_aid_group_description">Txoka contact card</string>
+    <string name="hce_service_description">Share your card over NFC</string>
+    <string name="nfc_disabled">NFC is turned off</string>
+    <string name="nfc_unavailable">This phone does not support NFC</string>
+    <string name="action_open_settings">Open NFC settings</string>
+    <string name="share_hint_disabled">Sharing is off</string>
     <string name="share_no_card_body">Create it to start sharing your contact over NFC.</string>
+    <string name="share_require_unlock">Require device unlock</string>
     <string name="share_no_card_title">You don\'t have a card yet</string>
+    <string name="share_toggle">Share over NFC</string>
     <string name="share_phone">Include phone when sharing</string>
 </resources>

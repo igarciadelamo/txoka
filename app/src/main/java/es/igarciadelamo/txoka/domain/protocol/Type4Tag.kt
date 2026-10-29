@@ -90,7 +90,7 @@ class Type4Tag(private val ndefMessage: ByteArray, acceptedAids: List<ByteArray>
         return command.copyOfRange(start, start + length)
     }
 
-    private fun status(sw: Int): ByteArray = byteArrayOf((sw ushr BITS_PER_BYTE).toByte(), sw.toByte())
+    private fun status(sw: Int): ByteArray = statusWord(sw)
 
     private enum class FileType(private val id: Int) {
         CapabilityContainer(CC_FILE_ID),
@@ -118,6 +118,10 @@ class Type4Tag(private val ndefMessage: ByteArray, acceptedAids: List<ByteArray>
         const val SW_INS_NOT_SUPPORTED = 0x6D00
         const val SW_CLA_NOT_SUPPORTED = 0x6E00
         const val SW_OFFSET_OUT_OF_RANGE = 0x6B00
+        const val SW_CONDITIONS_NOT_SATISFIED = 0x6985
+
+        /** Builds the two byte status word used by every response. */
+        fun statusWord(sw: Int): ByteArray = byteArrayOf((sw ushr BITS_PER_BYTE).toByte(), sw.toByte())
 
         private const val CLA_ISO = 0x00
         private const val INS_SELECT = 0xA4

@@ -37,7 +37,15 @@
 
     <string name="share_email">Incluir el email al compartir</string>
     <string name="share_hint">Acerca este móvil al otro para compartir</string>
+    <string name="hce_aid_group_description">Tarjeta de contacto de Txoka</string>
+    <string name="hce_service_description">Comparte tu tarjeta por NFC</string>
+    <string name="nfc_disabled">El NFC está apagado</string>
+    <string name="nfc_unavailable">Este móvil no tiene NFC</string>
+    <string name="action_open_settings">Abrir ajustes de NFC</string>
+    <string name="share_hint_disabled">Compartir desactivado</string>
     <string name="share_no_card_body">Créala para empezar a compartir tu contacto por NFC.</string>
+    <string name="share_require_unlock">Pedir desbloqueo</string>
     <string name="share_no_card_title">Aún no tienes tarjeta</string>
+    <string name="share_toggle">Compartir por NFC</string>
     <string name="share_phone">Incluir el teléfono al compartir</string>
 </resources>
