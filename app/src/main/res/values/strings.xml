@@ -32,6 +32,17 @@
     <string name="action_discard">Discard</string>
     <string name="action_save_contact">Save contact</string>
     <string name="receive_title">New contact</string>
+    <string name="action_add_to_contacts">Add to contacts</string>
+    <string name="action_call">Call</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_email">Email</string>
+    <string name="action_save_note">Save note</string>
+    <string name="delete_dialog_message">This cannot be undone.</string>
+    <string name="delete_dialog_title">Delete contact?</string>
+    <string name="received_empty">No contacts yet</string>
+    <string name="received_note">Notes</string>
+    <string name="received_search">Search contacts</string>
     <string name="received_title">Received</string>
     <string name="received_placeholder">Contacts you receive will appear here</string>
 

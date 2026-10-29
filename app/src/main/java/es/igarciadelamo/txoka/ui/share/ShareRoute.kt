@@ -32,6 +32,7 @@ fun ShareRoute(
         onOpenSettings = onOpenSettings,
         onCreateCard = onCreateCard,
         modifier = modifier,
+        receivedCount = state.receivedCount,
     )
 }
 

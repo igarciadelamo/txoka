@@ -14,7 +14,7 @@ you receive. Everything stays on the device: no backend, no internet permission.
 | 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Done |
 | 3 | HCE emitter service | Done |
 | 4 | Receiving: reader mode, intent filter, confirmation | Done |
-| 5 | Room, received contacts list | Planned |
+| 5 | Room, received contacts list | Done |
 | 6 | Polish, documentation, manual test matrix | Planned |
 
 ## Stack
@@ -90,7 +90,9 @@ Pending: transport abstraction, protocol versioning, payload allowlist, card the
   vendor Contacts apps that still handle the legacy Beam filter.
 - Reader mode and HCE run at the same time on the same device; *pending device test* to confirm both
   work on the same radio.
-- Received cards live in memory until Room arrives in the next milestone.
+- Duplicate detection matches a stored contact when the normalised phone or the normalised email is
+  equal; two cards sharing only a name are stored separately.
+- Notes are plain text, one per contact. The database is version 1 with no migrations yet.
 - Pending: Tap to Share interactions and vendor specific behaviour.
 
 Items that cannot be verified without hardware are listed here as *pending device test*.

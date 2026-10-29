@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
+import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.nfc.NfcAvailability
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,12 +22,14 @@ data class ShareUiState(
     val sharingEnabled: Boolean = true,
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
+    val receivedCount: Int = 0,
 )
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
     profileRepository: ProfileRepository,
     private val settingsRepository: ShareSettingsRepository,
+    receivedRepository: ReceivedContactRepository,
     private val nfcAvailability: NfcAvailability,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ShareUiState(nfc = nfcAvailability.status()))
@@ -34,11 +37,16 @@ class ShareViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(profileRepository.profile, settingsRepository.settings) { profile, settings ->
+            combine(
+                profileRepository.profile,
+                settingsRepository.settings,
+                receivedRepository.contacts,
+            ) { profile, settings, contacts ->
                 _state.value.copy(
                     profile = profile,
                     sharingEnabled = settings.sharingEnabled,
                     requireUnlock = settings.requireDeviceUnlock,
+                    receivedCount = contacts.size,
                 )
             }.collect { state -> _state.value = state }
         }

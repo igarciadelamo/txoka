@@ -9,6 +9,9 @@ data object ShareRoute
 data object ReceivedRoute
 
 @Serializable
+data class ReceivedDetailRoute(val id: Long)
+
+@Serializable
 data object SettingsRoute
 
 @Serializable

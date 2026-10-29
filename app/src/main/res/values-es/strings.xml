@@ -32,6 +32,17 @@
     <string name="action_discard">Descartar</string>
     <string name="action_save_contact">Guardar contacto</string>
     <string name="receive_title">Nuevo contacto</string>
+    <string name="action_add_to_contacts">Añadir a contactos</string>
+    <string name="action_call">Llamar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_email">Email</string>
+    <string name="action_save_note">Guardar nota</string>
+    <string name="delete_dialog_message">No se puede deshacer.</string>
+    <string name="delete_dialog_title">¿Borrar contacto?</string>
+    <string name="received_empty">Aún no hay contactos</string>
+    <string name="received_note">Notas</string>
+    <string name="received_search">Buscar contactos</string>
     <string name="received_title">Recibidos</string>
     <string name="received_placeholder">Aquí aparecerán los contactos que recibas</string>
 
