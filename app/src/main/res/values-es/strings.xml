@@ -33,9 +33,9 @@
     <string name="settings_title">Ajustes</string>
     <string name="settings_placeholder">Ajustes próximamente</string>
 
-    <string name="share_email">Compartir email</string>
+    <string name="share_email">Incluir el email al compartir</string>
     <string name="share_hint">Acerca este móvil al otro para compartir</string>
     <string name="share_no_card_body">Créala para empezar a compartir tu contacto por NFC.</string>
     <string name="share_no_card_title">Aún no tienes tarjeta</string>
-    <string name="share_phone">Compartir teléfono</string>
+    <string name="share_phone">Incluir el teléfono al compartir</string>
 </resources>

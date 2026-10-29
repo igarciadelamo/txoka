@@ -33,9 +33,9 @@
     <string name="settings_title">Settings</string>
     <string name="settings_placeholder">Settings coming soon</string>
 
-    <string name="share_email">Share email</string>
+    <string name="share_email">Include email when sharing</string>
     <string name="share_hint">Hold this phone near the other one</string>
     <string name="share_no_card_body">Create it to start sharing your contact over NFC.</string>
     <string name="share_no_card_title">You don\'t have a card yet</string>
-    <string name="share_phone">Share phone</string>
+    <string name="share_phone">Include phone when sharing</string>
 </resources>
