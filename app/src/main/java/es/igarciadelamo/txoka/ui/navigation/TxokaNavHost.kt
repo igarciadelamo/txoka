@@ -14,7 +14,7 @@ import es.igarciadelamo.txoka.ui.share.ShareScreen
 
 @Composable
 fun TxokaNavHost(
-    profile: Profile,
+    profile: Profile?,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
@@ -28,7 +28,7 @@ fun TxokaNavHost(
                 profile = profile,
                 onOpenReceived = { navController.navigate(ReceivedRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
-                onEditProfile = { navController.navigate(ProfileEditorRoute) },
+                onCreateCard = { navController.navigate(ProfileEditorRoute) },
             )
         }
         composable<ReceivedRoute> {
@@ -38,6 +38,7 @@ fun TxokaNavHost(
             SettingsScreen(
                 onBack = navController::popBackStack,
                 onEditProfile = { navController.navigate(ProfileEditorRoute) },
+                hasProfile = profile != null,
             )
         }
         composable<ProfileEditorRoute> {

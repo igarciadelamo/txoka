@@ -3,6 +3,7 @@
     <string name="app_name">Txoka</string>
 
     <string name="action_back">Back</string>
+    <string name="action_create_card">Create card</string>
     <string name="action_edit_profile">Edit profile</string>
     <string name="action_received">Received</string>
     <string name="action_save">Save</string>
@@ -34,5 +35,7 @@
 
     <string name="share_email">Share email</string>
     <string name="share_hint">Hold this phone near the other one</string>
+    <string name="share_no_card_body">Create it to start sharing your contact over NFC.</string>
+    <string name="share_no_card_title">You don\'t have a card yet</string>
     <string name="share_phone">Share phone</string>
 </resources>

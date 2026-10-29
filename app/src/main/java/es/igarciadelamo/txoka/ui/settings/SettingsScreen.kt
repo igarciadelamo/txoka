@@ -27,7 +27,12 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onEditProfile: () -> Unit, modifier: Modifier = Modifier) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onEditProfile: () -> Unit,
+    modifier: Modifier = Modifier,
+    hasProfile: Boolean = true,
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -46,7 +51,13 @@ fun SettingsScreen(onBack: () -> Unit, onEditProfile: () -> Unit, modifier: Modi
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             ListItem(
-                headlineContent = { Text(text = stringResource(R.string.action_edit_profile)) },
+                headlineContent = {
+                    Text(
+                        text = stringResource(
+                            if (hasProfile) R.string.action_edit_profile else R.string.action_create_card,
+                        ),
+                    )
+                },
                 leadingContent = {
                     Icon(
                         imageVector = Icons.Filled.Person,
@@ -72,6 +83,6 @@ fun SettingsScreen(onBack: () -> Unit, onEditProfile: () -> Unit, modifier: Modi
 @Composable
 private fun SettingsScreenPreview() {
     TxokaTheme {
-        SettingsScreen(onBack = {}, onEditProfile = {})
+        SettingsScreen(onBack = {}, onEditProfile = {}, hasProfile = false)
     }
 }
