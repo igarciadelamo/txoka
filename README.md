@@ -11,7 +11,7 @@ you receive. Everything stays on the device: no backend, no internet permission.
 | --- | --- | --- |
 | 0 | Project scaffolding, Hilt, navigation, lint and CI | Done |
 | 1 | Own profile, card palette and onboarding | Done |
-| 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Planned |
+| 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Done |
 | 3 | HCE emitter service | Planned |
 | 4 | Receiving: reader mode, intent filter, confirmation | Planned |
 | 5 | Room, received contacts list | Planned |
@@ -47,7 +47,28 @@ Pending: diagram and layer responsibilities.
 
 ## Protocol
 
-Pending: vCard 3.0 payload, NDEF `text/vcard` record and the Type 4 Tag APDU sequence.
+The card is a vCard 3.0 document carried in a single NDEF record with MIME type `text/vcard`.
+Txoka adds three properties that other readers simply ignore:
+
+| Property | Meaning |
+| --- | --- |
+| `X-TXOKA-PROTOCOL` | Payload version, currently `1` |
+| `X-TXOKA-CARD-ACCENT` | First gradient colour, `#RRGGBB` |
+| `X-TXOKA-CARD-ACCENT2` | Second gradient colour |
+
+Text values are escaped as vCard requires (`\n`, `\,`, `\;`, `\\`) and long lines are folded at
+75 octets. Unknown properties are skipped and invalid colours fall back to the default palette, so a
+card written by another app still loads. The NDEF message is capped at 768 bytes.
+
+The emitter emulates a NFC Forum Type 4 Tag. The reader sequence is:
+
+1. `SELECT AID` (`D2760000850101` by default, plus any extra AID we register).
+2. `SELECT CC` (`E103`) and `READ BINARY` of the 15-byte capability container.
+3. `SELECT NDEF` (`E104`), `READ BINARY` of the two-byte NLEN and then of the message.
+
+Status words: `9000` success, `6A82` file or AID not found, `6A86` wrong P1/P2, `6700` wrong
+length, `6986` no file selected, `6D00` unsupported instruction, `6E00` unsupported class and
+`6B00` offset past the end of the file.
 
 ## Design decisions
 
