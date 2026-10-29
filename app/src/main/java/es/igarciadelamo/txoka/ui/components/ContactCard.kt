@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,38 +21,61 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
 private val CardShape = RoundedCornerShape(28.dp)
+private val CardCorner = 28.dp
+private val CardBorderWidth = 2.dp
+private val CardBorderDash = 8.dp
 
+/**
+ * Renders the card exactly as recipients will see it. While the profile is not saved yet the
+ * card is drawn as a ghost so the onboarding preview cannot be mistaken for a stored card.
+ */
 @Composable
-fun ContactCard(profile: Profile, modifier: Modifier = Modifier) {
-    val contentColor = if (profile.card.accent.prefersDarkContent()) {
-        Color(0xFF1C1B1F)
-    } else {
-        Color.White
+fun ContactCard(profile: Profile, modifier: Modifier = Modifier, placeholder: Boolean = false) {
+    val contentColor = when {
+        placeholder -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = GHOST_CONTENT_ALPHA)
+        profile.card.accent.prefersDarkContent() -> Color(0xFF1C1B1F)
+        else -> Color.White
     }
+    val displayName = profile.name.ifBlank { stringResource(R.string.profile_name_placeholder) }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(CardShape)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        profile.card.accent.toComposeColor(),
-                        profile.card.accent2.toComposeColor(),
-                    ),
-                ),
+            .then(
+                if (placeholder) {
+                    Modifier
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CardShape)
+                        .dashedOutline(MaterialTheme.colorScheme.outline)
+                } else {
+                    Modifier.background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                profile.card.accent.toComposeColor(),
+                                profile.card.accent2.toComposeColor(),
+                            ),
+                        ),
+                    )
+                },
             )
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -60,17 +84,25 @@ fun ContactCard(profile: Profile, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .background(contentColor.copy(alpha = 0.22f)),
+                .background(contentColor.copy(alpha = AVATAR_BACKGROUND_ALPHA)),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = profile.initials,
-                style = MaterialTheme.typography.headlineSmall,
-                color = contentColor,
-            )
+            if (profile.initials.isEmpty()) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    tint = contentColor,
+                )
+            } else {
+                Text(
+                    text = profile.initials,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = contentColor,
+                )
+            }
         }
         Text(
-            text = profile.name,
+            text = displayName,
             style = MaterialTheme.typography.headlineSmall,
             color = contentColor,
             maxLines = 2,
@@ -102,22 +134,49 @@ private fun ContactCardRow(icon: ImageVector, text: String, contentColor: Color)
     }
 }
 
+@Composable
+private fun Modifier.dashedOutline(color: Color): Modifier {
+    val density = LocalDensity.current
+    val strokeWidth = with(density) { CardBorderWidth.toPx() }
+    val dash = with(density) { CardBorderDash.toPx() }
+    val corner = with(density) { CardCorner.toPx() }
+
+    return drawBehind {
+        drawRoundRect(
+            color = color,
+            cornerRadius = CornerRadius(corner, corner),
+            style = Stroke(
+                width = strokeWidth,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash)),
+            ),
+        )
+    }
+}
+
 internal fun RgbColor.toComposeColor(): Color = Color(argb)
+
+private const val GHOST_CONTENT_ALPHA = 0.55f
+private const val AVATAR_BACKGROUND_ALPHA = 0.22f
 
 @Preview(showBackground = true)
 @Composable
 private fun ContactCardPreview() {
     TxokaTheme {
-        ContactCard(
-            profile = Profile(
-                name = "Isidro García",
-                phone = "+34600123456",
-                email = "isidro@example.com",
-                sharePhone = true,
-                shareEmail = true,
-                card = CardPalette.Default,
-            ),
+        Column(
             modifier = Modifier.padding(16.dp),
-        )
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            ContactCard(
+                profile = Profile(
+                    name = "Isidro García",
+                    phone = "+34600123456",
+                    email = "isidro@example.com",
+                    sharePhone = true,
+                    shareEmail = true,
+                    card = CardPalette.Default,
+                ),
+            )
+            ContactCard(profile = Profile(name = ""), placeholder = true)
+        }
     }
 }

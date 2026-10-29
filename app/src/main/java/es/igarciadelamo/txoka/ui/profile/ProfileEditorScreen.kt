@@ -79,7 +79,14 @@ fun ProfileEditorScreen(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            ContactCard(profile = state.toPreview())
+            ContactCard(profile = state.toPreview(), placeholder = !state.isEditing)
+            if (!state.isEditing) {
+                Text(
+                    text = stringResource(R.string.profile_card_footer),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             CardSection(
                 state = state,
                 onPresetSelected = viewModel::onPresetSelected,

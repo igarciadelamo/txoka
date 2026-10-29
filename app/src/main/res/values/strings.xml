@@ -21,6 +21,8 @@
     <string name="field_name">Name</string>
     <string name="field_phone">Phone</string>
 
+    <string name="profile_card_footer">This is how others will see it. Nothing is saved yet.</string>
+    <string name="profile_name_placeholder">Your name</string>
     <string name="profile_title_create">Your card</string>
     <string name="profile_title_edit">Edit profile</string>
 
