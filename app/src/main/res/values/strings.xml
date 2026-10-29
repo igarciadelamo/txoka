@@ -5,7 +5,6 @@
     <string name="action_back">Back</string>
     <string name="action_create_card">Create card</string>
     <string name="action_edit_profile">Edit profile</string>
-    <string name="action_received">Received</string>
     <string name="action_save">Save</string>
     <string name="action_settings">Settings</string>
 
@@ -13,6 +12,7 @@
     <string name="card_colour_custom">Custom colour</string>
     <string name="card_colour_custom_error">Use six hex digits, for example #4F46E5</string>
     <string name="card_colour_custom_hint">#4F46E5</string>
+    <string name="card_colour_preset">Colour preset %1$d</string>
 
     <string name="error_email_invalid">Enter a valid email address</string>
     <string name="error_name_required">Name is required</string>
@@ -44,11 +44,14 @@
     <string name="received_note">Notes</string>
     <string name="received_search">Search contacts</string>
     <string name="received_title">Received</string>
-    <string name="received_placeholder">Contacts you receive will appear here</string>
+
+    <plurals name="received_badge_count">
+        <item quantity="one">%d received contact</item>
+        <item quantity="other">%d received contacts</item>
+    </plurals>
 
     <string name="settings_demo_card">Simulate an incoming card</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_placeholder">Settings coming soon</string>
 
     <string name="share_email">Include email when sharing</string>
     <string name="share_hint">Hold this phone near the other one</string>

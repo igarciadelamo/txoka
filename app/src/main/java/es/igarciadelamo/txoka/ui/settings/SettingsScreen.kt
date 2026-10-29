@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import es.igarciadelamo.txoka.BuildConfig
@@ -128,7 +130,7 @@ private fun ProfileRow(hasProfile: Boolean, onEditProfile: () -> Unit) {
         },
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onEditProfile),
+            .clickable(role = Role.Button, onClick = onEditProfile),
     )
 }
 
@@ -145,7 +147,7 @@ private fun DemoRow(onSimulateIncomingCard: () -> Unit) {
         },
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onSimulateIncomingCard),
+            .clickable(role = Role.Button, onClick = onSimulateIncomingCard),
     )
 }
 
@@ -154,6 +156,12 @@ private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .toggleable(
+                value = checked,
+                enabled = enabled,
+                role = Role.Switch,
+                onValueChange = onCheckedChange,
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -161,9 +169,12 @@ private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
         )
-        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
+        // The row owns the toggle, so the switch itself stays out of the accessibility tree.
+        Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }
 }
 

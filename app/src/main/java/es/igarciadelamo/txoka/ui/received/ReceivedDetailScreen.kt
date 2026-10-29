@@ -1,11 +1,11 @@
 package es.igarciadelamo.txoka.ui.received
 
 import android.content.Intent
-import android.net.Uri
 import android.provider.ContactsContract
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,13 +35,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ReceivedDetailScreen(
     contact: ReceivedContact,
@@ -128,17 +129,20 @@ private fun ReceivedDetailContent(
             Text(text = stringResource(R.string.action_save_note))
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             contact.phone?.let { phone ->
                 OutlinedButton(
-                    onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))) },
+                    onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, "tel:$phone".toUri())) },
                 ) {
                     Text(text = stringResource(R.string.action_call))
                 }
             }
             contact.email?.let { email ->
                 OutlinedButton(
-                    onClick = { context.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))) },
+                    onClick = { context.startActivity(Intent(Intent.ACTION_SENDTO, "mailto:$email".toUri())) },
                 ) {
                     Text(text = stringResource(R.string.action_email))
                 }
