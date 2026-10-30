@@ -84,8 +84,8 @@ private fun TxokaHeaderRow(modifier: Modifier, actions: @Composable RowScope.() 
 @Composable
 fun ScreenTopBar(
     title: String,
-    onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {

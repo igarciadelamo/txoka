@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -144,7 +145,7 @@ private fun DetailContent(
 ) {
     val context = LocalContext.current
     var saved by remember(note) { mutableStateOf(false) }
-    val locale = context.resources.configuration.locales[0]
+    val locale = LocalConfiguration.current.locales[0]
     val received = remember(contact.receivedAt, locale) {
         DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(Date(contact.receivedAt))
     }
