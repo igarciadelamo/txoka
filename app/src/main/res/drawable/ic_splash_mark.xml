@@ -21,6 +21,11 @@
         </gradient>
       </aapt:attr>
   </path>
+  <path
+      android:pathData="M256,5A251,251 0,1 0,256,507A251,251 0,1 0,256,5Z"
+      android:strokeColor="#33FFFFFF"
+      android:strokeWidth="10"
+      android:fillColor="#00000000" />
   <group android:scaleX="0.74"
       android:scaleY="0.74"
       android:translateX="66.56"
