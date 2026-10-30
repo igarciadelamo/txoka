@@ -14,6 +14,7 @@ fun ShareRoute(
     onOpenReceived: () -> Unit,
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
+    onEditProfile: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ShareViewModel = hiltViewModel(),
 ) {
@@ -31,6 +32,9 @@ fun ShareRoute(
         onOpenReceived = onOpenReceived,
         onOpenSettings = onOpenSettings,
         onCreateCard = onCreateCard,
+        onEditProfile = onEditProfile,
+        onSharingChanged = viewModel::onSharingChanged,
+        requireUnlock = state.requireUnlock,
         modifier = modifier,
         receivedCount = state.receivedCount,
     )

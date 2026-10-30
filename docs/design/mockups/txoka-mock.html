@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Txoka · Direction A mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#F7F5F2;
+    --surface:#FFFFFF;
+    --surface-2:#F1EEE9;
+    --ink:#171614;
+    --ink-2:#5F5C56;
+    --ink-3:#8E8A83;
+    --line:rgba(23,22,20,.08);
+    --accent:#4F46E5;
+    --accent-2:#06B6D4;
+    --accent-soft:rgba(79,70,229,.10);
+    --success:#0F9D6A;
+    --success-soft:rgba(15,157,106,.12);
+    --warning:#B45309;
+    --warning-soft:#FDF3E7;
+    --switch-off:#D9D5CE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--canvas);
+    width:430px;height:932px;overflow:hidden;
+  }
+  .phone{
+    display:none;
+    position:absolute;inset:0;
+    width:430px;height:932px;
+    background:var(--canvas);
+    position:relative;overflow:hidden;
+    flex-direction:column;
+    color:var(--ink);
+  }
+  body[data-screen="hub"] #hub,
+  body[data-screen="empty"] #empty,
+  body[data-screen="editor"] #editor,
+  body[data-screen="list"] #list,
+  body[data-screen="detail"] #detail,
+  body[data-screen="sheet"] #sheet,
+  body[data-screen="settings"] #settings,
+  body[data-screen="dark"] #dark{display:flex}
+
+  /* status bar */
+  .status{height:44px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;font-size:14px;font-weight:600;letter-spacing:.2px}
+  .status .icons{display:flex;gap:6px;align-items:center;opacity:.85}
+  .dot{width:18px;height:10px;border-radius:2px;border:1.5px solid currentColor}
+
+  /* header */
+  .topbar{display:flex;align-items:center;gap:12px;padding:8px 24px 0}
+  .wordmark{font-size:22px;font-weight:800;letter-spacing:-.6px}
+  .spacer{flex:1}
+  .icon-btn{width:40px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    background:transparent;color:var(--ink)}
+  .icon-btn.surface{background:var(--surface);box-shadow:0 1px 2px rgba(23,22,20,.06)}
+  .icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .icon.sm{width:18px;height:18px}
+  .icon.filled{fill:currentColor;stroke:none}
+
+  .scroll{flex:1;overflow:hidden;padding:0 24px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-3)}
+
+  /* card */
+  .card{
+    position:relative;border-radius:28px;overflow:hidden;color:#fff;
+    background:
+      radial-gradient(120% 150% at 8% -10%, rgba(255,255,255,.38), rgba(255,255,255,0) 45%),
+      linear-gradient(135deg,#4F46E5 0%,#3E7BE8 45%,#06B6D4 100%);
+    box-shadow:0 22px 40px -22px rgba(79,70,229,.75), 0 6px 14px -10px rgba(6,182,212,.5);
+    padding:22px 24px;
+    display:flex;flex-direction:column;
+  }
+  .card.hero{padding-top:26px}
+  .card .brandmark{position:absolute;right:20px;bottom:16px;font-size:11px;font-weight:700;
+    letter-spacing:1.2px;text-transform:uppercase;opacity:.45}
+  .avatar{width:60px;height:60px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);
+    font-size:20px;font-weight:700;letter-spacing:.5px}
+  .name{font-size:29px;line-height:34px;font-weight:700;letter-spacing:-.8px;margin-top:auto;padding-top:14px}
+  .rows{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
+    padding:7px 14px 7px 12px;border-radius:999px;background:rgba(255,255,255,.14);
+    font-size:14.5px;font-weight:500}
+  .pill .icon{width:16px;height:16px;stroke-width:2}
+
+  /* sharing module */
+  .module{background:var(--surface);border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px;
+    box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .waves{width:48px;height:48px;border-radius:16px;background:var(--accent-soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex:none}
+  .module h3{font-size:16px;font-weight:700;letter-spacing:-.2px}
+  .module p{font-size:13px;color:var(--ink-2);margin-top:3px}
+  .switch{width:54px;height:32px;border-radius:999px;background:var(--accent);position:relative;flex:none;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+  .switch::after{content:"";position:absolute;top:3px;right:3px;width:26px;height:26px;border-radius:999px;
+    background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.18)}
+  .switch.off{background:var(--switch-off)}
+  .switch.off::after{right:25px}
+
+  /* quick actions */
+  .actions{display:flex;gap:12px}
+  .btn{flex:1;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:15px;font-weight:700;letter-spacing:-.1px}
+  .btn.ghost{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .btn.filled{background:var(--accent);color:#fff;box-shadow:0 10px 22px -12px rgba(79,70,229,.9)}
+  .badge{min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--accent);
+    color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .count{color:var(--ink-3);font-weight:700}
+
+  /* empty state */
+  .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:0 40px;gap:14px}
+  .empty h2{font-size:26px;line-height:32px;font-weight:800;letter-spacing:-.6px}
+  .empty p{font-size:15px;line-height:23px;color:var(--ink-2)}
+  .illo{width:180px;height:150px;position:relative;margin-bottom:8px}
+
+  /* fields */
+  .section{margin-top:26px}
+  .section > .eyebrow{margin-bottom:12px}
+  .field{background:var(--surface);border-radius:16px;padding:14px 16px;box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .field label{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:6px}
+  .field .value{font-size:16.5px;font-weight:600;letter-spacing:-.2px}
+  .field .value.ph{color:var(--ink-3);font-weight:500}
+  .row-gap{display:flex;flex-direction:column;gap:10px}
+  .inline{display:flex;gap:10px;align-items:stretch}
+  .country{background:var(--surface);border-radius:16px;padding:0 14px;display:flex;align-items:center;gap:8px;
+    font-weight:700;font-size:15px;box-shadow:0 1px 2px rgba(23,22,20,.05);flex:none}
+  .chips{display:flex;gap:8px;margin-top:10px}
+  .chip{height:34px;padding:0 14px;border-radius:999px;display:flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:700;background:var(--surface-2);color:var(--ink-2)}
+  .chip.on{background:var(--accent-soft);color:var(--accent)}
+  .palette{display:flex;gap:10px;align-items:center;overflow:hidden}
+  .swatch{width:46px;height:46px;border-radius:999px;flex:none;box-shadow:inset 0 0 0 1px rgba(23,22,20,.08)}
+  .swatch.sel{box-shadow:0 0 0 3px var(--canvas),0 0 0 5px var(--ink)}
+  .swatch.custom{background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+
+  .footer{display:flex;align-items:center;justify-content:center;gap:6px;padding:18px 0 30px;
+    font-size:12px;font-weight:600;color:var(--ink-3)}
+  .bottombar{position:absolute;left:0;right:0;bottom:0;padding:16px 24px 28px;
+    background:linear-gradient(180deg,rgba(247,245,242,0) 0%,var(--canvas) 38%);
+    display:flex;align-items:center;gap:14px}
+  .bottombar .btn{flex:1}
+  .link{font-size:15px;font-weight:700;color:var(--ink-2);padding:0 6px}
+
+  /* list */
+  .search{margin-top:16px;height:50px;border-radius:16px;background:var(--surface);display:flex;
+    align-items:center;gap:10px;padding:0 16px;color:var(--ink-3);font-size:15px;
+    box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .group{margin-top:22px}
+  .li{display:flex;align-items:center;gap:14px;padding:12px 0}
+  .li .ava{width:46px;height:46px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;letter-spacing:.3px}
+  .li .txt{flex:1;min-width:0}
+  .li .txt b{display:block;font-size:16px;font-weight:700;letter-spacing:-.2px}
+  .li .txt span{display:block;font-size:13.5px;color:var(--ink-2);margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .li .chev{color:var(--ink-3)}
+
+  /* detail */
+  .meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin-top:14px}
+  .dotsep{width:3px;height:3px;border-radius:999px;background:var(--ink-3)}
+  .actionbar{display:flex;background:var(--surface);border-radius:20px;padding:8px;margin-top:22px;
+    box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .actionbar .act{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;
+    font-size:12.5px;font-weight:700;color:var(--ink)}
+  .actionbar .act + .act{border-left:1px solid var(--line)}
+  .actionbar .act .icon{color:var(--accent)}
+  .notes{background:var(--surface);border-radius:20px;padding:16px;margin-top:22px;
+    box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .notes .head{display:flex;align-items:center;justify-content:space-between}
+  .notes p{font-size:15px;line-height:23px;color:var(--ink-2);margin-top:10px}
+  .saved{font-size:12px;font-weight:800;color:var(--success);background:var(--success-soft);
+    padding:5px 10px;border-radius:999px}
+
+  /* sheet */
+  .scrim{position:absolute;inset:0;background:rgba(23,22,20,.45)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--canvas);border-radius:28px 28px 0 0;
+    padding:10px 24px 30px;box-shadow:0 -20px 50px rgba(0,0,0,.18)}
+  .handle{width:38px;height:5px;border-radius:999px;background:#D6D1CA;margin:0 auto 18px}
+  .sheet-head{display:flex;align-items:center;gap:12px}
+  .sheet-head .ava{width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;flex:none}
+  .sheet-head h3{font-size:17px;font-weight:800;letter-spacing:-.3px;line-height:22px}
+  .sheet-head p{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+  .prov{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:6px 12px;border-radius:999px;
+    background:var(--surface);font-size:12px;font-weight:700;color:var(--ink-2);box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .sheet .card{margin-top:16px}
+  .sheet .btn{margin-top:16px}
+  .sheet .link{display:block;text-align:center;margin-top:12px}
+
+  /* settings */
+  .group-card{background:var(--surface);border-radius:20px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(23,22,20,.05)}
+  .srow{display:flex;align-items:center;gap:14px;padding:14px 16px}
+  .srow + .srow{border-top:1px solid var(--line)}
+  .srow .ico{width:36px;height:36px;border-radius:12px;background:var(--accent-soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex:none}
+  .srow .lbl{flex:1;font-size:15.5px;font-weight:600}
+  .srow .sub{font-size:12.5px;color:var(--ink-2);margin-top:2px;font-weight:500}
+  .mini{width:52px;height:34px;border-radius:10px;flex:none;
+    background:linear-gradient(135deg,#4F46E5,#06B6D4)}
+
+  /* dark */
+  #dark{--canvas:#121113;--surface:#1C1B1D;--surface-2:#262427;--ink:#F4F1EC;--ink-2:#A9A49C;
+    --ink-3:#7C7770;--line:rgba(255,255,255,.09);--switch-off:#3A373B;background:var(--canvas)}
+  #dark .module{box-shadow:none;border:1px solid var(--line)}
+  #dark .btn.ghost{box-shadow:none;border:1px solid var(--line)}
+  #dark .bottombar{background:linear-gradient(180deg,rgba(18,17,19,0) 0%,var(--canvas) 38%)}
+</style>
+</head>
+<body data-screen="hub">
+
+<!-- HUB -->
+<section class="phone" id="hub">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="wordmark">Txoka</div>
+    <div class="spacer"></div>
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></div>
+  </div>
+
+  <div class="scroll" style="display:flex;flex-direction:column">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="eyebrow">Your card</div>
+      <div class="card hero" style="margin-top:10px;aspect-ratio:1.58">
+        <div class="avatar">IG</div>
+        <div class="name">Isidro García</div>
+        <div class="rows">
+          <div class="pill"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.9 2.2z"/></svg>+34 600 123 456</div>
+          <div class="pill"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 7 9 6 9-6"/></svg>isidro@example.com</div>
+        </div>
+        <div class="brandmark">Txoka</div>
+      </div>
+
+      <div class="module" style="margin-top:16px">
+        <div class="waves">
+          <svg class="icon" viewBox="0 0 24 24" style="width:24px;height:24px">
+            <circle cx="8" cy="12" r="2" fill="currentColor" stroke="none"/>
+            <path d="M12.5 8.5a5 5 0 0 1 0 7"/><path d="M15.5 6a9 9 0 0 1 0 12"/>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <h3>Sharing over NFC</h3>
+          <p>Hold near a phone to send your card</p>
+        </div>
+        <div class="switch"></div>
+      </div>
+
+      <div class="actions" style="margin-top:16px">
+        <div class="btn ghost"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/></svg>My card</div>
+        <div class="btn ghost"><svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Received<span class="count">3</span></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <svg class="icon sm" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Your card stays on this device · No internet
+    </div>
+  </div>
+</section>
+
+<!-- EMPTY HUB -->
+<section class="phone" id="empty">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="wordmark">Txoka</div>
+    <div class="spacer"></div>
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M4.5 12a7.5 7.5 0 0 1 .3-2M19.5 12a7.5 7.5 0 0 0-.3-2"/><circle cx="12" cy="12" r="9"/></svg></div>
+  </div>
+  <div class="empty">
+    <div class="illo">
+      <div style="position:absolute;left:10px;top:26px;width:130px;height:84px;border-radius:18px;
+        background:linear-gradient(135deg,#4F46E5,#06B6D4);opacity:.25;transform:rotate(-9deg)"></div>
+      <div style="position:absolute;left:34px;top:34px;width:130px;height:84px;border-radius:18px;
+        background:linear-gradient(135deg,#4F46E5,#06B6D4);
+        box-shadow:0 18px 30px -16px rgba(79,70,229,.7);transform:rotate(6deg)">
+        <div style="width:26px;height:26px;border-radius:999px;background:rgba(255,255,255,.25);margin:16px 0 0 16px"></div>
+        <div style="width:56px;height:7px;border-radius:999px;background:rgba(255,255,255,.6);margin:10px 0 0 16px"></div>
+      </div>
+      <svg viewBox="0 0 24 24" style="position:absolute;right:6px;bottom:14px;width:56px;height:56px;color:#4F46E5;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round">
+        <circle cx="7" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+        <path d="M12 8.5a5 5 0 0 1 0 7"/><path d="M15.5 6a9 9 0 0 1 0 12"/>
+      </svg>
+    </div>
+    <h2>Your card, one tap away</h2>
+    <p>Create it once and share it by holding two phones together.</p>
+    <div class="btn filled" style="width:100%;margin-top:8px;flex:none;align-self:stretch">Create card</div>
+  </div>
+</section>
+
+<!-- EDITOR -->
+<section class="phone" id="editor">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></div>
+    <div style="font-size:17px;font-weight:800;letter-spacing:-.3px">Edit profile</div>
+    <div class="spacer"></div>
+    <div class="eyebrow" style="color:var(--ink-3)">Preview</div>
+  </div>
+
+  <div class="scroll" style="padding-top:18px;padding-bottom:110px">
+    <div class="card" style="aspect-ratio:1.72;padding:18px 22px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="avatar" style="width:48px;height:48px;font-size:16px">IG</div>
+        <div class="name" style="margin:0;font-size:23px;line-height:28px">Isidro García</div>
+      </div>
+      <div class="rows" style="margin-top:12px;flex-direction:row;gap:8px;flex-wrap:wrap">
+        <div class="pill" style="font-size:13px;padding:6px 12px">+34 600 123 456</div>
+        <div class="pill" style="font-size:13px;padding:6px 12px">isidro@example.com</div>
+      </div>
+      <div class="brandmark">Txoka</div>
+    </div>
+
+    <div class="section">
+      <div class="eyebrow">Identity</div>
+      <div class="field">
+        <label>Name</label>
+        <div class="value">Isidro García</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="eyebrow">Contact</div>
+      <div class="inline">
+        <div class="country">🇪🇸 +34 <svg class="icon sm" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="field" style="flex:1">
+          <label>Phone</label>
+          <div class="value">600 123 456</div>
+        </div>
+      </div>
+      <div class="chips">
+        <div class="chip on"><svg class="icon sm" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m4 12 5 5 11-11"/></svg>Phone</div>
+        <div class="chip">Email</div>
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>Email</label>
+        <div class="value ph">Optional</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="eyebrow">Style</div>
+      <div class="palette">
+        <div class="swatch sel" style="background:linear-gradient(135deg,#4F46E5,#06B6D4)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0EA5E9,#22D3EE)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#10B981,#34D399)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#F97316,#FBBF24)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#E11D48,#F43F5E)"></div>
+        <div class="swatch custom"><svg class="icon sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottombar">
+    <div class="btn filled">Save</div>
+    <div class="link">Discard</div>
+  </div>
+</section>
+
+<!-- LIST -->
+<section class="phone" id="list">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></div>
+    <div style="font-size:26px;font-weight:800;letter-spacing:-.7px">Received</div>
+  </div>
+
+  <div class="scroll" style="padding-top:6px">
+    <div class="search"><svg class="icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search contacts</div>
+
+    <div class="group">
+      <div class="eyebrow">Today</div>
+      <div class="li">
+        <div class="ava" style="background:linear-gradient(135deg,#10B981,#34D399)">MR</div>
+        <div class="txt"><b>Marta Ruiz</b><span>+34 600 111 222</span></div>
+        <svg class="icon sm chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </div>
+      <div class="li">
+        <div class="ava" style="background:linear-gradient(135deg,#7C3AED,#C026D3)">AL</div>
+        <div class="txt"><b>Ana López</b><span>ana@example.com</span></div>
+        <svg class="icon sm chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="eyebrow">Earlier</div>
+      <div class="li">
+        <div class="ava" style="background:linear-gradient(135deg,#F97316,#FBBF24)">LP</div>
+        <div class="txt"><b>Luis Pérez</b><span>+34 699 000 111</span></div>
+        <svg class="icon sm chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DETAIL -->
+<section class="phone" id="detail">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></div>
+    <div style="font-size:17px;font-weight:800;letter-spacing:-.3px">Marta Ruiz</div>
+    <div class="spacer"></div>
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg></div>
+  </div>
+
+  <div class="scroll" style="padding-top:18px">
+    <div class="card" style="aspect-ratio:1.66;background:
+      radial-gradient(120% 150% at 8% -10%, rgba(255,255,255,.38), rgba(255,255,255,0) 45%),
+      linear-gradient(135deg,#10B981 0%,#22C55E 55%,#34D399 100%);
+      box-shadow:0 22px 40px -22px rgba(16,185,129,.7)">
+      <div class="avatar">MR</div>
+      <div class="name">Marta Ruiz</div>
+      <div class="rows">
+        <div class="pill"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.9 2.2z"/></svg>+34 600 111 222</div>
+        <div class="pill"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 7 9 6 9-6"/></svg>marta@example.com</div>
+      </div>
+      <div class="brandmark">Txoka</div>
+    </div>
+
+    <div class="meta">Received 12 Oct 2026 <span class="dotsep"></span> Shared via NFC</div>
+
+    <div class="actionbar">
+      <div class="act"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.9 2.2z"/></svg>Call</div>
+      <div class="act"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 7 9 6 9-6"/></svg>Email</div>
+      <div class="act"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Add</div>
+    </div>
+
+    <div class="notes">
+      <div class="head"><div class="eyebrow">Notes</div><div class="saved">Saved</div></div>
+      <p>Met at the Compose meetup. Works on design systems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RECEIVE SHEET -->
+<section class="phone" id="sheet">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar" style="opacity:.5">
+    <div class="wordmark">Txoka</div>
+    <div class="spacer"></div>
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg></div>
+  </div>
+  <div class="scroll" style="padding-top:22px;opacity:.35">
+    <div class="eyebrow">Your card</div>
+    <div class="card hero" style="margin-top:10px;aspect-ratio:1.58">
+      <div class="avatar">IG</div>
+      <div class="name">Isidro García</div>
+      <div class="rows"><div class="pill">+34 600 123 456</div></div>
+    </div>
+  </div>
+  <div class="scrim"></div>
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-head">
+      <div class="ava" style="background:linear-gradient(135deg,#10B981,#34D399)">MR</div>
+      <div>
+        <h3>Marta Ruiz wants to<br>share their card</h3>
+        <p>Nothing is saved until you accept.</p>
+      </div>
+    </div>
+    <div class="prov"><svg class="icon sm" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 3a9 9 0 0 1 9 9"/><path d="M12 7a5 5 0 0 1 5 5"/><circle cx="12" cy="18" r="1.5" fill="currentColor"/></svg>Shared via NFC</div>
+    <div class="card" style="aspect-ratio:2.25;padding:18px 22px;background:
+      radial-gradient(120% 150% at 8% -10%, rgba(255,255,255,.38), rgba(255,255,255,0) 45%),
+      linear-gradient(135deg,#10B981 0%,#22C55E 55%,#34D399 100%);
+      box-shadow:0 18px 34px -20px rgba(16,185,129,.7)">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="avatar" style="width:46px;height:46px;font-size:15px">MR</div>
+        <div class="name" style="margin:0;font-size:22px;line-height:26px">Marta Ruiz</div>
+      </div>
+      <div class="rows" style="margin-top:10px;flex-direction:row;gap:8px;flex-wrap:wrap">
+        <div class="pill" style="font-size:12.5px;padding:5px 11px">+34 600 111 222</div>
+        <div class="pill" style="font-size:12.5px;padding:5px 11px">marta@example.com</div>
+      </div>
+    </div>
+    <div class="btn filled">Save contact</div>
+    <div class="link">Discard</div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="phone" id="settings">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></div>
+    <div style="font-size:26px;font-weight:800;letter-spacing:-.7px">Settings</div>
+  </div>
+
+  <div class="scroll" style="padding-top:8px">
+    <div class="group">
+      <div class="eyebrow">Your card</div>
+      <div class="group-card" style="margin-top:10px">
+        <div class="srow">
+          <div class="mini"></div>
+          <div class="lbl">Isidro García<div class="sub">3 fields shared</div></div>
+          <svg class="icon sm" viewBox="0 0 24 24" style="color:var(--ink-3)"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="eyebrow">Sharing</div>
+      <div class="group-card" style="margin-top:10px">
+        <div class="srow">
+          <div class="ico"><svg class="icon sm" viewBox="0 0 24 24"><circle cx="7" cy="12" r="1.8" fill="currentColor" stroke="none"/><path d="M12 8.5a5 5 0 0 1 0 7"/><path d="M15.5 6a9 9 0 0 1 0 12"/></svg></div>
+          <div class="lbl">Share over NFC</div>
+          <div class="switch"></div>
+        </div>
+        <div class="srow">
+          <div class="ico"><svg class="icon sm" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <div class="lbl">Require device unlock</div>
+          <div class="switch off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="eyebrow">Library</div>
+      <div class="group-card" style="margin-top:10px">
+        <div class="srow">
+          <div class="ico"><svg class="icon sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="lbl">Received contacts</div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink-3)">3</div>
+          <svg class="icon sm" viewBox="0 0 24 24" style="color:var(--ink-3)"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="srow">
+          <div class="ico" style="background:var(--warning-soft);color:var(--warning)"><svg class="icon sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="lbl">Simulate a card<div class="sub">Debug builds only</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="eyebrow">About</div>
+      <div class="group-card" style="margin-top:10px">
+        <div class="srow">
+          <div class="ico"><svg class="icon sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/></svg></div>
+          <div class="lbl">Version 1.0<div class="sub">No internet permission</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DARK HUB -->
+<section class="phone" id="dark">
+  <div class="status"><span>9:41</span><span class="icons">▮▮▮ ⌁ <span class="dot"></span></span></div>
+  <div class="topbar">
+    <div class="wordmark">Txoka</div>
+    <div class="spacer"></div>
+    <div class="icon-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg></div>
+  </div>
+  <div class="scroll" style="display:flex;flex-direction:column">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="eyebrow">Your card</div>
+      <div class="card hero" style="margin-top:10px;aspect-ratio:1.58">
+        <div class="avatar">IG</div>
+        <div class="name">Isidro García</div>
+        <div class="rows">
+          <div class="pill">+34 600 123 456</div>
+          <div class="pill">isidro@example.com</div>
+        </div>
+        <div class="brandmark">Txoka</div>
+      </div>
+      <div class="module" style="margin-top:16px">
+        <div class="waves"><svg class="icon" viewBox="0 0 24 24" style="width:24px;height:24px"><circle cx="8" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12.5 8.5a5 5 0 0 1 0 7"/><path d="M15.5 6a9 9 0 0 1 0 12"/></svg></div>
+        <div style="flex:1"><h3>Sharing over NFC</h3><p>Hold near a phone to send your card</p></div>
+        <div class="switch"></div>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <div class="btn ghost">My card</div>
+        <div class="btn ghost">Received<span class="count">3</span></div>
+      </div>
+    </div>
+    <div class="footer">
+      <svg class="icon sm" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Your card stays on this device · No internet
+    </div>
+  </div>
+</section>
+
+<script>
+  const screen = new URLSearchParams(location.search).get('s');
+  if (screen) document.body.dataset.screen = screen;
+</script>
+</body>
+</html>

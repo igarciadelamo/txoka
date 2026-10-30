@@ -24,6 +24,7 @@ fun TxokaNavHost(modifier: Modifier = Modifier, navController: NavHostController
                 onOpenReceived = { navController.navigate(ReceivedRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onCreateCard = { navController.navigate(ProfileEditorRoute) },
+                onEditProfile = { navController.navigate(ProfileEditorRoute) },
             )
         }
         composable<ReceivedRoute> {
@@ -41,10 +42,14 @@ fun TxokaNavHost(modifier: Modifier = Modifier, navController: NavHostController
             SettingsRoute(
                 onBack = navController::popBackStack,
                 onEditProfile = { navController.navigate(ProfileEditorRoute) },
+                onOpenReceived = { navController.navigate(ReceivedRoute) },
             )
         }
         composable<ProfileEditorRoute> {
-            ProfileEditorScreen(onSaved = { navController.popBackStack() })
+            ProfileEditorScreen(
+                onSaved = { navController.popBackStack() },
+                onCancel = { navController.popBackStack() },
+            )
         }
     }
 }

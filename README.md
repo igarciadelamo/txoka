@@ -32,10 +32,26 @@ hardware: when NFC is missing the app explains it and disables the sharing contr
 | 5 | Room, received contacts list | Done |
 | 6 | Polish, accessibility, documentation, manual test matrix | Done |
 
+## Design
+
+The visual system is "editorial": a warm canvas (`#F7F5F2`, dark `#121113`), white surfaces with
+20–28 dp radii, one strong colour per screen and the card as the hero. Manrope (SIL Open Font
+License, see `licenses/Manrope-OFL.txt`) covers display, titles and body; Android falls back to the
+system font for scripts the bundled weights do not include.
+
+Tokens live in `ui/theme`: `Spacing`, `Corners`, `TxokaShapes`, the light and dark schemes and the
+extra roles (hairline, accent-soft, success, warning) exposed through `MaterialTheme.txoka`. Shared
+pieces are `ContactCard` (hero and preview layouts), `TxokaField`, `Eyebrow`, the top bars and the
+hub quick actions, so screens do not invent their own paddings.
+
+Mockups of the direction are in `docs/design/mockups/` (`overview.jpg`), generated from
+`txoka-mock.html` with headless Chrome.
+
 ## Stack
 
 Kotlin, Jetpack Compose with Material 3, Hilt, coroutines and Flow, Room, DataStore and
-libphonenumber. Single Gradle module, minSdk 26, target and compile SDK 37.
+libphonenumber. Single Gradle module, minSdk 26, target and compile SDK 37. Manrope is bundled as
+five static weights, subset to Latin.
 
 ```
 app/src/main/java/es/igarciadelamo/txoka
@@ -160,7 +176,8 @@ while the unlock setting is on).
   name and dial code instead of the flag emoji; search fields use visible labels.
 - Call and email actions flow onto a second line on narrow screens or large fonts.
 - Layouts were checked on the Pixel 9 emulator at 100% and 200% font scale, in English and
-  Spanish, light and dark theme.
+  Spanish, light and dark theme, with and without a card and with NFC reporting available or
+  missing.
 
 ## API levels
 

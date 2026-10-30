@@ -8,7 +8,6 @@
     <string name="action_save">Save</string>
     <string name="action_settings">Settings</string>
 
-    <string name="card_colour">Card colour</string>
     <string name="card_colour_custom">Custom colour</string>
     <string name="card_colour_custom_error">Use six hex digits, for example #4F46E5</string>
     <string name="card_colour_custom_hint">#4F46E5</string>
@@ -31,8 +30,6 @@
 
     <string name="action_discard">Discard</string>
     <string name="action_save_contact">Save contact</string>
-    <string name="receive_title">New contact</string>
-    <string name="action_add_to_contacts">Add to contacts</string>
     <string name="action_call">Call</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
@@ -45,25 +42,49 @@
     <string name="received_search">Search contacts</string>
     <string name="received_title">Received</string>
 
-    <plurals name="received_badge_count">
-        <item quantity="one">%d received contact</item>
-        <item quantity="other">%d received contacts</item>
-    </plurals>
-
     <string name="settings_demo_card">Simulate an incoming card</string>
     <string name="settings_title">Settings</string>
 
-    <string name="share_email">Include email when sharing</string>
-    <string name="share_hint">Hold this phone near the other one</string>
     <string name="hce_aid_group_description">Txoka contact card</string>
     <string name="hce_service_description">Share your card over NFC</string>
     <string name="nfc_disabled">NFC is turned off</string>
-    <string name="nfc_unavailable">This phone does not support NFC</string>
     <string name="action_open_settings">Open NFC settings</string>
     <string name="share_hint_disabled">Sharing is off</string>
-    <string name="share_no_card_body">Create it to start sharing your contact over NFC.</string>
     <string name="share_require_unlock">Require device unlock</string>
-    <string name="share_no_card_title">You don\'t have a card yet</string>
     <string name="share_toggle">Share over NFC</string>
-    <string name="share_phone">Include phone when sharing</string>
+    <string name="hub_empty_body">Create it once and share it by holding two phones together.</string>
+    <string name="hub_empty_title">Your card, one tap away</string>
+    <string name="hub_my_card">My card</string>
+    <string name="hub_privacy_footer">Your card stays on this device · No internet</string>
+    <string name="hub_your_card">Your card</string>
+    <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>
+    <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
+    <string name="share_module_hint">Hold near a phone to send your card</string>
+    <string name="share_module_unlock_hint">Unlock the phone to share</string>
+    <string name="hub_received_count">Received %1$d</string>
+    <string name="nfc_unavailable_title">NFC unavailable</string>
+    <string name="nfc_disabled_title">NFC is off</string>
+    <string name="section_identity">Identity</string>
+    <string name="section_contact">Contact</string>
+    <string name="section_style">Style</string>
+    <string name="field_optional">Optional</string>
+    <string name="action_add">Add</string>
+    <string name="action_more">More options</string>
+    <string name="group_earlier">Earlier</string>
+    <string name="group_today">Today</string>
+    <string name="note_saved">Saved</string>
+    <string name="received_empty_body">Ask someone to share theirs over NFC.</string>
+    <string name="received_empty_title">No cards yet</string>
+    <string name="received_meta">Received %1$s · Shared via NFC</string>
+    <string name="settings_about">About</string>
+    <string name="settings_debug_only">Debug builds only</string>
+    <string name="settings_library">Library</string>
+    <string name="settings_no_internet">No internet permission</string>
+    <string name="settings_sharing">Sharing</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="sheet_incoming_body">Nothing is saved until you accept.</string>
+    <string name="sheet_incoming_title">%1$s wants to share their card</string>
+    <string name="sheet_shared_via_nfc">Shared via NFC</string>
+    <string name="settings_received">Received contacts</string>
+    <string name="received_note_hint">Add a note about this person</string>
 </resources>
