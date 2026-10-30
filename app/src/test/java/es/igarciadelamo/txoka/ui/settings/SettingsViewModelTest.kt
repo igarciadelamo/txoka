@@ -2,11 +2,13 @@ package es.igarciadelamo.txoka.ui.settings
 
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
+import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.nfc.FakeTransport
 import es.igarciadelamo.txoka.nfc.IncomingCards
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
+import es.igarciadelamo.txoka.testing.FakeReceivedContactRepository
 import es.igarciadelamo.txoka.testing.FakeShareSettingsRepository
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -26,6 +28,7 @@ class SettingsViewModelTest {
         val viewModel = SettingsViewModel(
             profileRepository = FakeProfileRepository(Profile(name = "Isidro")),
             settingsRepository = FakeShareSettingsRepository(),
+            receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
             fakeTransport = FakeTransport(IncomingCards()),
         )
@@ -41,6 +44,7 @@ class SettingsViewModelTest {
             settingsRepository = FakeShareSettingsRepository(
                 ShareSettings(sharingEnabled = false, requireDeviceUnlock = true),
             ),
+            receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
             fakeTransport = FakeTransport(IncomingCards()),
         )
@@ -57,6 +61,7 @@ class SettingsViewModelTest {
         val viewModel = SettingsViewModel(
             profileRepository = FakeProfileRepository(null),
             settingsRepository = FakeShareSettingsRepository(),
+            receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
             fakeTransport = FakeTransport(IncomingCards()),
         )
@@ -76,6 +81,7 @@ class SettingsViewModelTest {
         val viewModel = SettingsViewModel(
             profileRepository = FakeProfileRepository(null),
             settingsRepository = FakeShareSettingsRepository(),
+            receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = availability,
             fakeTransport = FakeTransport(IncomingCards()),
         )
@@ -85,5 +91,21 @@ class SettingsViewModelTest {
         viewModel.refreshNfcStatus()
 
         assertEquals(NfcStatus.Unavailable, viewModel.state.value.nfc)
+    }
+
+    @Test
+    fun `counts the received contacts`() = runTest {
+        val viewModel = SettingsViewModel(
+            profileRepository = FakeProfileRepository(Profile(name = "Isidro")),
+            settingsRepository = FakeShareSettingsRepository(),
+            receivedRepository = FakeReceivedContactRepository(
+                listOf(ReceivedContact(id = 1, name = "Marta"), ReceivedContact(id = 2, name = "Luis")),
+            ),
+            nfcAvailability = FakeNfcAvailability(),
+            fakeTransport = FakeTransport(IncomingCards()),
+        )
+        advanceUntilIdle()
+
+        assertEquals(2, viewModel.state.value.receivedCount)
     }
 }

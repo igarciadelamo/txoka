@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import es.igarciadelamo.txoka.ui.profile.ProfileEditorScreen
 import es.igarciadelamo.txoka.ui.received.ReceivedDetailRoute
 import es.igarciadelamo.txoka.ui.received.ReceivedRoute
+import es.igarciadelamo.txoka.ui.settings.AboutScreen
+import es.igarciadelamo.txoka.ui.settings.LicencesScreen
 import es.igarciadelamo.txoka.ui.settings.SettingsRoute
 import es.igarciadelamo.txoka.ui.share.ShareRoute
 
@@ -41,9 +43,18 @@ fun TxokaNavHost(modifier: Modifier = Modifier, navController: NavHostController
         composable<SettingsRoute> {
             SettingsRoute(
                 onBack = navController::popBackStack,
-                onEditProfile = { navController.navigate(ProfileEditorRoute) },
                 onOpenReceived = { navController.navigate(ReceivedRoute) },
+                onOpenAbout = { navController.navigate(AboutRoute) },
             )
+        }
+        composable<AboutRoute> {
+            AboutScreen(
+                onBack = navController::popBackStack,
+                onOpenLicences = { navController.navigate(LicencesRoute) },
+            )
+        }
+        composable<LicencesRoute> {
+            LicencesScreen(onBack = navController::popBackStack)
         }
         composable<ProfileEditorRoute> {
             ProfileEditorScreen(

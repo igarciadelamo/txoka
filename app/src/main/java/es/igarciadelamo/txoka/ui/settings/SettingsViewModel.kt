@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
+import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.nfc.FakeTransport
 import es.igarciadelamo.txoka.nfc.NfcAvailability
 import es.igarciadelamo.txoka.nfc.NfcStatus
@@ -21,6 +22,7 @@ data class SettingsUiState(
     val sharingEnabled: Boolean = true,
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
+    val receivedCount: Int = 0,
     val isLoading: Boolean = true,
 )
 
@@ -28,6 +30,7 @@ data class SettingsUiState(
 class SettingsViewModel @Inject constructor(
     profileRepository: ProfileRepository,
     private val settingsRepository: ShareSettingsRepository,
+    receivedRepository: ReceivedContactRepository,
     private val nfcAvailability: NfcAvailability,
     private val fakeTransport: FakeTransport,
 ) : ViewModel() {
@@ -36,12 +39,17 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(profileRepository.profile, settingsRepository.settings) { profile, settings ->
+            combine(
+                profileRepository.profile,
+                settingsRepository.settings,
+                receivedRepository.contacts,
+            ) { profile, settings, contacts ->
                 SettingsUiState(
                     hasProfile = profile != null,
                     sharingEnabled = settings.sharingEnabled,
                     requireUnlock = settings.requireDeviceUnlock,
                     nfc = nfcAvailability.status(),
+                    receivedCount = contacts.size,
                     isLoading = false,
                 )
             }.collect { state -> _state.value = state }

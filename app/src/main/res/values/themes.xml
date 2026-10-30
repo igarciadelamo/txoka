@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.Txoka" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <!-- Native splash, backported by core-splashscreen -->
+    <!-- One splash only: the system one. Android 12+ shows the mark in the centre and the
+         branding image (the wordmark) at the bottom; older versions show the mark alone. -->
     <style name="Theme.Txoka.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark</item>
+        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="31">@drawable/ic_splash_wordmark</item>
         <item name="postSplashScreenTheme">@style/Theme.Txoka</item>
     </style>
 </resources>

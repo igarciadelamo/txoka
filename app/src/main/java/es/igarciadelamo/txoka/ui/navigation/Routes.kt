@@ -15,4 +15,10 @@ data class ReceivedDetailRoute(val id: Long)
 data object SettingsRoute
 
 @Serializable
+data object AboutRoute
+
+@Serializable
+data object LicencesRoute
+
+@Serializable
 data object ProfileEditorRoute
