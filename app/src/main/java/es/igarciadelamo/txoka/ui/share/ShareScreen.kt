@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +28,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
@@ -216,7 +216,11 @@ private fun QuickActions(receivedCount: Int, onOpenReceived: () -> Unit, onOpenM
             modifier = Modifier.weight(1f),
         )
         SurfaceButton(
-            text = stringResource(R.string.hub_received_count, receivedCount),
+            text = if (receivedCount > 0) {
+                stringResource(R.string.hub_received_count, receivedCount)
+            } else {
+                stringResource(R.string.received_title)
+            },
             onClick = onOpenReceived,
             modifier = Modifier.weight(1f),
         )
@@ -260,14 +264,15 @@ private fun EmptyIllustration() {
     Box(modifier = Modifier.size(width = 200.dp, height = 160.dp), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
-                .size(width = 132.dp, height = 86.dp)
-                .rotate(-9f)
+                .offset(x = (-14).dp, y = (-14).dp)
+                .size(width = 128.dp, height = 82.dp)
+                .rotate(-11f)
                 .clip(shape)
-                .background(gradient)
-                .alpha(0.22f),
+                .background(MaterialTheme.colorScheme.primaryContainer),
         )
         Box(
             modifier = Modifier
+                .offset(x = 12.dp, y = 10.dp)
                 .size(width = 132.dp, height = 86.dp)
                 .rotate(6f)
                 .clip(shape)
