@@ -1,6 +1,6 @@
 # Visual refresh proposal
 
-Status: proposal only, nothing implemented yet.
+Status: implemented in the `feat/visual-refresh` branch. Mockups kept as the design reference.
 
 The app works and is accessible, but the interface still looks like a scaffold: stock Material 3
 components, default type, default padding and a lot of empty space. This document diagnoses what
