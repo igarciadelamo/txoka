@@ -180,11 +180,23 @@ no errors. Findings fixed during the audit:
 ./gradlew :app:testDebugUnitTest
 ./gradlew detekt ktlintCheck
 ./gradlew :app:lintDebug
+./gradlew :app:koverVerifyDebug
 ```
 
 The Gradle daemon JVM is pinned to 21 through `gradle/gradle-daemon-jvm.properties`, because
 Detekt 1.23.8 cannot parse the version string of newer JDKs. CI runs the same tasks on every push
 to `main` and on every pull request.
+
+### Unit tests and coverage
+
+The JVM suite covers the protocol, the profile logic, the NFC responder and every view model.
+Kover enforces a 95% line coverage gate over those layers; Compose screens and the Android-only
+adapters are covered by the manual test plan instead. The HTML report is written to
+`app/build/reports/kover/htmlDebug/index.html`.
+
+```sh
+./gradlew :app:koverVerifyDebug :app:koverHtmlReportDebug
+```
 
 ### Instrumented tests
 
