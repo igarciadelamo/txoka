@@ -31,10 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -55,8 +55,8 @@ import es.igarciadelamo.txoka.ui.theme.txoka
 fun SettingsScreen(
     state: SettingsUiState,
     onBack: () -> Unit,
-    onEditProfile: () -> Unit,
     onOpenReceived: () -> Unit,
+    onOpenAbout: () -> Unit,
     onSharingChanged: (Boolean) -> Unit,
     onRequireUnlockChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -78,15 +78,6 @@ fun SettingsScreen(
                 .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.xl),
         ) {
-            YourCardGroup(hasProfile = state.hasProfile, onEditProfile = onEditProfile)
-            if (state.nfc != NfcStatus.Unavailable) {
-                SharingGroup(
-                    state = state,
-                    onSharingChanged = onSharingChanged,
-                    onRequireUnlockChanged = onRequireUnlockChanged,
-                )
-            }
-            LibraryGroup(onOpenReceived = onOpenReceived, onSimulateIncomingCard = onSimulateIncomingCard)
             if (state.nfc == NfcStatus.Disabled) {
                 WarningCard(
                     title = stringResource(R.string.nfc_disabled),
@@ -95,38 +86,26 @@ fun SettingsScreen(
                     onAction = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
                 )
             }
-            AboutGroup()
-        }
-    }
-}
 
-@Composable
-private fun YourCardGroup(hasProfile: Boolean, onEditProfile: () -> Unit) {
-    SettingsGroup(title = stringResource(R.string.hub_your_card)) {
-        SettingsRow(
-            title = stringResource(if (hasProfile) R.string.action_edit_profile else R.string.action_create_card),
-            onClick = onEditProfile,
-            leading = if (hasProfile) {
-                {
-                    Box(
-                        modifier = Modifier
-                            .size(width = 52.dp, height = 34.dp)
-                            .clip(RoundedCornerShape(Corners.chip))
-                            .background(
-                                Brush.linearGradient(
-                                    listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.secondary,
-                                    ),
-                                ),
-                            ),
-                    )
-                }
-            } else {
-                null
-            },
-            fallbackIcon = Icons.Filled.Person,
-        )
+            // Sharing controls make no sense on a device without NFC hardware.
+            if (state.nfc != NfcStatus.Unavailable) {
+                SharingGroup(
+                    state = state,
+                    onSharingChanged = onSharingChanged,
+                    onRequireUnlockChanged = onRequireUnlockChanged,
+                )
+            }
+
+            LibraryGroup(
+                receivedCount = state.receivedCount,
+                onOpenReceived = onOpenReceived,
+                onSimulateIncomingCard = onSimulateIncomingCard,
+            )
+
+            PrivacyGroup()
+
+            AboutGroup(version = BuildConfig.VERSION_NAME, onOpenAbout = onOpenAbout)
+        }
     }
 }
 
@@ -162,10 +141,11 @@ private fun SharingGroup(
 }
 
 @Composable
-private fun LibraryGroup(onOpenReceived: () -> Unit, onSimulateIncomingCard: () -> Unit) {
+private fun LibraryGroup(receivedCount: Int, onOpenReceived: () -> Unit, onSimulateIncomingCard: () -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_library)) {
         SettingsRow(
             title = stringResource(R.string.settings_received),
+            subtitle = pluralStringResource(R.plurals.received_count, receivedCount, receivedCount),
             onClick = onOpenReceived,
             fallbackIcon = Icons.Filled.Person,
         )
@@ -183,12 +163,28 @@ private fun LibraryGroup(onOpenReceived: () -> Unit, onSimulateIncomingCard: () 
 }
 
 @Composable
-private fun AboutGroup() {
+private fun PrivacyGroup() {
+    SettingsGroup(title = stringResource(R.string.settings_privacy)) {
+        InfoRow(
+            icon = Icons.Filled.Lock,
+            title = stringResource(R.string.settings_no_internet_title),
+            body = stringResource(R.string.settings_no_internet_body),
+        )
+        InfoRow(
+            icon = Icons.Filled.Person,
+            title = stringResource(R.string.settings_storage_title),
+            body = stringResource(R.string.settings_storage_body),
+        )
+    }
+}
+
+@Composable
+private fun AboutGroup(version: String, onOpenAbout: () -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_about)) {
         SettingsRow(
-            title = stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
-            subtitle = stringResource(R.string.settings_no_internet),
-            onClick = null,
+            title = stringResource(R.string.app_name),
+            subtitle = stringResource(R.string.settings_version, version),
+            onClick = onOpenAbout,
             fallbackIcon = Icons.Filled.Info,
         )
     }
@@ -227,16 +223,10 @@ private fun SettingsRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (leading != null) {
-            leading()
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(Corners.chip))
-                    .background(background),
-                contentAlignment = Alignment.Center,
-            ) {
+        IconBadge(background = background) {
+            if (leading != null) {
+                leading()
+            } else {
                 Icon(
                     imageVector = fallbackIcon,
                     contentDescription = null,
@@ -270,6 +260,51 @@ private fun SettingsRow(
 }
 
 @Composable
+private fun InfoRow(icon: ImageVector, title: String, body: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        verticalAlignment = Alignment.Top,
+    ) {
+        IconBadge {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = body,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun IconBadge(background: Color = MaterialTheme.txoka.accentSoft, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(Corners.chip))
+            .background(background),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
+    }
+}
+
+@Composable
 private fun SwitchRow(
     title: String,
     checked: Boolean,
@@ -290,15 +325,7 @@ private fun SwitchRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(RoundedCornerShape(Corners.chip))
-                .background(MaterialTheme.txoka.accentSoft),
-            contentAlignment = Alignment.Center,
-        ) {
-            leading()
-        }
+        IconBadge { leading() }
         Text(
             text = title,
             modifier = Modifier.weight(1f),
@@ -351,10 +378,10 @@ private fun WarningCard(title: String, body: String, action: String, onAction: (
 private fun SettingsScreenPreview() {
     TxokaTheme {
         SettingsScreen(
-            state = SettingsUiState(hasProfile = true, nfc = NfcStatus.Enabled, isLoading = false),
+            state = SettingsUiState(hasProfile = true, nfc = NfcStatus.Enabled, receivedCount = 3),
             onBack = {},
-            onEditProfile = {},
             onOpenReceived = {},
+            onOpenAbout = {},
             onSharingChanged = {},
             onRequireUnlockChanged = {},
         )

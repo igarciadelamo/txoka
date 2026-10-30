@@ -4,7 +4,6 @@
 
     <string name="action_back">Atrás</string>
     <string name="action_create_card">Crear tarjeta</string>
-    <string name="action_edit_profile">Editar perfil</string>
     <string name="action_save">Guardar</string>
     <string name="action_settings">Ajustes</string>
 
@@ -79,7 +78,6 @@
     <string name="settings_about">Acerca de</string>
     <string name="settings_debug_only">Solo en versiones de depuración</string>
     <string name="settings_library">Biblioteca</string>
-    <string name="settings_no_internet">Sin permiso de internet</string>
     <string name="settings_sharing">Compartir</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="sheet_incoming_body">No se guarda nada hasta que aceptes.</string>
@@ -87,4 +85,19 @@
     <string name="sheet_shared_via_nfc">Compartida por NFC</string>
     <string name="settings_received">Contactos recibidos</string>
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
+    <string name="about_made_by">Creada por %1$s</string>
+    <string name="licences_font_body">© 2018 The Manrope Project Authors, con licencia SIL Open Font License 1.1.</string>
+    <string name="licences_font_title">Fuente Manrope</string>
+    <string name="settings_legal">Legal</string>
+    <string name="settings_licences">Licencias de código abierto</string>
+    <string name="settings_no_internet_body">Txoka no pide el permiso INTERNET, así que nada puede salir del móvil.</string>
+    <string name="settings_no_internet_title">Sin acceso a internet</string>
+    <string name="settings_privacy">Privacidad</string>
+    <string name="settings_storage_body">Tu tarjeta y las notas se quedan en la base de datos de la app.</string>
+    <string name="settings_storage_title">Guardado en este dispositivo</string>
+    <plurals name="received_count">
+        <item quantity="one">%d contacto</item>
+        <item quantity="many">%d de contactos</item>
+        <item quantity="other">%d contactos</item>
+    </plurals>
 </resources>
