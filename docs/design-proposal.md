@@ -16,6 +16,31 @@ code changes.
 | Settings | <img src="design/current-settings.jpg" width="240"> |
 | Receive overlay | <img src="design/current-overlay.jpg" width="240"> |
 
+## Chosen direction: A, editorial
+
+![Direction A mockups](design/mockups/overview.jpg)
+
+High fidelity HTML mockups of the chosen direction live in `docs/design/mockups/`
+(`txoka-mock.html`, rendered with headless Chrome). Individual screens:
+[hub](design/mockups/mock-hub.jpg) · [empty](design/mockups/mock-empty.jpg) ·
+[editor](design/mockups/mock-editor.jpg) · [received](design/mockups/mock-list.jpg) ·
+[detail](design/mockups/mock-detail.jpg) · [incoming](design/mockups/mock-sheet.jpg) ·
+[settings](design/mockups/mock-settings.jpg) · [dark](design/mockups/mock-dark.jpg).
+
+Decided:
+
+- Direction **A**: warm canvas `#F7F5F2`, white surfaces, 20–28 dp radii, one strong colour per
+  screen, card as the hero.
+- Typography: **Manrope** for display and titles, system font for body.
+- Sharing switch stays on the hub, in a status module below the card, and also in Settings.
+- Brand palette always; no dynamic colour from the wallpaper.
+- Received contacts keep the sender's colours (avatar and detail card).
+
+Still open, decided during implementation:
+
+- Whether the hub footer keeps the privacy line ("Your card stays on this device").
+- Whether the received list groups by date or stays a flat list with a search field.
+
 ## 1. Why it looks unfinished
 
 1. **No design system.** Each screen picks its own paddings (16/24 dp), shapes and sizes. There is
@@ -215,13 +240,7 @@ Latin subset needs bundling; the typography falls back automatically for other s
 Each step keeps the current semantics, string keys and tests, and lands with before/after
 screenshots in the MR. The Kover gate and the lint checks stay as they are.
 
-## 7. Decisions needed
+## 7. Next step
 
-1. **Direction**: A (editorial), B (bold gradient) or C (minimal Swiss).
-2. **Typography**: system only, Manrope for titles, or Inter everywhere.
-3. **Dynamic colour (Material You)**: respect the wallpaper palette or keep the Txoka brand
-   palette always. Recommendation: brand palette always.
-4. **Hub composition**: big inline sharing switch (as proposed) or a read-only status with the
-   switch only in Settings.
-5. **Cards in lists**: keep each sender's colour (current behaviour) or force a neutral row with
-   colour used only on the avatar.
+Approve the mockups and start with step 1 of the work plan: tokens, colour scheme, shapes and
+Manrope. Each subsequent step lands with before/after screenshots in its own MR.
