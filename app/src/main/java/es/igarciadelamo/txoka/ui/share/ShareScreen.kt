@@ -26,7 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,6 +69,7 @@ fun ShareScreen(
                                 Badge(
                                     containerColor = MaterialTheme.colorScheme.primary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.clearAndSetSemantics {},
                                 ) {
                                     Text(text = receivedCount.toString())
                                 }
@@ -74,7 +77,11 @@ fun ShareScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = stringResource(R.string.action_received),
+                                contentDescription = pluralStringResource(
+                                    R.plurals.received_badge_count,
+                                    receivedCount,
+                                    receivedCount,
+                                ),
                             )
                         }
                     }

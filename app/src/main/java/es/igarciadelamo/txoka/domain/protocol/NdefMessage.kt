@@ -36,8 +36,9 @@ object NdefMessage {
                 message.write(payload.size ushr (BITS_PER_BYTE * (LONG_LENGTH_BYTES - 1 - index)))
             }
         }
-        message.writeBytes(type)
-        message.writeBytes(payload)
+        // write(ByteArray) works on every API level; writeBytes(ByteArray) needs API 33.
+        message.write(type)
+        message.write(payload)
 
         val bytes = message.toByteArray()
         require(bytes.size <= MAX_MESSAGE_BYTES) {

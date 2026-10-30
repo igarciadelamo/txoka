@@ -5,7 +5,6 @@
     <string name="action_back">Atrás</string>
     <string name="action_create_card">Crear tarjeta</string>
     <string name="action_edit_profile">Editar perfil</string>
-    <string name="action_received">Recibidos</string>
     <string name="action_save">Guardar</string>
     <string name="action_settings">Ajustes</string>
 
@@ -13,6 +12,7 @@
     <string name="card_colour_custom">Color personalizado</string>
     <string name="card_colour_custom_error">Usa seis dígitos hexadecimales, por ejemplo #4F46E5</string>
     <string name="card_colour_custom_hint">#4F46E5</string>
+    <string name="card_colour_preset">Color predefinido %1$d</string>
 
     <string name="error_email_invalid">Introduce un email válido</string>
     <string name="error_name_required">El nombre es obligatorio</string>
@@ -44,11 +44,15 @@
     <string name="received_note">Notas</string>
     <string name="received_search">Buscar contactos</string>
     <string name="received_title">Recibidos</string>
-    <string name="received_placeholder">Aquí aparecerán los contactos que recibas</string>
+
+    <plurals name="received_badge_count">
+        <item quantity="one">%d contacto recibido</item>
+        <item quantity="many">%d de contactos recibidos</item>
+        <item quantity="other">%d contactos recibidos</item>
+    </plurals>
 
     <string name="settings_demo_card">Simular una tarjeta recibida</string>
     <string name="settings_title">Ajustes</string>
-    <string name="settings_placeholder">Ajustes próximamente</string>
 
     <string name="share_email">Incluir el email al compartir</string>
     <string name="share_hint">Acerca este móvil al otro para compartir</string>

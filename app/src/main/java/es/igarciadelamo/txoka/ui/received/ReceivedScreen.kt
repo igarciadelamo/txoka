@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,7 +67,7 @@ fun ReceivedScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text(text = stringResource(R.string.received_search)) },
+                label = { Text(text = stringResource(R.string.received_search)) },
                 singleLine = true,
             )
 
@@ -80,7 +81,8 @@ fun ReceivedScreen(
                             supportingContent = contact.phone?.let { phone -> { Text(text = phone) } },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onOpenContact(contact.id) },
+                                .clickable { onOpenContact(contact.id) }
+                                .semantics(mergeDescendants = true) {},
                         )
                     }
                 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +42,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -240,14 +243,12 @@ private fun PhoneField(
                 },
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = stringResource(R.string.share_phone), style = MaterialTheme.typography.bodyMedium)
-            Switch(checked = shared, onCheckedChange = onSharedChange, enabled = value.isNotBlank())
-        }
+        ShareRow(
+            label = stringResource(R.string.share_phone),
+            shared = shared,
+            enabled = value.isNotBlank(),
+            onSharedChange = onSharedChange,
+        )
     }
 
     if (showPicker) {
@@ -265,8 +266,9 @@ private fun PalettePicker(selected: CardPalette, onSelect: (CardPalette) -> Unit
         modifier = modifier.horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        CardPalette.Presets.forEach { palette ->
+        CardPalette.Presets.forEachIndexed { index, palette ->
             val isSelected = palette == selected
+            val presetLabel = stringResource(R.string.card_colour_preset, index + 1)
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -292,7 +294,8 @@ private fun PalettePicker(selected: CardPalette, onSelect: (CardPalette) -> Unit
                         selected = isSelected,
                         role = Role.RadioButton,
                         onClick = { onSelect(palette) },
-                    ),
+                    )
+                    .semantics { contentDescription = presetLabel },
             )
         }
     }
@@ -321,18 +324,38 @@ private fun ShareableField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             supportingText = supportingText?.let { text -> { Text(text = text) } },
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = shareLabel, style = MaterialTheme.typography.bodyMedium)
-            Switch(
-                checked = shared,
-                onCheckedChange = onSharedChange,
-                enabled = value.isNotBlank(),
-            )
-        }
+        ShareRow(
+            label = shareLabel,
+            shared = shared,
+            enabled = value.isNotBlank(),
+            onSharedChange = onSharedChange,
+        )
+    }
+}
+
+/** Label and switch behave as one control, so the whole row can be toggled by touch and TalkBack. */
+@Composable
+private fun ShareRow(label: String, shared: Boolean, enabled: Boolean, onSharedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(
+                value = shared,
+                enabled = enabled,
+                role = Role.Switch,
+                onValueChange = onSharedChange,
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+        )
+        Switch(checked = shared, onCheckedChange = null, enabled = enabled)
     }
 }
 
