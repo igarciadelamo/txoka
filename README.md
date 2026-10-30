@@ -12,8 +12,10 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
   to be unlocked before the card is served.
 - **Receiving.** Tap a Txoka phone (or any NDEF tag with a `text/vcard` record) and the card opens
   for confirmation before it is stored.
-- **Received contacts.** Searchable list, editable notes, call, email, add to the system contacts
-  app and delete. Duplicates are detected by normalised phone or email.
+- **Received contacts.** Searchable list grouped by date, editable notes, call, email, add to the
+  system contacts app and delete. Duplicates are detected by normalised phone or email.
+- **Settings.** Sharing switches, the received library, a plain-language privacy section and a
+  separate About screen with the version, credits and open source licences.
 - **Debug demo.** In debug builds, Settings offers *Simulate an incoming card*, which runs a demo
   card through the real NDEF and vCard round trip. Useful on emulators, which have no NFC.
 
