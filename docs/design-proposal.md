@@ -53,9 +53,9 @@ Real screenshots after the refresh (Pixel 9 emulator, light and dark):
 | --- | --- | --- | --- |
 | <img src="design/implemented-detail.jpg" width="200"> | <img src="design/implemented-sheet.jpg" width="200"> | <img src="design/implemented-settings.jpg" width="200"> | <img src="design/implemented-dark.jpg" width="200"> |
 
-| About | Licences |
-| --- | --- |
-| <img src="design/implemented-about.jpg" width="200"> | <img src="design/implemented-licences.jpg" width="200"> |
+| About | Licences | Splash | Splash · dark |
+| --- | --- | --- | --- |
+| <img src="design/implemented-about.jpg" width="200"> | <img src="design/implemented-licences.jpg" width="200"> | <img src="design/implemented-splash.jpg" width="200"> | <img src="design/implemented-splash-dark.jpg" width="200"> |
 
 ## 1. Why it looks unfinished
 

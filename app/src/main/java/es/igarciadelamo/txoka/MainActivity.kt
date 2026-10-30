@@ -3,7 +3,6 @@ package es.igarciadelamo.txoka
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,8 +18,6 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 import javax.inject.Inject
 import es.igarciadelamo.txoka.domain.protocol.NdefMessage as TxokaNdefMessage
 
-private const val SPLASH_DURATION_MS = 2_000L
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
@@ -30,13 +27,8 @@ class MainActivity : ComponentActivity() {
     lateinit var incomingCards: IncomingCards
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
-        val isColdStart = savedInstanceState == null
-        val splashDeadline = SystemClock.uptimeMillis() + SPLASH_DURATION_MS
-
-        splashScreen.setKeepOnScreenCondition {
-            isColdStart && SystemClock.uptimeMillis() < splashDeadline
-        }
+        // Keep the system splash only until the first frame; the branded splash lives in Compose.
+        installSplashScreen()
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -46,6 +46,9 @@ extra roles (hairline, accent-soft, success, warning) exposed through `MaterialT
 pieces are `ContactCard` (hero and preview layouts), `TxokaField`, `Eyebrow`, the top bars and the
 hub quick actions, so screens do not invent their own paddings.
 
+The splash is the brand circle plus the app name on the same canvas: the system splash shows the
+same mark, and a short compose splash adds the name after the first frame.
+
 Mockups of the direction are in `docs/design/mockups/` (`overview.jpg`), generated from
 `txoka-mock.html` with headless Chrome.
 
