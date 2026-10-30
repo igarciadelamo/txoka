@@ -41,6 +41,18 @@ Still open, decided during implementation:
 - Whether the hub footer keeps the privacy line ("Your card stays on this device").
 - Whether the received list groups by date or stays a flat list with a search field.
 
+## Implemented
+
+Real screenshots after the refresh (Pixel 9 emulator, light and dark):
+
+| Hub | Hub · empty | Editor | Received |
+| --- | --- | --- | --- |
+| <img src="design/implemented-hub.jpg" width="200"> | <img src="design/implemented-empty.jpg" width="200"> | <img src="design/implemented-editor.jpg" width="200"> | <img src="design/implemented-list.jpg" width="200"> |
+
+| Detail | Incoming | Settings | Dark |
+| --- | --- | --- | --- |
+| <img src="design/implemented-detail.jpg" width="200"> | <img src="design/implemented-sheet.jpg" width="200"> | <img src="design/implemented-settings.jpg" width="200"> | <img src="design/implemented-dark.jpg" width="200"> |
+
 ## 1. Why it looks unfinished
 
 1. **No design system.** Each screen picks its own paddings (16/24 dp), shapes and sizes. There is
