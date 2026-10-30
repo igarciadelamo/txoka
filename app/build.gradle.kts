@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kover)
     alias(libs.plugins.ktlint)
 }
 
@@ -43,6 +44,47 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+}
+
+kover {
+    reports {
+        filters {
+            // Compose screens and Android-only adapters are exercised manually; the coverage gate
+            // protects the logic that unit tests can reach.
+            includes {
+                classes(
+                    "es.igarciadelamo.txoka.domain.*",
+                    "es.igarciadelamo.txoka.nfc.HceCard*",
+                    "es.igarciadelamo.txoka.nfc.HceResponder*",
+                    "es.igarciadelamo.txoka.nfc.IncomingCards*",
+                    "es.igarciadelamo.txoka.nfc.FakeTransport*",
+                    "es.igarciadelamo.txoka.nfc.NdefHceTransport*",
+                    "es.igarciadelamo.txoka.nfc.NfcStatus",
+                    "es.igarciadelamo.txoka.ui.*ViewModel*",
+                    "es.igarciadelamo.txoka.ui.*UiState",
+                    "es.igarciadelamo.txoka.ui.AppState",
+                )
+            }
+            excludes {
+                classes(
+                    "*_Factory",
+                    "*_Factory\$*",
+                    "*_HiltModules*",
+                    "Hilt_*",
+                    "*_MembersInjector",
+                    "*_LazyMapKey",
+                    "*.BuildConfig",
+                )
+            }
+        }
+        total {
+            verify {
+                rule {
+                    minBound(95)
+                }
+            }
+        }
     }
 }
 

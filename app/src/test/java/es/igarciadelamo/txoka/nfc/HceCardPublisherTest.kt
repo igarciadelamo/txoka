@@ -5,8 +5,11 @@ import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.domain.protocol.Type4Tag
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeShareSettingsRepository
+import es.igarciadelamo.txoka.testing.NfcTestPackets.SelectAid
+import es.igarciadelamo.txoka.testing.NfcTestPackets.status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -19,7 +22,7 @@ class HceCardPublisherTest {
         val responder = HceResponder()
         publisher(profile, ShareSettings(sharingEnabled = true), responder).publishCurrent()
 
-        assertEquals(Type4Tag.SW_OK, status(responder.respond(selectAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
@@ -27,7 +30,7 @@ class HceCardPublisherTest {
         val responder = HceResponder()
         publisher(profile, ShareSettings(sharingEnabled = false), responder).publishCurrent()
 
-        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(selectAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
@@ -39,7 +42,7 @@ class HceCardPublisherTest {
             responder = responder,
         ).publishCurrent()
 
-        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(selectAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
@@ -47,8 +50,27 @@ class HceCardPublisherTest {
         val responder = HceResponder()
         publisher(profile, ShareSettings(sharingEnabled = true, requireDeviceUnlock = true), responder).publishCurrent()
 
-        assertEquals(Type4Tag.SW_CONDITIONS_NOT_SATISFIED, status(responder.respond(selectAid(), deviceLocked = true)))
-        assertEquals(Type4Tag.SW_OK, status(responder.respond(selectAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_CONDITIONS_NOT_SATISFIED, status(responder.respond(SelectAid, deviceLocked = true)))
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
+    }
+
+    @Test
+    fun `start follows the sharing settings`() = runTest {
+        val settings = FakeShareSettingsRepository(ShareSettings(sharingEnabled = true))
+        val responder = HceResponder()
+        HceCardPublisher(
+            profileRepository = FakeProfileRepository(profile),
+            settingsRepository = settings,
+            responder = responder,
+            scope = backgroundScope,
+        ).start()
+        runCurrent()
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
+
+        settings.setSharingEnabled(false)
+        runCurrent()
+
+        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
@@ -56,7 +78,7 @@ class HceCardPublisherTest {
         val responder = HceResponder()
         publisher(Profile(name = "A".repeat(900)), ShareSettings(sharingEnabled = true), responder).publishCurrent()
 
-        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(selectAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     private fun publisher(profile: Profile?, settings: ShareSettings, responder: HceResponder) = HceCardPublisher(
@@ -65,10 +87,4 @@ class HceCardPublisherTest {
         responder = responder,
         scope = CoroutineScope(Dispatchers.Unconfined),
     )
-
-    private fun selectAid(): ByteArray =
-        byteArrayOf(0x00, 0xA4.toByte(), 0x04, 0x00, 0x07, 0xD2.toByte(), 0x76, 0x00, 0x00, 0x85.toByte(), 0x01, 0x01)
-
-    private fun status(response: ByteArray): Int =
-        ((response[response.size - 2].toInt() and 0xFF) shl 8) or (response.last().toInt() and 0xFF)
 }
