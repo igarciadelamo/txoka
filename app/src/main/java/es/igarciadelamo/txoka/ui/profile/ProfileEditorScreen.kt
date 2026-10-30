@@ -6,30 +6,20 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,14 +42,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.PhoneCountry
+import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
+import es.igarciadelamo.txoka.ui.components.CountryChip
+import es.igarciadelamo.txoka.ui.components.Eyebrow
+import es.igarciadelamo.txoka.ui.components.PrimaryButton
+import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.ShareChip
+import es.igarciadelamo.txoka.ui.components.TxokaField
 import es.igarciadelamo.txoka.ui.components.toComposeColor
+import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditorScreen(
     onSaved: () -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileEditorViewModel = hiltViewModel(),
 ) {
@@ -69,92 +67,39 @@ fun ProfileEditorScreen(
         if (state.saved) onSaved()
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(
-                            if (state.isEditing) R.string.profile_title_edit else R.string.profile_title_create,
-                        ),
-                    )
-                },
-            )
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            ContactCard(profile = state.toPreview(), placeholder = !state.isEditing)
-            if (!state.isEditing) {
-                Text(
-                    text = stringResource(R.string.profile_card_footer),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            CardSection(
-                state = state,
-                onPresetSelected = viewModel::onPresetSelected,
-                onCustomHexChange = viewModel::onCustomHexChange,
-            )
-            IdentityFields(
-                state = state,
-                onNameChange = viewModel::onNameChange,
-                onPhoneChange = viewModel::onPhoneChange,
-                onEmailChange = viewModel::onEmailChange,
-                onCountrySelected = viewModel::onCountrySelected,
-                onSharePhoneChange = viewModel::onSharePhoneChange,
-                onShareEmailChange = viewModel::onShareEmailChange,
-            )
-            Button(
-                onClick = viewModel::save,
-                enabled = state.canSave,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.action_save))
-            }
-        }
-    }
-}
-
-@Composable
-private fun CardSection(
-    state: ProfileEditorUiState,
-    onPresetSelected: (CardPalette) -> Unit,
-    onCustomHexChange: (String) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.card_colour),
-            style = MaterialTheme.typography.titleSmall,
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        ScreenTopBar(
+            title = stringResource(
+                if (state.isEditing) R.string.profile_title_edit else R.string.profile_title_create,
+            ),
+            onBack = onCancel,
         )
-        PalettePicker(selected = state.card, onSelect = onPresetSelected)
-        OutlinedTextField(
-            value = state.customHex,
-            onValueChange = onCustomHexChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = stringResource(R.string.card_colour_custom)) },
-            placeholder = { Text(text = stringResource(R.string.card_colour_custom_hint)) },
-            singleLine = true,
-            isError = state.customHexError,
-            supportingText = if (state.customHexError) {
-                { Text(text = stringResource(R.string.card_colour_custom_error)) }
-            } else {
-                null
-            },
+        EditorContent(
+            state = state,
+            onNameChange = viewModel::onNameChange,
+            onPhoneChange = viewModel::onPhoneChange,
+            onEmailChange = viewModel::onEmailChange,
+            onCountrySelected = viewModel::onCountrySelected,
+            onSharePhoneChange = viewModel::onSharePhoneChange,
+            onShareEmailChange = viewModel::onShareEmailChange,
+            onPresetSelected = viewModel::onPresetSelected,
+            onCustomHexChange = viewModel::onCustomHexChange,
+            modifier = Modifier.weight(1f),
+        )
+        BottomBar(
+            canSave = state.canSave,
+            onSave = viewModel::save,
+            onDiscard = onCancel,
         )
     }
 }
 
 @Composable
-private fun IdentityFields(
+private fun EditorContent(
     state: ProfileEditorUiState,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
@@ -162,38 +107,131 @@ private fun IdentityFields(
     onCountrySelected: (PhoneCountry) -> Unit,
     onSharePhoneChange: (Boolean) -> Unit,
     onShareEmailChange: (Boolean) -> Unit,
+    onPresetSelected: (CardPalette) -> Unit,
+    onCustomHexChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        OutlinedTextField(
+    var showCountryPicker by rememberSaveable { mutableStateOf(false) }
+    var showCustomColour by rememberSaveable { mutableStateOf(state.card !in CardPalette.Presets) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = Spacing.xl, vertical = Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+    ) {
+        PreviewSection(state = state)
+        IdentitySection(state = state, onNameChange = onNameChange)
+        ContactSection(
+            state = state,
+            onPhoneChange = onPhoneChange,
+            onEmailChange = onEmailChange,
+            onSharePhoneChange = onSharePhoneChange,
+            onShareEmailChange = onShareEmailChange,
+            onOpenCountryPicker = { showCountryPicker = true },
+        )
+        StyleSection(
+            state = state,
+            customSelected = showCustomColour,
+            onPresetSelected = { palette ->
+                showCustomColour = false
+                onPresetSelected(palette)
+            },
+            onCustomClick = { showCustomColour = true },
+            onCustomHexChange = onCustomHexChange,
+        )
+    }
+
+    if (showCountryPicker) {
+        CountryPickerDialog(
+            selected = state.country,
+            onSelect = onCountrySelected,
+            onDismiss = { showCountryPicker = false },
+        )
+    }
+}
+
+@Composable
+private fun PreviewSection(state: ProfileEditorUiState) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+        ContactCard(
+            profile = state.toPreview(),
+            placeholder = !state.isEditing,
+            layout = CardLayout.Preview,
+        )
+        if (!state.isEditing) {
+            Text(
+                text = stringResource(R.string.profile_card_footer),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun IdentitySection(state: ProfileEditorUiState, onNameChange: (String) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Eyebrow(text = stringResource(R.string.section_identity))
+        TxokaField(
             value = state.name,
             onValueChange = onNameChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = stringResource(R.string.field_name)) },
-            singleLine = true,
+            label = stringResource(R.string.field_name),
+            placeholder = stringResource(R.string.profile_name_placeholder),
             isError = state.nameError,
-            supportingText = if (state.nameError) {
-                { Text(text = stringResource(R.string.error_name_required)) }
-            } else {
-                null
-            },
+            supportingText = if (state.nameError) stringResource(R.string.error_name_required) else null,
         )
-        PhoneField(
-            value = state.phone,
-            onValueChange = onPhoneChange,
-            country = state.country,
-            onCountrySelected = onCountrySelected,
-            shared = state.sharePhone,
-            onSharedChange = onSharePhoneChange,
-            isError = state.phoneError,
-        )
-        ShareableField(
+    }
+}
+
+@Composable
+private fun ContactSection(
+    state: ProfileEditorUiState,
+    onPhoneChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onSharePhoneChange: (Boolean) -> Unit,
+    onShareEmailChange: (Boolean) -> Unit,
+    onOpenCountryPicker: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Eyebrow(text = stringResource(R.string.section_contact))
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            CountryChip(
+                flag = state.country.flag,
+                dialCode = state.country.dialCode,
+                onClick = onOpenCountryPicker,
+            )
+            TxokaField(
+                value = state.phone,
+                onValueChange = onPhoneChange,
+                label = stringResource(R.string.field_phone),
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                isError = state.phoneError,
+                supportingText = if (state.phoneError) stringResource(R.string.error_phone_invalid) else null,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            ShareChip(
+                text = stringResource(R.string.field_phone),
+                selected = state.sharePhone,
+                enabled = state.phone.isNotBlank(),
+                onClick = { onSharePhoneChange(!state.sharePhone) },
+            )
+            ShareChip(
+                text = stringResource(R.string.field_email),
+                selected = state.shareEmail,
+                enabled = state.email.isNotBlank(),
+                onClick = { onShareEmailChange(!state.shareEmail) },
+            )
+        }
+        TxokaField(
             value = state.email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.field_email),
-            shareLabel = stringResource(R.string.share_email),
-            shared = state.shareEmail,
-            onSharedChange = onShareEmailChange,
-            keyboardType = KeyboardType.Email,
+            placeholder = stringResource(R.string.field_optional),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             isError = state.emailError,
             supportingText = if (state.emailError) stringResource(R.string.error_email_invalid) else null,
         )
@@ -201,77 +239,57 @@ private fun IdentityFields(
 }
 
 @Composable
-private fun PhoneField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    country: PhoneCountry,
-    onCountrySelected: (PhoneCountry) -> Unit,
-    shared: Boolean,
-    onSharedChange: (Boolean) -> Unit,
-    isError: Boolean,
+private fun StyleSection(
+    state: ProfileEditorUiState,
+    customSelected: Boolean,
+    onPresetSelected: (CardPalette) -> Unit,
+    onCustomClick: () -> Unit,
+    onCustomHexChange: (String) -> Unit,
 ) {
-    var showPicker by rememberSaveable { mutableStateOf(false) }
-
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(
-                onClick = { showPicker = true },
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-            ) {
-                Text(text = "${country.flag} +${country.dialCode}")
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = stringResource(R.string.phone_country),
-                )
-            }
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.weight(1f),
-                label = { Text(text = stringResource(R.string.field_phone)) },
-                singleLine = true,
-                isError = isError,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                supportingText = if (isError) {
-                    { Text(text = stringResource(R.string.error_phone_invalid)) }
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Eyebrow(text = stringResource(R.string.section_style))
+        PaletteRow(
+            selected = state.card,
+            customSelected = customSelected,
+            onSelect = onPresetSelected,
+            onCustomClick = onCustomClick,
+        )
+        if (customSelected) {
+            TxokaField(
+                value = state.customHex,
+                onValueChange = onCustomHexChange,
+                label = stringResource(R.string.card_colour_custom),
+                placeholder = stringResource(R.string.card_colour_custom_hint),
+                isError = state.customHexError,
+                supportingText = if (state.customHexError) {
+                    stringResource(R.string.card_colour_custom_error)
                 } else {
                     null
                 },
             )
         }
-        ShareRow(
-            label = stringResource(R.string.share_phone),
-            shared = shared,
-            enabled = value.isNotBlank(),
-            onSharedChange = onSharedChange,
-        )
-    }
-
-    if (showPicker) {
-        CountryPickerDialog(
-            selected = country,
-            onSelect = onCountrySelected,
-            onDismiss = { showPicker = false },
-        )
     }
 }
 
 @Composable
-private fun PalettePicker(selected: CardPalette, onSelect: (CardPalette) -> Unit, modifier: Modifier = Modifier) {
+private fun PaletteRow(
+    selected: CardPalette,
+    customSelected: Boolean,
+    onSelect: (CardPalette) -> Unit,
+    onCustomClick: () -> Unit,
+) {
     Row(
-        modifier = modifier.horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         CardPalette.Presets.forEachIndexed { index, palette ->
-            val isSelected = palette == selected
+            val isSelected = !customSelected && palette == selected
             val presetLabel = stringResource(R.string.card_colour_preset, index + 1)
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(46.dp)
                     .clip(CircleShape)
                     .background(
                         brush = Brush.linearGradient(
@@ -282,14 +300,15 @@ private fun PalettePicker(selected: CardPalette, onSelect: (CardPalette) -> Unit
                         ),
                     )
                     .border(
-                        width = if (isSelected) 3.dp else 1.dp,
+                        width = if (isSelected) 2.dp else 0.dp,
                         color = if (isSelected) {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.onBackground
                         } else {
-                            MaterialTheme.colorScheme.outlineVariant
+                            MaterialTheme.colorScheme.surface
                         },
                         shape = CircleShape,
                     )
+                    .padding(if (isSelected) 3.dp else 0.dp)
                     .selectable(
                         selected = isSelected,
                         role = Role.RadioButton,
@@ -298,85 +317,82 @@ private fun PalettePicker(selected: CardPalette, onSelect: (CardPalette) -> Unit
                     .semantics { contentDescription = presetLabel },
             )
         }
+        val customLabel = stringResource(R.string.card_colour_custom)
+        Box(
+            modifier = Modifier
+                .size(46.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface)
+                .border(
+                    width = if (customSelected) 2.dp else 0.dp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = CircleShape,
+                )
+                .selectable(
+                    selected = customSelected,
+                    role = Role.RadioButton,
+                    onClick = onCustomClick,
+                )
+                .semantics { contentDescription = customLabel },
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "+",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 @Composable
-private fun ShareableField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    shareLabel: String,
-    shared: Boolean,
-    onSharedChange: (Boolean) -> Unit,
-    keyboardType: KeyboardType,
-    isError: Boolean,
-    supportingText: String?,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = label) },
-            singleLine = true,
-            isError = isError,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            supportingText = supportingText?.let { text -> { Text(text = text) } },
-        )
-        ShareRow(
-            label = shareLabel,
-            shared = shared,
-            enabled = value.isNotBlank(),
-            onSharedChange = onSharedChange,
-        )
-    }
-}
-
-/** Label and switch behave as one control, so the whole row can be toggled by touch and TalkBack. */
-@Composable
-private fun ShareRow(label: String, shared: Boolean, enabled: Boolean, onSharedChange: (Boolean) -> Unit) {
+private fun BottomBar(canSave: Boolean, onSave: () -> Unit, onDiscard: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .toggleable(
-                value = shared,
-                enabled = enabled,
-                role = Role.Switch,
-                onValueChange = onSharedChange,
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .navigationBarsPadding()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = Spacing.xl, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
+        PrimaryButton(
+            text = stringResource(R.string.action_save),
+            onClick = onSave,
+            enabled = canSave,
+            modifier = Modifier.weight(1f),
         )
-        Switch(checked = shared, onCheckedChange = null, enabled = enabled)
+        TextButton(onClick = onDiscard) {
+            Text(
+                text = stringResource(R.string.action_discard),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun ProfileEditorScreenPreview() {
+private fun ProfileEditorPreview() {
     TxokaTheme {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .background(MaterialTheme.colorScheme.background)
+                .padding(Spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
             ContactCard(
                 profile = ProfileEditorUiState(
                     name = "Isidro García",
-                    phone = "+34600123456",
+                    phone = "+34 600 123 456",
                     email = "isidro@example.com",
                 ).toPreview(),
+                layout = CardLayout.Preview,
             )
-            PalettePicker(selected = CardPalette.Default, onSelect = {})
+            PaletteRow(selected = CardPalette.Default, customSelected = false, onSelect = {}, onCustomClick = {})
+            BottomBar(canSave = true, onSave = {}, onDiscard = {})
         }
     }
 }

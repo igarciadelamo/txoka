@@ -11,6 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun SettingsRoute(
     onBack: () -> Unit,
     onEditProfile: () -> Unit,
+    onOpenReceived: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -25,6 +26,7 @@ fun SettingsRoute(
         state = state,
         onBack = onBack,
         onEditProfile = onEditProfile,
+        onOpenReceived = onOpenReceived,
         onSharingChanged = viewModel::onSharingChanged,
         onRequireUnlockChanged = viewModel::onRequireUnlockChanged,
         onSimulateIncomingCard = viewModel::onSimulateIncomingCard,

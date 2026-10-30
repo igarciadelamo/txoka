@@ -8,7 +8,6 @@
     <string name="action_save">Guardar</string>
     <string name="action_settings">Ajustes</string>
 
-    <string name="card_colour">Color de la tarjeta</string>
     <string name="card_colour_custom">Color personalizado</string>
     <string name="card_colour_custom_error">Usa seis dígitos hexadecimales, por ejemplo #4F46E5</string>
     <string name="card_colour_custom_hint">#4F46E5</string>
@@ -31,8 +30,6 @@
 
     <string name="action_discard">Descartar</string>
     <string name="action_save_contact">Guardar contacto</string>
-    <string name="receive_title">Nuevo contacto</string>
-    <string name="action_add_to_contacts">Añadir a contactos</string>
     <string name="action_call">Llamar</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_delete">Borrar</string>
@@ -45,26 +42,49 @@
     <string name="received_search">Buscar contactos</string>
     <string name="received_title">Recibidos</string>
 
-    <plurals name="received_badge_count">
-        <item quantity="one">%d contacto recibido</item>
-        <item quantity="many">%d de contactos recibidos</item>
-        <item quantity="other">%d contactos recibidos</item>
-    </plurals>
-
     <string name="settings_demo_card">Simular una tarjeta recibida</string>
     <string name="settings_title">Ajustes</string>
 
-    <string name="share_email">Incluir el email al compartir</string>
-    <string name="share_hint">Acerca este móvil al otro para compartir</string>
     <string name="hce_aid_group_description">Tarjeta de contacto de Txoka</string>
     <string name="hce_service_description">Comparte tu tarjeta por NFC</string>
     <string name="nfc_disabled">El NFC está apagado</string>
-    <string name="nfc_unavailable">Este móvil no tiene NFC</string>
     <string name="action_open_settings">Abrir ajustes de NFC</string>
     <string name="share_hint_disabled">Compartir desactivado</string>
-    <string name="share_no_card_body">Créala para empezar a compartir tu contacto por NFC.</string>
     <string name="share_require_unlock">Pedir desbloqueo</string>
-    <string name="share_no_card_title">Aún no tienes tarjeta</string>
     <string name="share_toggle">Compartir por NFC</string>
-    <string name="share_phone">Incluir el teléfono al compartir</string>
+    <string name="hub_empty_body">Créala una vez y compártela acercando dos móviles.</string>
+    <string name="hub_empty_title">Tu tarjeta, a un toque</string>
+    <string name="hub_my_card">Mi tarjeta</string>
+    <string name="hub_privacy_footer">Tu tarjeta se queda en este dispositivo · Sin internet</string>
+    <string name="hub_your_card">Tu tarjeta</string>
+    <string name="nfc_disabled_body">Vuelve a activar el NFC para seguir compartiendo tu tarjeta.</string>
+    <string name="nfc_unavailable_body">Aún puedes crear y guardar tarjetas, pero no compartirlas por NFC.</string>
+    <string name="share_module_hint">Acércalo a un móvil para enviar tu tarjeta</string>
+    <string name="share_module_unlock_hint">Desbloquea el móvil para compartir</string>
+    <string name="hub_received_count">Recibidos %1$d</string>
+    <string name="nfc_unavailable_title">NFC no disponible</string>
+    <string name="nfc_disabled_title">El NFC está apagado</string>
+    <string name="section_identity">Identidad</string>
+    <string name="section_contact">Contacto</string>
+    <string name="section_style">Estilo</string>
+    <string name="field_optional">Opcional</string>
+    <string name="action_add">Añadir</string>
+    <string name="action_more">Más opciones</string>
+    <string name="group_earlier">Anteriores</string>
+    <string name="group_today">Hoy</string>
+    <string name="note_saved">Guardada</string>
+    <string name="received_empty_body">Pide a alguien que comparta la suya por NFC.</string>
+    <string name="received_empty_title">Aún no hay tarjetas</string>
+    <string name="received_meta">Recibida el %1$s · Compartida por NFC</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_debug_only">Solo en versiones de depuración</string>
+    <string name="settings_library">Biblioteca</string>
+    <string name="settings_no_internet">Sin permiso de internet</string>
+    <string name="settings_sharing">Compartir</string>
+    <string name="settings_version">Versión %1$s</string>
+    <string name="sheet_incoming_body">No se guarda nada hasta que aceptes.</string>
+    <string name="sheet_incoming_title">%1$s quiere compartir su tarjeta</string>
+    <string name="sheet_shared_via_nfc">Compartida por NFC</string>
+    <string name="settings_received">Contactos recibidos</string>
+    <string name="received_note_hint">Añade una nota sobre esta persona</string>
 </resources>
