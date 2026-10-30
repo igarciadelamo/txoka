@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,37 +26,47 @@ import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
 /**
- * Branded splash shown once per cold start, on the same canvas as the hub. It carries no copy
- * beyond the app name, so it reads the same in every language.
+ * Branded splash shown once per cold start. It uses the card gradient, so it never reads as an
+ * empty white screen, and carries no copy beyond the app name.
  */
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        SPLASH_MID,
+                        MaterialTheme.colorScheme.secondary,
+                    ),
+                ),
+            )
             // Swallow taps so the hub behind cannot be touched while the splash is up.
             .pointerInput(Unit) { detectTapGestures(onTap = {}) },
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(R.drawable.ic_splash_mark),
+                painter = painterResource(R.drawable.ic_splash_logo),
                 contentDescription = null,
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier.size(132.dp),
             )
             Text(
                 text = stringResource(R.string.app_name),
-                modifier = Modifier.padding(top = 22.dp),
+                modifier = Modifier.padding(top = 18.dp),
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-1).sp,
                 ),
-                color = MaterialTheme.colorScheme.onBackground,
+                color = Color.White,
             )
         }
     }
 }
+
+private val SPLASH_MID = Color(0xFF3E7BE8)
 
 @Preview(showBackground = true)
 @Composable

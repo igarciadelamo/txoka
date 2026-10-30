@@ -1,31 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Splash mark: a brand circle with the card inside. The system splash masks icons to a
-     circle, so the graphic is already circular and survives the mask untouched. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="512"
     android:viewportHeight="512">
-  <path
-      android:pathData="M256,0A256,256 0,1 0,256,512A256,256 0,1 0,256,0Z">
-    <aapt:attr name="android:fillColor">
-        <gradient
-            android:startX="-0"
-            android:startY="0"
-            android:endX="512"
-            android:endY="512"
-            android:type="linear">
-          <item android:offset="0" android:color="#FF4F46E5"/>
-          <item android:offset="1" android:color="#FF06B6D4"/>
-        </gradient>
-      </aapt:attr>
-  </path>
-  <group android:scaleX="0.74"
-      android:scaleY="0.74"
-      android:translateX="66.56"
-      android:translateY="66.56">
-
+  <group android:scaleX="0.77"
+      android:scaleY="0.77"
+      android:translateX="58.88"
+      android:translateY="58.88">
     <path
         android:pathData="M81.18,146.34L254.51,115.78A22,22 52.86,0 1,279.99 133.63L296.66,228.17A22,22 53.15,0 1,278.82 253.66L105.49,284.22A22,22 67,0 1,80.01 266.37L63.34,171.83A22,22 67,0 1,81.18 146.34z"
         android:fillColor="#FFFFFF"/>

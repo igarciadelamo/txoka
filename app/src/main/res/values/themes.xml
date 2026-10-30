@@ -3,11 +3,11 @@
 
     <style name="Theme.Txoka" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <!-- Native splash, backported by core-splashscreen. Same canvas as the app, icon matches
-         the launcher icon so the hand-off to the compose splash is seamless. -->
+    <!-- Native splash, backported by core-splashscreen. Brand colour so it never reads as a
+         blank white screen; the compose splash continues with the same gradient. -->
     <style name="Theme.Txoka.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
         <item name="postSplashScreenTheme">@style/Theme.Txoka</item>
     </style>
 </resources>
