@@ -53,7 +53,7 @@ import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -79,7 +79,7 @@ fun ReceivedDetailScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(
+        TxokaAppBar(
             title = contact.name,
             onBack = onBack,
             actions = {

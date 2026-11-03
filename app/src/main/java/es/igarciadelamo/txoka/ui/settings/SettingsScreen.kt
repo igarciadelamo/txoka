@@ -45,7 +45,7 @@ import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -69,7 +69,7 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(title = stringResource(R.string.settings_title), onBack = onBack)
+        TxokaAppBar(title = stringResource(R.string.settings_title), onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)

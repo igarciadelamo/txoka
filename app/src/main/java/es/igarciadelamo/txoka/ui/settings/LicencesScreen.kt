@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.components.Eyebrow
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -38,7 +38,7 @@ fun LicencesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(title = stringResource(R.string.settings_licences), onBack = onBack)
+        TxokaAppBar(title = stringResource(R.string.settings_licences), onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)

@@ -17,7 +17,7 @@ val SurfaceMutedLight = Color(0xFFF1EEE9)
 val InkLight = Color(0xFF171614)
 val InkSecondaryLight = Color(0xFF5F5C56)
 val InkTertiaryLight = Color(0xFF8E8A83)
-val HairlineLight = Color(0x14171614)
+val HairlineLight = Color(0x3D171614)
 
 // Dark canvas
 val CanvasDark = Color(0xFF121113)
@@ -26,7 +26,7 @@ val SurfaceMutedDark = Color(0xFF262427)
 val InkDark = Color(0xFFF4F1EC)
 val InkSecondaryDark = Color(0xFFA9A49C)
 val InkTertiaryDark = Color(0xFF7C7770)
-val HairlineDark = Color(0x17FFFFFF)
+val HairlineDark = Color(0x33FFFFFF)
 val IndigoSoftDark = Color(0xFF2A2750)
 
 val Success = Color(0xFF0F9D6A)
