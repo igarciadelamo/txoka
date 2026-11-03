@@ -64,6 +64,11 @@ private val CardBorderWidth = 2.dp
 private val CardBorderDash = 8.dp
 
 /**
+ * Content colour that reads on top of the card gradient, mirrored by the hub overlay actions.
+ */
+fun Profile.cardContentColor(): Color = if (card.accent.prefersDarkContent()) darkCardContent else Color.White
+
+/**
  * Renders the card exactly as recipients will see it. While the profile is not saved yet the
  * card is drawn as a ghost so the onboarding preview cannot be mistaken for a stored card.
  */
@@ -74,10 +79,10 @@ fun ContactCard(
     placeholder: Boolean = false,
     layout: CardLayout = CardLayout.Hero,
 ) {
-    val contentColor = when {
-        placeholder -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = GHOST_CONTENT_ALPHA)
-        profile.card.accent.prefersDarkContent() -> Color(0xFF1C1B1F)
-        else -> Color.White
+    val contentColor = if (placeholder) {
+        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = GHOST_CONTENT_ALPHA)
+    } else {
+        profile.cardContentColor()
     }
     val accent = profile.card.accent.toComposeColor()
 
@@ -307,6 +312,7 @@ private const val PILL_BACKGROUND_ALPHA = 0.14f
 private const val HIGHLIGHT_ALPHA = 0.30f
 private const val HIGHLIGHT_X = 0.08f
 private const val BRANDMARK_ALPHA = 0.45f
+private val darkCardContent = Color(0xFF1C1B1F)
 
 @Preview(showBackground = true)
 @Composable

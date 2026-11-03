@@ -36,7 +36,6 @@ fun ShareRoute(
         onSharingChanged = viewModel::onSharingChanged,
         requireUnlock = state.requireUnlock,
         modifier = modifier,
-        receivedCount = state.receivedCount,
     )
 }
 

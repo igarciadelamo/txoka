@@ -4,6 +4,8 @@
 
     <string name="action_back">Back</string>
     <string name="action_create_card">Create card</string>
+    <string name="action_delete_card">Delete card</string>
+    <string name="action_edit_card">Edit card</string>
     <string name="action_save">Save</string>
     <string name="action_settings">Settings</string>
 
@@ -36,6 +38,8 @@
     <string name="action_save_note">Save note</string>
     <string name="delete_dialog_message">This cannot be undone.</string>
     <string name="delete_dialog_title">Delete contact?</string>
+    <string name="delete_card_dialog_message">Your profile will be removed from this device. Received contacts are kept.</string>
+    <string name="delete_card_dialog_title">Delete your card?</string>
     <string name="received_empty">No contacts yet</string>
     <string name="received_note">Notes</string>
     <string name="received_search">Search contacts</string>
@@ -53,14 +57,12 @@
     <string name="share_toggle">Share over NFC</string>
     <string name="hub_empty_body">Create it once and share it by holding two phones together.</string>
     <string name="hub_empty_title">Your card, one tap away</string>
-    <string name="hub_my_card">My card</string>
     <string name="hub_privacy_footer">Your card stays on this device · No internet</string>
     <string name="hub_your_card">Your card</string>
     <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>
     <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
     <string name="share_module_hint">Hold near a phone to send your card</string>
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
-    <string name="hub_received_count">Received %1$d</string>
     <string name="nfc_unavailable_title">NFC unavailable</string>
     <string name="nfc_disabled_title">NFC is off</string>
     <string name="section_identity">Identity</string>

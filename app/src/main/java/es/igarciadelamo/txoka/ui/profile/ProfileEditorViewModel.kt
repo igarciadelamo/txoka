@@ -35,6 +35,7 @@ data class ProfileEditorUiState(
     val customHexError: Boolean = false,
     val isEditing: Boolean = false,
     val saved: Boolean = false,
+    val deleted: Boolean = false,
 ) {
     val canSave: Boolean
         get() = name.isNotBlank() && !customHexError
@@ -162,6 +163,13 @@ class ProfileEditorViewModel @Inject constructor(
                     saved = true,
                 )
             }
+        }
+    }
+
+    fun delete() {
+        viewModelScope.launch {
+            repository.delete()
+            _uiState.update { it.copy(deleted = true) }
         }
     }
 

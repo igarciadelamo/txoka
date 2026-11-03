@@ -7,4 +7,7 @@ interface ProfileRepository {
     val profile: Flow<Profile?>
 
     suspend fun save(profile: Profile)
+
+    /** Removes the stored profile while keeping the rest of the preferences. */
+    suspend fun delete()
 }

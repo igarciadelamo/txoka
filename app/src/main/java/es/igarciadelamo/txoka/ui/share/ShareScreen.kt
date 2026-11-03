@@ -17,7 +17,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,8 +49,8 @@ import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
-import es.igarciadelamo.txoka.ui.components.SurfaceButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
+import es.igarciadelamo.txoka.ui.components.cardContentColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -60,7 +62,6 @@ fun ShareScreen(
     sharingEnabled: Boolean,
     requireUnlock: Boolean,
     nfc: NfcStatus,
-    receivedCount: Int,
     onOpenReceived: () -> Unit,
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
@@ -80,6 +81,12 @@ fun ShareScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
         TxokaAppBar {
+            IconButton(onClick = onOpenReceived) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = stringResource(R.string.settings_received),
+                )
+            }
             IconButton(onClick = onOpenSettings) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
@@ -104,11 +111,26 @@ fun ShareScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
                         Column {
                             Eyebrow(text = stringResource(R.string.hub_your_card))
-                            ContactCard(
-                                profile = profile,
-                                modifier = Modifier.padding(top = Spacing.sm),
-                                layout = CardLayout.Hero,
-                            )
+                            Box(modifier = Modifier.padding(top = Spacing.sm)) {
+                                ContactCard(
+                                    profile = profile,
+                                    layout = CardLayout.Hero,
+                                )
+                                IconButton(
+                                    onClick = onEditProfile,
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(Spacing.lg)
+                                        .clip(CircleShape)
+                                        .background(profile.cardContentColor().copy(alpha = 0.18f)),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Edit,
+                                        contentDescription = stringResource(R.string.action_edit_card),
+                                        tint = profile.cardContentColor(),
+                                    )
+                                }
+                            }
                         }
                         SharingModule(
                             sharingEnabled = sharingEnabled,
@@ -116,11 +138,6 @@ fun ShareScreen(
                             nfc = nfc,
                             onSharingChanged = onSharingChanged,
                             onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
-                        )
-                        QuickActions(
-                            receivedCount = receivedCount,
-                            onOpenReceived = onOpenReceived,
-                            onOpenMyCard = onEditProfile,
                         )
                     }
                 }
@@ -204,26 +221,6 @@ private fun SharingModule(
                 Text(text = stringResource(R.string.action_open_settings))
             }
         }
-    }
-}
-
-@Composable
-private fun QuickActions(receivedCount: Int, onOpenReceived: () -> Unit, onOpenMyCard: () -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        SurfaceButton(
-            text = stringResource(R.string.hub_my_card),
-            onClick = onOpenMyCard,
-            modifier = Modifier.weight(1f),
-        )
-        SurfaceButton(
-            text = if (receivedCount > 0) {
-                stringResource(R.string.hub_received_count, receivedCount)
-            } else {
-                stringResource(R.string.received_title)
-            },
-            onClick = onOpenReceived,
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 
@@ -342,7 +339,6 @@ private fun ShareScreenPreview() {
             sharingEnabled = true,
             requireUnlock = false,
             nfc = NfcStatus.Enabled,
-            receivedCount = 3,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
@@ -361,7 +357,6 @@ private fun ShareScreenNoCardPreview() {
             sharingEnabled = false,
             requireUnlock = false,
             nfc = NfcStatus.Unavailable,
-            receivedCount = 0,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},

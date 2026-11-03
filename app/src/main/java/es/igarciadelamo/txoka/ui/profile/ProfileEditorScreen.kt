@@ -17,6 +17,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,13 +59,19 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 fun ProfileEditorScreen(
     onSaved: () -> Unit,
     onCancel: () -> Unit,
+    onDeleted: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileEditorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var confirmDelete by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.saved) {
         if (state.saved) onSaved()
+    }
+
+    LaunchedEffect(state.deleted) {
+        if (state.deleted) onDeleted()
     }
 
     Column(
@@ -88,12 +95,39 @@ fun ProfileEditorScreen(
             onShareEmailChange = viewModel::onShareEmailChange,
             onPresetSelected = viewModel::onPresetSelected,
             onCustomHexChange = viewModel::onCustomHexChange,
+            onDeleteClick = { confirmDelete = true },
             modifier = Modifier.weight(1f),
         )
         BottomBar(
             canSave = state.canSave,
             onSave = viewModel::save,
             onDiscard = onCancel,
+        )
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(text = stringResource(R.string.delete_card_dialog_title)) },
+            text = { Text(text = stringResource(R.string.delete_card_dialog_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmDelete = false
+                        viewModel.delete()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_delete),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) {
+                    Text(text = stringResource(R.string.action_cancel))
+                }
+            },
         )
     }
 }
@@ -109,6 +143,7 @@ private fun EditorContent(
     onShareEmailChange: (Boolean) -> Unit,
     onPresetSelected: (CardPalette) -> Unit,
     onCustomHexChange: (String) -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showCountryPicker by rememberSaveable { mutableStateOf(false) }
@@ -141,6 +176,18 @@ private fun EditorContent(
             onCustomClick = { showCustomColour = true },
             onCustomHexChange = onCustomHexChange,
         )
+        if (state.isEditing) {
+            TextButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = stringResource(R.string.action_delete_card),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
     }
 
     if (showCountryPicker) {
