@@ -24,8 +24,12 @@ data class RgbColor(val red: Int, val green: Int, val blue: Int) {
     fun relativeLuminance(): Double =
         RED_WEIGHT * linearize(red) + GREEN_WEIGHT * linearize(green) + BLUE_WEIGHT * linearize(blue)
 
-    /** True when dark text reads better than light text on top of this colour. */
-    fun prefersDarkContent(): Boolean = relativeLuminance() > DARK_CONTENT_THRESHOLD
+    /** WCAG 2.1 contrast ratio between this colour and [other], from 1.0 to 21.0. */
+    fun contrastRatio(other: RgbColor): Double {
+        val first = relativeLuminance()
+        val second = other.relativeLuminance()
+        return (maxOf(first, second) + CONTRAST_OFFSET) / (minOf(first, second) + CONTRAST_OFFSET)
+    }
 
     fun lighten(amount: Double): RgbColor {
         val ratio = amount.coerceIn(0.0, 1.0)
@@ -33,6 +37,15 @@ data class RgbColor(val red: Int, val green: Int, val blue: Int) {
             red = mixWithWhite(red, ratio),
             green = mixWithWhite(green, ratio),
             blue = mixWithWhite(blue, ratio),
+        )
+    }
+
+    fun darken(amount: Double): RgbColor {
+        val ratio = 1.0 - amount.coerceIn(0.0, 1.0)
+        return RgbColor(
+            red = (red * ratio).toInt(),
+            green = (green * ratio).toInt(),
+            blue = (blue * ratio).toInt(),
         )
     }
 
@@ -47,7 +60,7 @@ data class RgbColor(val red: Int, val green: Int, val blue: Int) {
         private const val RED_SHIFT = 16
         private const val GREEN_SHIFT = 8
         private const val OPAQUE_ALPHA = 0xFF000000L
-        private const val DARK_CONTENT_THRESHOLD = 0.45
+        private const val CONTRAST_OFFSET = 0.05
 
         private const val RED_WEIGHT = 0.2126
         private const val GREEN_WEIGHT = 0.7152

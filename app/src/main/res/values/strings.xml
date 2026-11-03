@@ -23,6 +23,8 @@
     <string name="field_phone">Phone</string>
 
     <string name="phone_country">Country</string>
+    <string name="phone_country_chip">%1$s, dial code +%2$s</string>
+    <string name="phone_country_chip_short">Country, dial code +%1$s</string>
     <string name="phone_country_search">Search country</string>
     <string name="profile_card_footer">This is how others will see it. Nothing is saved yet.</string>
     <string name="profile_name_placeholder">Your name</string>

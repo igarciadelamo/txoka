@@ -7,13 +7,23 @@ import org.junit.Test
 
 class CardPaletteTest {
     @Test
-    fun `derives a lighter second colour from the accent`() {
+    fun `derives a second colour that keeps white text readable`() {
         val accent = RgbColor(0x4F, 0x46, 0xE5)
         val palette = CardPalette.fromAccent(accent)
 
         assertEquals(accent, palette.accent)
         assertNotEquals(palette.accent, palette.accent2)
-        assertTrue(palette.accent2.relativeLuminance() > palette.accent.relativeLuminance())
+        assertTrue(palette.accent2.relativeLuminance() < palette.accent.relativeLuminance())
+        assertTrue(CardContrast.worstRatio(palette, CardContrast.LightContent) >= CardContrast.BODY_MIN_RATIO)
+    }
+
+    @Test
+    fun `derives a lighter second colour for light accents`() {
+        val accent = RgbColor(0xFB, 0xBF, 0x24)
+        val palette = CardPalette.fromAccent(accent)
+
+        assertTrue(palette.accent2.relativeLuminance() > accent.relativeLuminance())
+        assertTrue(CardContrast.worstRatio(palette, CardContrast.DarkContent) >= CardContrast.BODY_MIN_RATIO)
     }
 
     @Test

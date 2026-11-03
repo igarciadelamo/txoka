@@ -23,6 +23,8 @@
     <string name="field_phone">Teléfono</string>
 
     <string name="phone_country">País</string>
+    <string name="phone_country_chip">%1$s, prefijo +%2$s</string>
+    <string name="phone_country_chip_short">País, prefijo +%1$s</string>
     <string name="phone_country_search">Buscar país</string>
     <string name="profile_card_footer">Así la verán los demás. Aún no se ha guardado.</string>
     <string name="profile_name_placeholder">Tu nombre</string>

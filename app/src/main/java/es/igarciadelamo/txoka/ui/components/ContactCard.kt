@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.igarciadelamo.txoka.R
+import es.igarciadelamo.txoka.domain.profile.CardContrast
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.RgbColor
@@ -66,7 +68,10 @@ private val CardBorderDash = 8.dp
 /**
  * Content colour that reads on top of the card gradient, mirrored by the hub overlay actions.
  */
-fun Profile.cardContentColor(): Color = if (card.accent.prefersDarkContent()) darkCardContent else Color.White
+fun Profile.cardContentColor(): Color = CardContrast.contentColor(card).toComposeColor()
+
+/** Translucent decoration that never lowers the contrast of [cardContentColor]. */
+fun Profile.cardOverlayTint(): Color = if (cardContentColor() == Color.White) Color.Black else Color.White
 
 /**
  * Renders the card exactly as recipients will see it. While the profile is not saved yet the
@@ -84,6 +89,7 @@ fun ContactCard(
     } else {
         profile.cardContentColor()
     }
+    val overlayTint = if (placeholder) Color.White else profile.cardOverlayTint()
     val accent = profile.card.accent.toComposeColor()
 
     Box(
@@ -117,7 +123,7 @@ fun ContactCard(
                                 ),
                             ),
                         )
-                        .highlight()
+                        .highlight(overlayTint)
                 },
             )
             .then(
@@ -125,18 +131,29 @@ fun ContactCard(
                     CardLayout.Hero -> Modifier.aspectRatio(HERO_ASPECT_RATIO)
                     CardLayout.Preview -> Modifier.aspectRatio(PREVIEW_ASPECT_RATIO)
                 },
-            ),
+            )
+            // TalkBack reads the card as one unit instead of five loose labels.
+            .semantics(mergeDescendants = true) {},
     ) {
         when (layout) {
-            CardLayout.Hero -> HeroContent(profile = profile, contentColor = contentColor)
-            CardLayout.Preview -> PreviewContent(profile = profile, contentColor = contentColor)
+            CardLayout.Hero -> HeroContent(
+                profile = profile,
+                contentColor = contentColor,
+                overlayTint = overlayTint,
+            )
+            CardLayout.Preview -> PreviewContent(
+                profile = profile,
+                contentColor = contentColor,
+                overlayTint = overlayTint,
+            )
         }
         if (!placeholder) {
             Text(
                 text = TXOKA_MARK,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 20.dp, bottom = 16.dp),
+                    .padding(end = 20.dp, bottom = 16.dp)
+                    .clearAndSetSemantics {},
                 style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp),
                 color = contentColor.copy(alpha = BRANDMARK_ALPHA),
             )
@@ -145,13 +162,13 @@ fun ContactCard(
 }
 
 @Composable
-private fun HeroContent(profile: Profile, contentColor: Color) {
+private fun HeroContent(profile: Profile, contentColor: Color, overlayTint: Color) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 22.dp, vertical = 20.dp),
     ) {
-        Avatar(profile = profile, size = 52.dp, contentColor = contentColor)
+        Avatar(profile = profile, size = 52.dp, contentColor = contentColor, overlayTint = overlayTint)
         Text(
             text = profile.displayName(),
             modifier = Modifier
@@ -167,19 +184,19 @@ private fun HeroContent(profile: Profile, contentColor: Color) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        ContactRows(profile = profile, contentColor = contentColor)
+        ContactRows(profile = profile, contentColor = contentColor, overlayTint = overlayTint)
     }
 }
 
 @Composable
-private fun PreviewContent(profile: Profile, contentColor: Color) {
+private fun PreviewContent(profile: Profile, contentColor: Color, overlayTint: Color) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 22.dp, vertical = 18.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(profile = profile, size = 46.dp, contentColor = contentColor)
+            Avatar(profile = profile, size = 46.dp, contentColor = contentColor, overlayTint = overlayTint)
             Text(
                 text = profile.displayName(),
                 modifier = Modifier
@@ -195,18 +212,20 @@ private fun PreviewContent(profile: Profile, contentColor: Color) {
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        ContactRows(profile = profile, contentColor = contentColor)
+        ContactRows(profile = profile, contentColor = contentColor, overlayTint = overlayTint)
     }
 }
 
 @Composable
-private fun Avatar(profile: Profile, size: Dp, contentColor: Color) {
+private fun Avatar(profile: Profile, size: Dp, contentColor: Color, overlayTint: Color) {
     Box(
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(contentColor.copy(alpha = AVATAR_BACKGROUND_ALPHA))
-            .border(width = 1.dp, color = contentColor.copy(alpha = AVATAR_RING_ALPHA), shape = CircleShape),
+            .background(overlayTint.copy(alpha = AVATAR_BACKGROUND_ALPHA))
+            .border(width = 1.dp, color = contentColor.copy(alpha = AVATAR_RING_ALPHA), shape = CircleShape)
+            // Initials are decoration: the name follows right away.
+            .clearAndSetSemantics {},
         contentAlignment = Alignment.Center,
     ) {
         if (profile.initials.isEmpty()) {
@@ -225,7 +244,7 @@ private fun Avatar(profile: Profile, size: Dp, contentColor: Color) {
 }
 
 @Composable
-private fun ContactRows(profile: Profile, contentColor: Color) {
+private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Color) {
     val rows = listOfNotNull(
         profile.sharedPhone?.let { phone -> Icons.Filled.Phone to phone },
         profile.sharedEmail?.let { email -> Icons.Filled.Email to email },
@@ -237,17 +256,17 @@ private fun ContactRows(profile: Profile, contentColor: Color) {
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         rows.forEach { (icon, text) ->
-            ContactPill(icon = icon, text = text, contentColor = contentColor)
+            ContactPill(icon = icon, text = text, contentColor = contentColor, overlayTint = overlayTint)
         }
     }
 }
 
 @Composable
-private fun ContactPill(icon: ImageVector, text: String, contentColor: Color) {
+private fun ContactPill(icon: ImageVector, text: String, contentColor: Color, overlayTint: Color) {
     Row(
         modifier = Modifier
             .clip(CircleShape)
-            .background(contentColor.copy(alpha = PILL_BACKGROUND_ALPHA))
+            .background(overlayTint.copy(alpha = PILL_BACKGROUND_ALPHA))
             .padding(start = 12.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -271,10 +290,13 @@ private fun ContactPill(icon: ImageVector, text: String, contentColor: Color) {
 @Composable
 private fun Profile.displayName(): String = name.ifBlank { stringResource(R.string.profile_name_placeholder) }
 
-/** Soft light from the top-left corner, which gives the flat gradient some depth. */
-private fun Modifier.highlight(): Modifier = drawWithCache {
+/**
+ * Soft light from the top-left corner, which gives the flat gradient some depth. The tint goes
+ * against the content colour, so the glow always pushes the text towards more contrast.
+ */
+private fun Modifier.highlight(tint: Color): Modifier = drawWithCache {
     val glow = Brush.radialGradient(
-        colors = listOf(Color.White.copy(alpha = HIGHLIGHT_ALPHA), Color.Transparent),
+        colors = listOf(tint.copy(alpha = HIGHLIGHT_ALPHA), Color.Transparent),
         center = Offset(size.width * HIGHLIGHT_X, 0f),
         radius = size.maxDimension,
     )
@@ -312,7 +334,6 @@ private const val PILL_BACKGROUND_ALPHA = 0.14f
 private const val HIGHLIGHT_ALPHA = 0.30f
 private const val HIGHLIGHT_X = 0.08f
 private const val BRANDMARK_ALPHA = 0.45f
-private val darkCardContent = Color(0xFF1C1B1F)
 
 @Preview(showBackground = true)
 @Composable

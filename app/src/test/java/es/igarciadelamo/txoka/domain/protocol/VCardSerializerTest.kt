@@ -34,7 +34,7 @@ class VCardSerializerTest {
         assertTrue(text.contains("EMAIL;TYPE=INTERNET:isidro@example.com"))
         assertTrue(text.contains("X-TXOKA-PROTOCOL:1"))
         assertTrue(text.contains("X-TXOKA-CARD-ACCENT:#4F46E5"))
-        assertTrue(text.contains("X-TXOKA-CARD-ACCENT2:#06B6D4"))
+        assertTrue(text.contains("X-TXOKA-CARD-ACCENT2:#0E7490"))
         assertTrue(text.endsWith("END:VCARD\r\n"))
     }
 
@@ -101,7 +101,7 @@ class VCardSerializerTest {
         val accent = RgbColor(0x10, 0xB9, 0x81)
         val text = VCardSerializer.encode(payload)
             .replace("X-TXOKA-CARD-ACCENT:#4F46E5", "X-TXOKA-CARD-ACCENT:${accent.hex}")
-            .replace("X-TXOKA-CARD-ACCENT2:#06B6D4", "")
+            .replace("X-TXOKA-CARD-ACCENT2:#0E7490", "")
 
         val decoded = VCardSerializer.decode(text) as VCardParseResult.Success
 

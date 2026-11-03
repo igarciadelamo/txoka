@@ -62,6 +62,9 @@ import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
+/** Swatches must stay at least 48 dp so they are easy to hit. */
+private val PaletteSwatchSize = 48.dp
+
 @Composable
 fun ProfileEditorScreen(
     onSaved: () -> Unit,
@@ -271,6 +274,7 @@ private fun ContactSection(
                 flag = state.country.flag,
                 dialCode = state.country.dialCode,
                 onClick = onOpenCountryPicker,
+                countryName = state.country.label,
             )
             TxokaField(
                 value = state.phone,
@@ -359,7 +363,7 @@ private fun PaletteRow(
             val presetLabel = stringResource(R.string.card_colour_preset, index + 1)
             Box(
                 modifier = Modifier
-                    .size(46.dp)
+                    .size(PaletteSwatchSize)
                     .clip(CircleShape)
                     .background(
                         brush = Brush.linearGradient(
@@ -390,7 +394,7 @@ private fun PaletteRow(
         val customLabel = stringResource(R.string.card_colour_custom)
         Box(
             modifier = Modifier
-                .size(46.dp)
+                .size(PaletteSwatchSize)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surface)
                 .border(

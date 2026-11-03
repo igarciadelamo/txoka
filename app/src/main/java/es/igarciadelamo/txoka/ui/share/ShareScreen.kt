@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +53,7 @@ import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.cardContentColor
+import es.igarciadelamo.txoka.ui.components.cardOverlayTint
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -122,7 +125,7 @@ fun ShareScreen(
                                         .align(Alignment.TopEnd)
                                         .padding(Spacing.lg)
                                         .clip(CircleShape)
-                                        .background(profile.cardContentColor().copy(alpha = 0.18f)),
+                                        .background(profile.cardOverlayTint().copy(alpha = 0.18f)),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.Edit,
@@ -182,7 +185,16 @@ private fun SharingModule(
             .padding(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        val switchEnabled = !unavailable && nfc == NfcStatus.Enabled
+        Row(
+            modifier = Modifier.toggleable(
+                value = sharingEnabled,
+                enabled = switchEnabled,
+                role = Role.Switch,
+                onValueChange = onSharingChanged,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -211,8 +223,8 @@ private fun SharingModule(
             if (!unavailable) {
                 Switch(
                     checked = sharingEnabled,
-                    onCheckedChange = onSharingChanged,
-                    enabled = nfc == NfcStatus.Enabled,
+                    onCheckedChange = null,
+                    enabled = switchEnabled,
                 )
             }
         }

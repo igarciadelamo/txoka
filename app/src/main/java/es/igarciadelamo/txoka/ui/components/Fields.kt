@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -16,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,11 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 
@@ -99,7 +103,7 @@ fun TxokaField(
                                 Text(
                                     text = placeholder,
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             innerTextField()
@@ -122,16 +126,27 @@ fun TxokaField(
     }
 }
 
-/** Field-shaped button that opens the country picker. */
+/** Field-shaped button that opens the country picker. The flag is decoration only. */
 @Composable
-fun CountryChip(flag: String, dialCode: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun CountryChip(
+    flag: String,
+    dialCode: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    countryName: String? = null,
+) {
     val shape = RoundedCornerShape(Corners.field)
+    val description = countryName?.let { name ->
+        stringResource(R.string.phone_country_chip, name, dialCode)
+    } ?: stringResource(R.string.phone_country_chip_short, dialCode)
     Row(
         modifier = modifier
+            .minimumInteractiveComponentSize()
             .clip(shape)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.surface, shape)
             .clickable(role = Role.DropdownList, onClick = onClick)
+            .semantics { contentDescription = description }
             .padding(horizontal = Spacing.lg, vertical = Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -163,18 +178,24 @@ fun ShareChip(text: String, selected: Boolean, enabled: Boolean, onClick: () -> 
         selected -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
-    Row(
+    Box(
         modifier = Modifier
-            .clip(CircleShape)
-            .background(background)
-            .clickable(enabled = enabled, role = Role.Checkbox, onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .toggleable(value = selected, enabled = enabled, role = Role.Checkbox, onValueChange = { onClick() })
+            .minimumInteractiveComponentSize(),
+        contentAlignment = Alignment.Center,
     ) {
-        if (selected && enabled) {
-            Text(text = "✓", style = MaterialTheme.typography.labelMedium, color = content)
+        Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(background)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (selected && enabled) {
+                Text(text = "✓", style = MaterialTheme.typography.labelMedium, color = content)
+            }
+            Text(text = text, style = MaterialTheme.typography.labelMedium, color = content)
         }
-        Text(text = text, style = MaterialTheme.typography.labelMedium, color = content)
     }
 }
