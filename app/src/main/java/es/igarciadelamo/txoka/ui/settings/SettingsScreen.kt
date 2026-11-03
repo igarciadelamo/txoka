@@ -45,7 +45,6 @@ import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
-import es.igarciadelamo.txoka.ui.components.ScreenTitle
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -70,7 +69,7 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        TxokaAppBar(onBack = onBack)
+        TxokaAppBar(title = stringResource(R.string.settings_title), onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -79,8 +78,6 @@ fun SettingsScreen(
                 .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.xl),
         ) {
-            ScreenTitle(text = stringResource(R.string.settings_title))
-
             if (state.nfc == NfcStatus.Disabled) {
                 WarningCard(
                     title = stringResource(R.string.nfc_disabled),

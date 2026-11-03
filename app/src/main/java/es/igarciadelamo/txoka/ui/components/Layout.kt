@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,12 +60,13 @@ fun Eyebrow(text: String, modifier: Modifier = Modifier) {
 }
 
 /**
- * Unified app bar: an optional back arrow, the wordmark and the actions of the current screen.
- * The bar sits on the surface colour with a hairline divider, so it reads as chrome above the canvas.
+ * Unified app bar: back arrow, either the wordmark or the screen title, and the screen actions.
+ * The bar sits on the surface colour with a hairline divider and a soft shadow under it.
  */
 @Composable
 fun TxokaAppBar(
     modifier: Modifier = Modifier,
+    title: String? = null,
     onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -103,16 +105,21 @@ fun TxokaAppBar(
                     }
                 }
                 Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-0.6).sp,
-                    ),
+                    text = title ?: stringResource(R.string.app_name),
+                    modifier = Modifier.weight(1f),
+                    style = if (title == null) {
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = (-0.6).sp,
+                        )
+                    } else {
+                        MaterialTheme.typography.titleLarge
+                    },
                     color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                     content = actions,
                 )
@@ -120,17 +127,6 @@ fun TxokaAppBar(
         }
         HorizontalDivider(thickness = 1.dp, color = MaterialTheme.txoka.hairline)
     }
-}
-
-/** Page heading shown inside the content, because the app bar always carries the wordmark. */
-@Composable
-fun ScreenTitle(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        modifier = modifier,
-        style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.onBackground,
-    )
 }
 
 @Preview(showBackground = true)
@@ -146,7 +142,7 @@ private fun TxokaAppBarPreview() {
                     )
                 }
             }
-            TxokaAppBar(onBack = {}) {
+            TxokaAppBar(title = stringResource(R.string.received_title), onBack = {}) {
                 IconButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,

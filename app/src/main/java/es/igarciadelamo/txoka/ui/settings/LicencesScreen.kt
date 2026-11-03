@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.components.Eyebrow
-import es.igarciadelamo.txoka.ui.components.ScreenTitle
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -39,7 +38,7 @@ fun LicencesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        TxokaAppBar(onBack = onBack)
+        TxokaAppBar(title = stringResource(R.string.settings_licences), onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -48,10 +47,6 @@ fun LicencesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            ScreenTitle(
-                text = stringResource(R.string.settings_licences),
-                modifier = Modifier.padding(bottom = Spacing.sm),
-            )
             Eyebrow(text = stringResource(R.string.licences_font_title))
             Text(
                 text = stringResource(R.string.licences_font_body),

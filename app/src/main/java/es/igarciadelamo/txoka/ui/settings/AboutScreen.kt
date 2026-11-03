@@ -37,7 +37,6 @@ import es.igarciadelamo.txoka.BuildConfig
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
-import es.igarciadelamo.txoka.ui.components.ScreenTitle
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -50,7 +49,7 @@ fun AboutScreen(onBack: () -> Unit, onOpenLicences: () -> Unit, modifier: Modifi
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        TxokaAppBar(onBack = onBack)
+        TxokaAppBar(title = stringResource(R.string.settings_about), onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -59,10 +58,6 @@ fun AboutScreen(onBack: () -> Unit, onOpenLicences: () -> Unit, modifier: Modifi
                 .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ScreenTitle(
-                text = stringResource(R.string.settings_about),
-                modifier = Modifier.fillMaxWidth(),
-            )
             AppMark()
             Text(
                 text = stringResource(R.string.app_name),

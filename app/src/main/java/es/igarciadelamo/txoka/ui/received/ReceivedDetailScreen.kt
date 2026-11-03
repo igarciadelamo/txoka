@@ -80,6 +80,7 @@ fun ReceivedDetailScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
         TxokaAppBar(
+            title = contact.name,
             onBack = onBack,
             actions = {
                 IconButton(onClick = { menuOpen = true }) {
@@ -156,7 +157,6 @@ private fun DetailContent(
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        Eyebrow(text = stringResource(R.string.received_title))
         ContactCard(profile = contact.toProfile(), layout = CardLayout.Hero)
 
         Text(
