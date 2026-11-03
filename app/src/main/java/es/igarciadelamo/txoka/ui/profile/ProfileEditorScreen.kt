@@ -17,7 +17,13 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +72,7 @@ fun ProfileEditorScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var menuOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.saved) {
         if (state.saved) onSaved()
@@ -84,6 +92,30 @@ fun ProfileEditorScreen(
                 if (state.isEditing) R.string.profile_title_edit else R.string.profile_title_create,
             ),
             onBack = onCancel,
+            actions = {
+                if (state.isEditing) {
+                    IconButton(onClick = { menuOpen = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.action_more),
+                        )
+                    }
+                    DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.action_delete_card),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            onClick = {
+                                menuOpen = false
+                                confirmDelete = true
+                            },
+                        )
+                    }
+                }
+            },
         )
         EditorContent(
             state = state,
@@ -95,41 +127,45 @@ fun ProfileEditorScreen(
             onShareEmailChange = viewModel::onShareEmailChange,
             onPresetSelected = viewModel::onPresetSelected,
             onCustomHexChange = viewModel::onCustomHexChange,
-            onDeleteClick = { confirmDelete = true },
             modifier = Modifier.weight(1f),
         )
         BottomBar(
             canSave = state.canSave,
             onSave = viewModel::save,
-            onDiscard = onCancel,
         )
     }
 
     if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text(text = stringResource(R.string.delete_card_dialog_title)) },
-            text = { Text(text = stringResource(R.string.delete_card_dialog_message)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirmDelete = false
-                        viewModel.delete()
-                    },
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_delete),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmDelete = false }) {
-                    Text(text = stringResource(R.string.action_cancel))
-                }
+        DeleteCardDialog(
+            onDismiss = { confirmDelete = false },
+            onConfirm = {
+                confirmDelete = false
+                viewModel.delete()
             },
         )
     }
+}
+
+@Composable
+private fun DeleteCardDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.delete_card_dialog_title)) },
+        text = { Text(text = stringResource(R.string.delete_card_dialog_message)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = stringResource(R.string.action_delete),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.action_cancel))
+            }
+        },
+    )
 }
 
 @Composable
@@ -143,7 +179,6 @@ private fun EditorContent(
     onShareEmailChange: (Boolean) -> Unit,
     onPresetSelected: (CardPalette) -> Unit,
     onCustomHexChange: (String) -> Unit,
-    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showCountryPicker by rememberSaveable { mutableStateOf(false) }
@@ -176,18 +211,6 @@ private fun EditorContent(
             onCustomClick = { showCustomColour = true },
             onCustomHexChange = onCustomHexChange,
         )
-        if (state.isEditing) {
-            TextButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = stringResource(R.string.action_delete_card),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        }
     }
 
     if (showCountryPicker) {
@@ -393,29 +416,19 @@ private fun PaletteRow(
 }
 
 @Composable
-private fun BottomBar(canSave: Boolean, onSave: () -> Unit, onDiscard: () -> Unit) {
-    Row(
+private fun BottomBar(canSave: Boolean, onSave: () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         PrimaryButton(
             text = stringResource(R.string.action_save),
             onClick = onSave,
             enabled = canSave,
-            modifier = Modifier.weight(1f),
         )
-        TextButton(onClick = onDiscard) {
-            Text(
-                text = stringResource(R.string.action_discard),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 
@@ -439,7 +452,7 @@ private fun ProfileEditorPreview() {
                 layout = CardLayout.Preview,
             )
             PaletteRow(selected = CardPalette.Default, customSelected = false, onSelect = {}, onCustomClick = {})
-            BottomBar(canSave = true, onSave = {}, onDiscard = {})
+            BottomBar(canSave = true, onSave = {})
         }
     }
 }
