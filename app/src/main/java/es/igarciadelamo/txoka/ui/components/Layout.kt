@@ -29,6 +29,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,7 +71,19 @@ fun TxokaAppBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.surface)
+            .drawBehind {
+                val shadowHeight = 8.dp.toPx()
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color.Black.copy(alpha = 0.07f), Color.Transparent),
+                        startY = size.height,
+                        endY = size.height + shadowHeight,
+                    ),
+                    topLeft = Offset(0f, size.height),
+                    size = Size(size.width, shadowHeight),
+                )
+            },
     ) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             Row(
