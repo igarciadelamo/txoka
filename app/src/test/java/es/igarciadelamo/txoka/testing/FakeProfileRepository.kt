@@ -11,10 +11,18 @@ class FakeProfileRepository(initial: Profile? = null) : ProfileRepository {
     var savedProfile: Profile? = null
         private set
 
+    var deleted: Boolean = false
+        private set
+
     override val profile: Flow<Profile?> = state
 
     override suspend fun save(profile: Profile) {
         savedProfile = profile
         state.value = profile
+    }
+
+    override suspend fun delete() {
+        deleted = true
+        state.value = null
     }
 }

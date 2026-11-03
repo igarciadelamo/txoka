@@ -60,6 +60,7 @@ fun TxokaNavHost(modifier: Modifier = Modifier, navController: NavHostController
             ProfileEditorScreen(
                 onSaved = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() },
+                onDeleted = { navController.popBackStack() },
             )
         }
     }

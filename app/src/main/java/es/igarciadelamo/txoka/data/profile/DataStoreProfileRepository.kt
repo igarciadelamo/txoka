@@ -27,6 +27,18 @@ class DataStoreProfileRepository(private val dataStore: DataStore<Preferences>) 
         }
     }
 
+    override suspend fun delete() {
+        dataStore.edit { preferences ->
+            preferences.remove(Keys.Name)
+            preferences.remove(Keys.Phone)
+            preferences.remove(Keys.Email)
+            preferences.remove(Keys.SharePhone)
+            preferences.remove(Keys.ShareEmail)
+            preferences.remove(Keys.Accent)
+            preferences.remove(Keys.Accent2)
+        }
+    }
+
     private fun Preferences.toProfile(): Profile? {
         val name = this[Keys.Name]?.takeIf { it.isNotBlank() } ?: return null
         return Profile(

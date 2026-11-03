@@ -43,8 +43,8 @@ system font for scripts the bundled weights do not include.
 
 Tokens live in `ui/theme`: `Spacing`, `Corners`, `TxokaShapes`, the light and dark schemes and the
 extra roles (hairline, accent-soft, success, warning) exposed through `MaterialTheme.txoka`. Shared
-pieces are `ContactCard` (hero and preview layouts), `TxokaField`, `Eyebrow`, the top bars and the
-hub quick actions, so screens do not invent their own paddings.
+pieces are `ContactCard` (hero and preview layouts), `TxokaField`, `Eyebrow`, `TxokaAppBar` and the
+shared buttons, so screens do not invent their own paddings.
 
 There is a single splash: the Android one. It shows the brand mark over the brand indigo and, on
 Android 12 and newer, the wordmark as a branding image at the bottom. Nothing else is drawn on top,

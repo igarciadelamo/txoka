@@ -97,6 +97,19 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
+    fun `deletes the stored profile`() = runTest {
+        val repository = FakeProfileRepository(Profile(name = "Isidro"))
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+        advanceUntilIdle()
+
+        viewModel.delete()
+        advanceUntilIdle()
+
+        assertTrue(repository.deleted)
+        assertTrue(viewModel.uiState.value.deleted)
+    }
+
+    @Test
     fun `custom hex updates the palette and flags invalid input`() = runTest {
         val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
         viewModel.onNameChange("Isidro")

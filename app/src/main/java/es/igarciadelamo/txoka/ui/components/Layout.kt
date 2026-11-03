@@ -1,7 +1,6 @@
 package es.igarciadelamo.txoka.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -185,40 +184,6 @@ fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modi
         border = ButtonDefaults.outlinedButtonBorder(enabled = enabled),
     ) {
         Text(text = text, style = MaterialTheme.typography.labelLarge)
-    }
-}
-
-/** Quiet action on a raised surface, used for the hub quick actions. */
-@Composable
-fun SurfaceButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    leadingIcon: @Composable (() -> Unit)? = null,
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 52.dp),
-        shape = ButtonShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
-    ) {
-        if (leadingIcon != null) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leadingIcon()
-                Text(text = text, style = MaterialTheme.typography.labelLarge)
-            }
-        } else {
-            Text(text = text, style = MaterialTheme.typography.labelLarge)
-        }
     }
 }
 
