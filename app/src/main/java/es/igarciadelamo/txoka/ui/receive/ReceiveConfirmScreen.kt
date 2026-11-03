@@ -164,7 +164,7 @@ private fun ReceiveConfirmScreenPreview() {
             verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
             Text(
-                text = "Marta Ruiz wants to share their card",
+                text = stringResource(R.string.sheet_incoming_title, "Marta Ruiz"),
                 style = MaterialTheme.typography.titleLarge,
             )
             ContactCard(
