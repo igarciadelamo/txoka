@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -27,11 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
+import es.igarciadelamo.txoka.ui.theme.TxokaTheme
+import es.igarciadelamo.txoka.ui.theme.txoka
 
 private val ButtonShape = RoundedCornerShape(Corners.field)
 
@@ -46,84 +53,91 @@ fun Eyebrow(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** Wordmark header used by the hub. */
+/**
+ * Unified app bar: an optional back arrow, the wordmark and the actions of the current screen.
+ * The bar sits on the surface colour with a hairline divider, so it reads as chrome above the canvas.
+ */
 @Composable
-fun TxokaHeader(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
-        TxokaHeaderRow(modifier = modifier, actions = actions)
-    }
-}
-
-@Composable
-private fun TxokaHeaderRow(modifier: Modifier, actions: @Composable RowScope.() -> Unit) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = Spacing.xl, vertical = Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                letterSpacing = (-0.6).sp,
-            ),
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-            content = actions,
-        )
-    }
-}
-
-/** Title bar for secondary screens: back arrow, large title and optional actions. */
-@Composable
-fun ScreenTopBar(
-    title: String,
+fun TxokaAppBar(
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
-        ScreenTopBarRow(title = title, onBack = onBack, modifier = modifier, actions = actions)
-    }
-}
-
-@Composable
-private fun ScreenTopBarRow(
-    title: String,
-    onBack: (() -> Unit)?,
-    modifier: Modifier,
-    actions: @Composable RowScope.() -> Unit,
-) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(start = if (onBack != null) Spacing.md else Spacing.xl, end = Spacing.md, top = Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
+            .background(MaterialTheme.colorScheme.surface),
     ) {
-        if (onBack != null) {
-            IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.action_back),
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .heightIn(min = 56.dp)
+                    .padding(start = if (onBack != null) Spacing.xs else Spacing.xl, end = Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (onBack != null) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.action_back),
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = (-0.6).sp,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = actions,
                 )
             }
         }
-        Text(
-            text = title,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = if (onBack != null) Spacing.xs else 0.dp),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Row(verticalAlignment = Alignment.CenterVertically, content = actions)
+        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.txoka.hairline)
+    }
+}
+
+/** Page heading shown inside the content, because the app bar always carries the wordmark. */
+@Composable
+fun ScreenTitle(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.headlineMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TxokaAppBarPreview() {
+    TxokaTheme {
+        Column {
+            TxokaAppBar {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = stringResource(R.string.action_settings),
+                    )
+                }
+            }
+            TxokaAppBar(onBack = {}) {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = stringResource(R.string.action_more),
+                    )
+                }
+            }
+        }
     }
 }
 

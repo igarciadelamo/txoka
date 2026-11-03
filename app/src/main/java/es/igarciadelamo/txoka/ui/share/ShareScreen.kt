@@ -48,7 +48,7 @@ import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.SurfaceButton
-import es.igarciadelamo.txoka.ui.components.TxokaHeader
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -79,7 +79,7 @@ fun ShareScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        TxokaHeader {
+        TxokaAppBar {
             IconButton(onClick = onOpenSettings) {
                 Icon(
                     imageVector = Icons.Filled.Settings,

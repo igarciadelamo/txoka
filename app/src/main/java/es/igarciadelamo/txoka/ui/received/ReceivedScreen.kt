@@ -44,7 +44,8 @@ import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.Eyebrow
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.ScreenTitle
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -66,9 +67,10 @@ fun ReceivedScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(
-            title = stringResource(R.string.received_title),
-            onBack = onBack,
+        TxokaAppBar(onBack = onBack)
+        ScreenTitle(
+            text = stringResource(R.string.received_title),
+            modifier = Modifier.padding(start = Spacing.xl, end = Spacing.xl, top = Spacing.lg),
         )
         SearchField(
             value = state.query,

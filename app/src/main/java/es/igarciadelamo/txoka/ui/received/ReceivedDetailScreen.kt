@@ -53,7 +53,7 @@ import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -79,8 +79,7 @@ fun ReceivedDetailScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(
-            title = contact.name,
+        TxokaAppBar(
             onBack = onBack,
             actions = {
                 IconButton(onClick = { menuOpen = true }) {
@@ -157,6 +156,7 @@ private fun DetailContent(
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
+        Eyebrow(text = stringResource(R.string.received_title))
         ContactCard(profile = contact.toProfile(), layout = CardLayout.Hero)
 
         Text(

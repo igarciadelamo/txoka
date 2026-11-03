@@ -47,8 +47,9 @@ import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.CountryChip
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
-import es.igarciadelamo.txoka.ui.components.ScreenTopBar
+import es.igarciadelamo.txoka.ui.components.ScreenTitle
 import es.igarciadelamo.txoka.ui.components.ShareChip
+import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.TxokaField
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -72,12 +73,7 @@ fun ProfileEditorScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        ScreenTopBar(
-            title = stringResource(
-                if (state.isEditing) R.string.profile_title_edit else R.string.profile_title_create,
-            ),
-            onBack = onCancel,
-        )
+        TxokaAppBar(onBack = onCancel)
         EditorContent(
             state = state,
             onNameChange = viewModel::onNameChange,
@@ -121,6 +117,11 @@ private fun EditorContent(
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {
+        ScreenTitle(
+            text = stringResource(
+                if (state.isEditing) R.string.profile_title_edit else R.string.profile_title_create,
+            ),
+        )
         PreviewSection(state = state)
         IdentitySection(state = state, onNameChange = onNameChange)
         ContactSection(
