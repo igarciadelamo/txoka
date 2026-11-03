@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Txoka</string>
+    <string name="app_name" translatable="false">Txoka</string>
 
     <string name="action_back">Atrás</string>
     <string name="action_create_card">Crear tarjeta</string>
