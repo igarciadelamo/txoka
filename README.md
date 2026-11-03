@@ -15,7 +15,7 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 - **Received contacts.** Searchable list grouped by date, editable notes, call, email, add to the
   system contacts app and delete. Duplicates are detected by normalised phone or email.
 - **Settings.** Sharing switches, the received library, a plain-language privacy section and a
-  separate About screen with the version, credits and open source licences.
+  separate About screen with the version, credits and licence.
 - **Debug demo.** In debug builds, Settings offers *Simulate an incoming card*, which runs a demo
   card through the real NDEF and vCard round trip. Useful on emulators, which have no NFC.
 
@@ -298,3 +298,11 @@ adb shell am instrument -w \
 - Sharing as a vCard file or a QR code is not implemented; the manual test plan covers NFC only.
 
 Everything that cannot be verified without hardware is marked *pending device test*.
+
+## Licence
+
+Txoka is free software under the GNU General Public License v3.0 only (`GPL-3.0-only`). See
+[`LICENSE`](LICENSE) for the full text. Third-party components and their licences are listed in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); the bundled Manrope font uses the SIL Open
+Font License 1.1 (`licenses/Manrope-OFL.txt`). The licence texts also ship inside the APK under
+`assets/`.

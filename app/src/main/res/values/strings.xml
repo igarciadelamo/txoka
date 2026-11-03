@@ -90,10 +90,10 @@
     <string name="settings_received">Received contacts</string>
     <string name="received_note_hint">Add a note about this person</string>
     <string name="about_made_by">Made by %1$s</string>
-    <string name="licences_font_body">Copyright 2018 The Manrope Project Authors, licensed under the SIL Open Font License 1.1.</string>
-    <string name="licences_font_title">Manrope font</string>
-    <string name="settings_legal">Legal</string>
-    <string name="settings_licences">Open source licences</string>
+    <string name="about_licence">Licence</string>
+    <string name="about_licence_name" translatable="false">GPL-3.0-only</string>
+    <string name="about_licence_body">Free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3.</string>
+    <string name="about_font_licence">Manrope font · SIL OFL 1.1</string>
     <string name="settings_no_internet_body">Txoka has no INTERNET permission, so nothing can leave the phone.</string>
     <string name="settings_no_internet_title">No internet access</string>
     <string name="settings_privacy">Privacy</string>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Bundled for SIL OFL compliance; no code reads it at runtime. -->
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/raw/manrope_ofl.txt" />
+    </issue>
+</lint>

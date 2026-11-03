@@ -18,7 +18,4 @@ data object SettingsRoute
 data object AboutRoute
 
 @Serializable
-data object LicencesRoute
-
-@Serializable
 data object ProfileEditorRoute
