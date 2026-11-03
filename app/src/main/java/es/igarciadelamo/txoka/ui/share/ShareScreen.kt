@@ -344,8 +344,6 @@ private fun ShareScreenPreview() {
                 name = "Isidro García",
                 phone = "+34 600 123 456",
                 email = "isidro@example.com",
-                sharePhone = true,
-                shareEmail = true,
                 card = CardPalette.Default,
             ),
             sharingEnabled = true,

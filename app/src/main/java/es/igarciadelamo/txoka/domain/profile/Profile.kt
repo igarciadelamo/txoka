@@ -1,23 +1,14 @@
 package es.igarciadelamo.txoka.domain.profile
 
 /**
- * The card the user shares. The name is mandatory; phone and email are only exposed
- * when their sharing toggle is on.
+ * The card the user shares. The name is mandatory; phone and email are shared whenever present.
  */
 data class Profile(
     val name: String,
     val phone: String? = null,
     val email: String? = null,
-    val sharePhone: Boolean = false,
-    val shareEmail: Boolean = false,
     val card: CardPalette = CardPalette.Default,
 ) {
-    val sharedPhone: String?
-        get() = phone?.takeIf { sharePhone }
-
-    val sharedEmail: String?
-        get() = email?.takeIf { shareEmail }
-
     val initials: String
         get() = name.trim()
             .split(WHITESPACE)

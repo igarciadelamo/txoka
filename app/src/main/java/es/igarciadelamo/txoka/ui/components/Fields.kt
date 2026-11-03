@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -162,40 +160,5 @@ fun CountryChip(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-/** Chip that marks a field as included in the shared card. */
-@Composable
-fun ShareChip(text: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
-    val background = when {
-        !enabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        selected -> MaterialTheme.colorScheme.primaryContainer
-        else -> MaterialTheme.colorScheme.surfaceVariant
-    }
-    val content = when {
-        !enabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-        selected -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    Box(
-        modifier = Modifier
-            .toggleable(value = selected, enabled = enabled, role = Role.Checkbox, onValueChange = { onClick() })
-            .minimumInteractiveComponentSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Row(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(background)
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (selected && enabled) {
-                Text(text = "✓", style = MaterialTheme.typography.labelMedium, color = content)
-            }
-            Text(text = text, style = MaterialTheme.typography.labelMedium, color = content)
-        }
     }
 }

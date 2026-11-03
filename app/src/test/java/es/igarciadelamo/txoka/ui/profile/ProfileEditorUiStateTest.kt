@@ -21,15 +21,12 @@ class ProfileEditorUiStateTest {
             name = "  Ana  ",
             phone = " ",
             email = " ana@example.com ",
-            shareEmail = true,
             card = CardPalette.Presets[3],
         ).toPreview()
 
         assertEquals("Ana", preview.name)
         assertNull(preview.phone)
         assertEquals("ana@example.com", preview.email)
-        assertTrue(preview.shareEmail)
-        assertFalse(preview.sharePhone)
         assertEquals(CardPalette.Presets[3], preview.card)
     }
 }

@@ -147,8 +147,6 @@ private fun VCardPayload.toProfile(): Profile = Profile(
     name = name,
     phone = phone,
     email = email,
-    sharePhone = phone != null,
-    shareEmail = email != null,
     card = palette,
 )
 
