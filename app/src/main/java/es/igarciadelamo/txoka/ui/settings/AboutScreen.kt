@@ -62,12 +62,6 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = stringResource(R.string.about_made_by, stringResource(R.string.about_author)),
-                modifier = Modifier.padding(top = Spacing.xs),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
                 text = stringResource(R.string.hub_empty_title),
                 modifier = Modifier.padding(top = Spacing.md),
                 style = MaterialTheme.typography.bodyLarge,
@@ -77,6 +71,14 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
             Column(
                 modifier = Modifier.padding(top = Spacing.xxl),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                Eyebrow(text = stringResource(R.string.about_author_title))
+                AuthorCard()
+            }
+
+            Column(
+                modifier = Modifier.padding(top = Spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 Eyebrow(text = stringResource(R.string.about_licence))
@@ -91,6 +93,29 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
             )
         }
+    }
+}
+
+@Composable
+private fun AuthorCard() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Corners.sheet))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        Text(
+            text = stringResource(R.string.about_author),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = stringResource(R.string.about_author_role),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
