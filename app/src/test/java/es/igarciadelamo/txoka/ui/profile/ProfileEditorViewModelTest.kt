@@ -22,7 +22,7 @@ class ProfileEditorViewModelTest {
     @Test
     fun `loads an existing profile for editing`() = runTest {
         val repository = FakeProfileRepository(
-            Profile(name = "Isidro", phone = "+34600123456", sharePhone = true),
+            Profile(name = "Isidro", phone = "+34600123456"),
         )
 
         val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
@@ -31,18 +31,16 @@ class ProfileEditorViewModelTest {
         val state = viewModel.uiState.value
         assertEquals("Isidro", state.name)
         assertEquals("+34600123456", state.phone)
-        assertTrue(state.sharePhone)
         assertTrue(state.isEditing)
     }
 
     @Test
-    fun `saves a normalised phone number and the sharing flags`() = runTest {
+    fun `saves a normalised phone number and the email`() = runTest {
         val repository = FakeProfileRepository()
         val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
 
         viewModel.onNameChange("  Isidro García ")
         viewModel.onPhoneChange("600 12 34 56")
-        viewModel.onSharePhoneChange(true)
         viewModel.onEmailChange("isidro@example.com")
         viewModel.save()
         advanceUntilIdle()
@@ -51,8 +49,6 @@ class ProfileEditorViewModelTest {
         assertEquals("Isidro García", saved?.name)
         assertEquals("+34600123456", saved?.phone)
         assertEquals("isidro@example.com", saved?.email)
-        assertTrue(saved?.sharePhone == true)
-        assertFalse(saved?.shareEmail == true)
         assertTrue(viewModel.uiState.value.saved)
     }
 
@@ -76,24 +72,11 @@ class ProfileEditorViewModelTest {
 
         viewModel.onNameChange("Isidro")
         viewModel.onPhoneChange("123")
-        viewModel.onSharePhoneChange(true)
         viewModel.save()
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.phoneError)
         assertNull(repository.savedProfile)
-    }
-
-    @Test
-    fun `clearing a field disables its sharing toggle`() = runTest {
-        val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
-
-        viewModel.onPhoneChange("+34600123456")
-        viewModel.onSharePhoneChange(true)
-        assertTrue(viewModel.uiState.value.sharePhone)
-
-        viewModel.onPhoneChange("")
-        assertFalse(viewModel.uiState.value.sharePhone)
     }
 
     @Test

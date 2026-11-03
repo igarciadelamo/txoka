@@ -246,8 +246,8 @@ private fun Avatar(profile: Profile, size: Dp, contentColor: Color, overlayTint:
 @Composable
 private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Color) {
     val rows = listOfNotNull(
-        profile.sharedPhone?.let { phone -> Icons.Filled.Phone to phone },
-        profile.sharedEmail?.let { email -> Icons.Filled.Email to email },
+        profile.phone?.let { phone -> Icons.Filled.Phone to phone },
+        profile.email?.let { email -> Icons.Filled.Email to email },
     )
     if (rows.isEmpty()) return
 
@@ -348,8 +348,6 @@ private fun ContactCardPreview() {
                     name = "Isidro García",
                     phone = "+34 600 123 456",
                     email = "isidro@example.com",
-                    sharePhone = true,
-                    shareEmail = true,
                     card = CardPalette.Default,
                 ),
             )

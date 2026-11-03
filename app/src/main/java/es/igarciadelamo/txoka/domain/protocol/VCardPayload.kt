@@ -24,8 +24,8 @@ data class VCardPayload(
 
 fun Profile.toVCardPayload(): VCardPayload = VCardPayload(
     name = name,
-    phone = sharedPhone,
-    email = sharedEmail,
+    phone = phone,
+    email = email,
     palette = card,
     protocolVersion = VCardPayload.CURRENT_PROTOCOL_VERSION,
 )

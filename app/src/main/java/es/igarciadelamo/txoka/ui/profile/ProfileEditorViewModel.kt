@@ -25,8 +25,6 @@ data class ProfileEditorUiState(
     val phone: String = "",
     val email: String = "",
     val country: PhoneCountry = PhoneCountries.byIsoOrFallback(PhoneCountries.FALLBACK_REGION),
-    val sharePhone: Boolean = false,
-    val shareEmail: Boolean = false,
     val card: CardPalette = CardPalette.Default,
     val customHex: String = "",
     val nameError: Boolean = false,
@@ -44,8 +42,6 @@ data class ProfileEditorUiState(
         name = name.trim(),
         phone = phone.trim().ifEmpty { null },
         email = email.trim().ifEmpty { null },
-        sharePhone = sharePhone,
-        shareEmail = shareEmail,
         card = card,
     )
 }
@@ -77,35 +73,15 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onPhoneChange(value: String) {
-        _uiState.update {
-            it.copy(
-                phone = value,
-                sharePhone = it.sharePhone && value.isNotBlank(),
-                phoneError = false,
-            )
-        }
+        _uiState.update { it.copy(phone = value, phoneError = false) }
     }
 
     fun onEmailChange(value: String) {
-        _uiState.update {
-            it.copy(
-                email = value,
-                shareEmail = it.shareEmail && value.isNotBlank(),
-                emailError = false,
-            )
-        }
+        _uiState.update { it.copy(email = value, emailError = false) }
     }
 
     fun onCountrySelected(country: PhoneCountry) {
         _uiState.update { it.copy(country = country, phoneError = false) }
-    }
-
-    fun onSharePhoneChange(enabled: Boolean) {
-        _uiState.update { it.copy(sharePhone = enabled && it.phone.isNotBlank()) }
-    }
-
-    fun onShareEmailChange(enabled: Boolean) {
-        _uiState.update { it.copy(shareEmail = enabled && it.email.isNotBlank()) }
     }
 
     fun onPresetSelected(palette: CardPalette) {
@@ -147,8 +123,6 @@ class ProfileEditorViewModel @Inject constructor(
             name = name,
             phone = phone,
             email = email.ifEmpty { null },
-            sharePhone = state.sharePhone && phone != null,
-            shareEmail = state.shareEmail && email.isNotEmpty(),
             card = state.card,
         )
 
@@ -157,8 +131,6 @@ class ProfileEditorViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     phone = phone.orEmpty(),
-                    sharePhone = profile.sharePhone,
-                    shareEmail = profile.shareEmail,
                     isEditing = true,
                     saved = true,
                 )
@@ -178,8 +150,6 @@ class ProfileEditorViewModel @Inject constructor(
         phone = profile.phone.orEmpty(),
         email = profile.email.orEmpty(),
         country = profile.phone?.let { PhoneCountries.countryOf(it, country) } ?: country,
-        sharePhone = profile.sharePhone,
-        shareEmail = profile.shareEmail,
         card = profile.card,
         isEditing = true,
     )

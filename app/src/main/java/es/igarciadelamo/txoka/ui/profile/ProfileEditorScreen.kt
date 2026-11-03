@@ -55,7 +55,6 @@ import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.CountryChip
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
-import es.igarciadelamo.txoka.ui.components.ShareChip
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.TxokaField
 import es.igarciadelamo.txoka.ui.components.toComposeColor
@@ -126,8 +125,6 @@ fun ProfileEditorScreen(
             onPhoneChange = viewModel::onPhoneChange,
             onEmailChange = viewModel::onEmailChange,
             onCountrySelected = viewModel::onCountrySelected,
-            onSharePhoneChange = viewModel::onSharePhoneChange,
-            onShareEmailChange = viewModel::onShareEmailChange,
             onPresetSelected = viewModel::onPresetSelected,
             onCustomHexChange = viewModel::onCustomHexChange,
             modifier = Modifier.weight(1f),
@@ -178,8 +175,6 @@ private fun EditorContent(
     onPhoneChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onCountrySelected: (PhoneCountry) -> Unit,
-    onSharePhoneChange: (Boolean) -> Unit,
-    onShareEmailChange: (Boolean) -> Unit,
     onPresetSelected: (CardPalette) -> Unit,
     onCustomHexChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -200,8 +195,6 @@ private fun EditorContent(
             state = state,
             onPhoneChange = onPhoneChange,
             onEmailChange = onEmailChange,
-            onSharePhoneChange = onSharePhoneChange,
-            onShareEmailChange = onShareEmailChange,
             onOpenCountryPicker = { showCountryPicker = true },
         )
         StyleSection(
@@ -263,8 +256,6 @@ private fun ContactSection(
     state: ProfileEditorUiState,
     onPhoneChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
-    onSharePhoneChange: (Boolean) -> Unit,
-    onShareEmailChange: (Boolean) -> Unit,
     onOpenCountryPicker: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
@@ -284,20 +275,6 @@ private fun ContactSection(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 isError = state.phoneError,
                 supportingText = if (state.phoneError) stringResource(R.string.error_phone_invalid) else null,
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            ShareChip(
-                text = stringResource(R.string.field_phone),
-                selected = state.sharePhone,
-                enabled = state.phone.isNotBlank(),
-                onClick = { onSharePhoneChange(!state.sharePhone) },
-            )
-            ShareChip(
-                text = stringResource(R.string.field_email),
-                selected = state.shareEmail,
-                enabled = state.email.isNotBlank(),
-                onClick = { onShareEmailChange(!state.shareEmail) },
             )
         }
         TxokaField(
