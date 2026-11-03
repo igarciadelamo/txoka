@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Txoka</string>
-
     <string name="action_back">Atrás</string>
     <string name="action_create_card">Crear tarjeta</string>
     <string name="action_delete_card">Borrar tarjeta</string>
@@ -89,11 +87,11 @@
     <string name="sheet_shared_via_nfc">Compartida por NFC</string>
     <string name="settings_received">Contactos recibidos</string>
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
-    <string name="about_made_by">Creada por %1$s</string>
-    <string name="licences_font_body">© 2018 The Manrope Project Authors, con licencia SIL Open Font License 1.1.</string>
-    <string name="licences_font_title">Fuente Manrope</string>
-    <string name="settings_legal">Legal</string>
-    <string name="settings_licences">Licencias de código abierto</string>
+    <string name="about_author_title">Autor</string>
+    <string name="about_author_role">Diseño y desarrollo</string>
+    <string name="about_licence">Licencia</string>
+    <string name="about_licence_body">Software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la GNU General Public License, versión 3.</string>
+    <string name="about_font_licence">Fuente Manrope · SIL OFL 1.1</string>
     <string name="settings_no_internet_body">Txoka no pide el permiso INTERNET, así que nada puede salir del móvil.</string>
     <string name="settings_no_internet_title">Sin acceso a internet</string>
     <string name="settings_privacy">Privacidad</string>
