@@ -29,7 +29,8 @@ val InkTertiaryDark = Color(0xFF7C7770)
 val HairlineDark = Color(0x33FFFFFF)
 val IndigoSoftDark = Color(0xFF2A2750)
 
-val Success = Color(0xFF0F9D6A)
+// 4.5:1 against its own 12% tint on white, where the "saved" chip renders.
+val Success = Color(0xFF0B7A52)
 val SuccessSoft = Color(0x1F0F9D6A)
 val Warning = Color(0xFFB45309)
 val WarningSoft = Color(0xFFFDF3E7)

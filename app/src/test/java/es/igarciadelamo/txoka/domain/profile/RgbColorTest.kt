@@ -1,7 +1,6 @@
 package es.igarciadelamo.txoka.domain.profile
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -38,11 +37,13 @@ class RgbColorTest {
     }
 
     @Test
-    fun `dark colours prefer light content`() {
-        assertFalse(RgbColor(0, 0, 0).prefersDarkContent())
-        assertFalse(RgbColor(0x4F, 0x46, 0xE5).prefersDarkContent())
-        assertTrue(RgbColor(255, 255, 255).prefersDarkContent())
-        assertTrue(RgbColor(0xFB, 0xBF, 0x24).prefersDarkContent())
+    fun `contrast ratio follows WCAG`() {
+        val black = RgbColor(0, 0, 0)
+        val white = RgbColor(255, 255, 255)
+
+        assertEquals(21.0, black.contrastRatio(white), 0.01)
+        assertEquals(1.0, white.contrastRatio(white), 0.01)
+        assertEquals(black.contrastRatio(white), white.contrastRatio(black), 0.001)
     }
 
     @Test

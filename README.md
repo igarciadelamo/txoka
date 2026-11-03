@@ -181,9 +181,21 @@ while the unlock setting is on).
 - Palette swatches expose "Colour preset N" with the radio button role; country rows announce the
   name and dial code instead of the flag emoji; search fields use visible labels.
 - Call and email actions flow onto a second line on narrow screens or large fonts.
+- Interactive elements are at least 48 dp: palette swatches, share chips, the country chip, the
+  card action row and the inline NFC settings link keep a 48 dp target while the visual stays
+  small.
+- The contact card is one screen-reader node (`mergeDescendants`); the initials and the TXOKA
+  wordmark are decorative. Received rows merge the name and the detail and expose the button role.
+- Card contrast is picked from the worst gradient stop and every preset reaches 4.5:1 for body
+  text, which also covers the 3:1 large-text rule. The glow, avatar and contact pills are tinted
+  against the text colour, so they always add contrast instead of removing it. `CardContrastTest`
+  guards the presets.
 - Layouts were checked on the Pixel 9 emulator at 100% and 200% font scale, in English and
   Spanish, light and dark theme, with and without a card and with NFC reporting available or
   missing.
+- *Pending device test*: full TalkBack walkthrough on a physical phone. TalkBack renders on the
+  emulator and the 48 dp focus boxes were checked there, but `adb` cannot drive its focus order
+  reliably, so the spoken order is not verified yet.
 
 ## API levels
 

@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -235,6 +236,7 @@ private fun ActionBar(
 private fun ActionButton(icon: ImageVector, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
+            .minimumInteractiveComponentSize()
             .clip(RoundedCornerShape(Corners.field))
             .clickable(role = Role.Button, onClick = onClick)
             .padding(vertical = Spacing.sm),
@@ -295,7 +297,7 @@ private fun NotesCard(note: String, saved: Boolean, onNoteChange: (String) -> Un
                         Text(
                             text = stringResource(R.string.received_note_hint),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     inner()

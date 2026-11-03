@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -359,16 +360,20 @@ private fun WarningCard(title: String, body: String, action: String, onAction: (
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(
-                text = action,
+            Box(
                 modifier = Modifier
                     .padding(top = Spacing.xs)
+                    .minimumInteractiveComponentSize()
                     .clip(RoundedCornerShape(Corners.chip))
-                    .clickable(role = Role.Button, onClick = onAction)
-                    .padding(vertical = Spacing.xs),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-            )
+                    .clickable(role = Role.Button, onClick = onAction),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    text = action,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }
