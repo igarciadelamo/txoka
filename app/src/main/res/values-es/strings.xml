@@ -89,6 +89,7 @@
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
     <string name="about_author_title">Autor</string>
     <string name="about_author_role">Diseño y desarrollo</string>
+    <string name="about_tagline">Comparte tu tarjeta, guarda tus contactos</string>
     <string name="about_licence">Licencia</string>
     <string name="about_licence_body">Software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la GNU General Public License, versión 3.</string>
     <string name="about_font_licence">Fuente Manrope · SIL OFL 1.1</string>

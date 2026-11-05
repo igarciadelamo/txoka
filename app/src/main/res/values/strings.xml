@@ -91,6 +91,7 @@
     <string name="received_note_hint">Add a note about this person</string>
     <string name="about_author_title">Author</string>
     <string name="about_author_role">Design and development</string>
+    <string name="about_tagline">Share your card, keep your contacts</string>
     <string name="about_licence">Licence</string>
     <string name="about_licence_name" translatable="false">GPL-3.0-only</string>
     <string name="about_licence_body">Free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3.</string>
