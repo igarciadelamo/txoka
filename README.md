@@ -14,8 +14,8 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
   for confirmation before it is stored.
 - **Received contacts.** Searchable list grouped by date, editable notes, call, email, add to the
   system contacts app and delete. Duplicates are detected by normalised phone or email.
-- **Settings.** Sharing switches, the received library, a plain-language privacy section and a
-  separate About screen with the version, credits and licence.
+- **Settings.** Sharing switches, the received library and a separate About screen with the
+  version, credits and licence.
 - **Debug demo.** In debug builds, Settings offers *Simulate an incoming card*, which runs a demo
   card through the real NDEF and vCard round trip. Useful on emulators, which have no NFC.
 

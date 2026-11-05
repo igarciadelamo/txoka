@@ -91,15 +91,11 @@
     <string name="received_note_hint">Add a note about this person</string>
     <string name="about_author_title">Author</string>
     <string name="about_author_role">Design and development</string>
+    <string name="about_tagline">Share your card, keep your contacts</string>
     <string name="about_licence">Licence</string>
     <string name="about_licence_name" translatable="false">GPL-3.0-only</string>
     <string name="about_licence_body">Free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3.</string>
     <string name="about_font_licence">Manrope font · SIL OFL 1.1</string>
-    <string name="settings_no_internet_body">Txoka has no INTERNET permission, so nothing can leave the phone.</string>
-    <string name="settings_no_internet_title">No internet access</string>
-    <string name="settings_privacy">Privacy</string>
-    <string name="settings_storage_body">Your card and the notes stay in the app database.</string>
-    <string name="settings_storage_title">Stored on this device</string>
     <string name="about_author" translatable="false">Isidro García</string>
     <plurals name="received_count">
         <item quantity="one">%d contact</item>

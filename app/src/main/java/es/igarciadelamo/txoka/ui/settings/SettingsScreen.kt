@@ -103,8 +103,6 @@ fun SettingsScreen(
                 onSimulateIncomingCard = onSimulateIncomingCard,
             )
 
-            PrivacyGroup()
-
             AboutGroup(version = BuildConfig.VERSION_NAME, onOpenAbout = onOpenAbout)
         }
     }
@@ -160,22 +158,6 @@ private fun LibraryGroup(receivedCount: Int, onOpenReceived: () -> Unit, onSimul
                 background = MaterialTheme.txoka.warningSoft,
             )
         }
-    }
-}
-
-@Composable
-private fun PrivacyGroup() {
-    SettingsGroup(title = stringResource(R.string.settings_privacy)) {
-        InfoRow(
-            icon = Icons.Filled.Lock,
-            title = stringResource(R.string.settings_no_internet_title),
-            body = stringResource(R.string.settings_no_internet_body),
-        )
-        InfoRow(
-            icon = Icons.Filled.Person,
-            title = stringResource(R.string.settings_storage_title),
-            body = stringResource(R.string.settings_storage_body),
-        )
     }
 }
 
@@ -255,38 +237,6 @@ private fun SettingsRow(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun InfoRow(icon: ImageVector, title: String, body: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-        verticalAlignment = Alignment.Top,
-    ) {
-        IconBadge {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

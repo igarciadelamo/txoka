@@ -89,14 +89,10 @@
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
     <string name="about_author_title">Autor</string>
     <string name="about_author_role">Diseño y desarrollo</string>
+    <string name="about_tagline">Comparte tu tarjeta, guarda tus contactos</string>
     <string name="about_licence">Licencia</string>
     <string name="about_licence_body">Software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la GNU General Public License, versión 3.</string>
     <string name="about_font_licence">Fuente Manrope · SIL OFL 1.1</string>
-    <string name="settings_no_internet_body">Txoka no pide el permiso INTERNET, así que nada puede salir del móvil.</string>
-    <string name="settings_no_internet_title">Sin acceso a internet</string>
-    <string name="settings_privacy">Privacidad</string>
-    <string name="settings_storage_body">Tu tarjeta y las notas se quedan en la base de datos de la app.</string>
-    <string name="settings_storage_title">Guardado en este dispositivo</string>
     <plurals name="received_count">
         <item quantity="one">%d contacto</item>
         <item quantity="many">%d de contactos</item>

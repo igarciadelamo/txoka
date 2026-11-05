@@ -62,7 +62,7 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = stringResource(R.string.hub_empty_title),
+                text = stringResource(R.string.about_tagline),
                 modifier = Modifier.padding(top = Spacing.md),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -84,14 +84,6 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Eyebrow(text = stringResource(R.string.about_licence))
                 LicenceCard()
             }
-
-            Text(
-                text = stringResource(R.string.hub_privacy_footer),
-                modifier = Modifier.padding(top = Spacing.xl, bottom = Spacing.lg),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         }
     }
 }
