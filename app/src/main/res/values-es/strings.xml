@@ -25,6 +25,7 @@
     <string name="phone_country_chip_short">País, prefijo +%1$s</string>
     <string name="phone_country_search">Buscar país</string>
     <string name="profile_card_footer">Así la verán los demás. Aún no se ha guardado.</string>
+    <string name="profile_contact_required">Añade un teléfono o un email para guardar.</string>
     <string name="profile_name_placeholder">Tu nombre</string>
     <string name="profile_title_create">Tu tarjeta</string>
     <string name="profile_title_edit">Editar perfil</string>
@@ -65,10 +66,7 @@
     <string name="share_module_unlock_hint">Desbloquea el móvil para compartir</string>
     <string name="nfc_unavailable_title">NFC no disponible</string>
     <string name="nfc_disabled_title">El NFC está apagado</string>
-    <string name="section_identity">Identidad</string>
-    <string name="section_contact">Contacto</string>
     <string name="section_style">Estilo</string>
-    <string name="field_optional">Opcional</string>
     <string name="action_add">Añadir</string>
     <string name="action_more">Más opciones</string>
     <string name="group_earlier">Anteriores</string>

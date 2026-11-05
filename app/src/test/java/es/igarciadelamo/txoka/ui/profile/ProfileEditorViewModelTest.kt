@@ -80,6 +80,23 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
+    fun `enables save once a phone or an email is present`() = runTest {
+        val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
+
+        viewModel.onNameChange("Isidro")
+        assertFalse(viewModel.uiState.value.canSave)
+
+        viewModel.onEmailChange("isidro@example.com")
+        assertTrue(viewModel.uiState.value.canSave)
+
+        viewModel.onEmailChange(" ")
+        assertFalse(viewModel.uiState.value.canSave)
+
+        viewModel.onPhoneChange("+34600123456")
+        assertTrue(viewModel.uiState.value.canSave)
+    }
+
+    @Test
     fun `deletes the stored profile`() = runTest {
         val repository = FakeProfileRepository(Profile(name = "Isidro"))
         val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
@@ -96,6 +113,7 @@ class ProfileEditorViewModelTest {
     fun `custom hex updates the palette and flags invalid input`() = runTest {
         val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
         viewModel.onNameChange("Isidro")
+        viewModel.onPhoneChange("+34600123456")
 
         viewModel.onCustomHexChange("#10B981")
         val custom = viewModel.uiState.value

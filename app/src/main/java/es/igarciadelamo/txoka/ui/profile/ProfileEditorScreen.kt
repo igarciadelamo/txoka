@@ -190,9 +190,9 @@ private fun EditorContent(
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {
         PreviewSection(state = state)
-        IdentitySection(state = state, onNameChange = onNameChange)
-        ContactSection(
+        ContactFields(
             state = state,
+            onNameChange = onNameChange,
             onPhoneChange = onPhoneChange,
             onEmailChange = onEmailChange,
             onOpenCountryPicker = { showCountryPicker = true },
@@ -237,9 +237,14 @@ private fun PreviewSection(state: ProfileEditorUiState) {
 }
 
 @Composable
-private fun IdentitySection(state: ProfileEditorUiState, onNameChange: (String) -> Unit) {
+private fun ContactFields(
+    state: ProfileEditorUiState,
+    onNameChange: (String) -> Unit,
+    onPhoneChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onOpenCountryPicker: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        Eyebrow(text = stringResource(R.string.section_identity))
         TxokaField(
             value = state.name,
             onValueChange = onNameChange,
@@ -248,44 +253,38 @@ private fun IdentitySection(state: ProfileEditorUiState, onNameChange: (String) 
             isError = state.nameError,
             supportingText = if (state.nameError) stringResource(R.string.error_name_required) else null,
         )
-    }
-}
-
-@Composable
-private fun ContactSection(
-    state: ProfileEditorUiState,
-    onPhoneChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
-    onOpenCountryPicker: () -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        Eyebrow(text = stringResource(R.string.section_contact))
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            CountryChip(
-                flag = state.country.flag,
-                dialCode = state.country.dialCode,
-                onClick = onOpenCountryPicker,
-                countryName = state.country.label,
-            )
-            TxokaField(
-                value = state.phone,
-                onValueChange = onPhoneChange,
-                label = stringResource(R.string.field_phone),
-                modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                isError = state.phoneError,
-                supportingText = if (state.phoneError) stringResource(R.string.error_phone_invalid) else null,
-            )
-        }
+        TxokaField(
+            value = state.phone,
+            onValueChange = onPhoneChange,
+            label = stringResource(R.string.field_phone),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            isError = state.phoneError,
+            supportingText = if (state.phoneError) stringResource(R.string.error_phone_invalid) else null,
+            leading = {
+                CountryChip(
+                    flag = state.country.flag,
+                    dialCode = state.country.dialCode,
+                    onClick = onOpenCountryPicker,
+                    countryName = state.country.label,
+                )
+            },
+        )
         TxokaField(
             value = state.email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.field_email),
-            placeholder = stringResource(R.string.field_optional),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             isError = state.emailError,
             supportingText = if (state.emailError) stringResource(R.string.error_email_invalid) else null,
         )
+        if (state.phone.isBlank() && state.email.isBlank()) {
+            Text(
+                text = stringResource(R.string.profile_contact_required),
+                modifier = Modifier.padding(start = Spacing.xs),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
