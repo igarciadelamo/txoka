@@ -63,7 +63,7 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   picker, email, palette/custom hex, delete in the overflow menu.
 - `ui/received/` — list, detail, notes, delete, add to system contacts.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
-- `ui/settings/` — sharing switches, library, privacy, About, no separate licences screen.
+- `ui/settings/` — sharing switches, library, About, no separate licences screen.
 - `ui/components/Layout.kt` — `Eyebrow`, `TxokaAppBar`, `ScreenColumn`, shared buttons.
 - `ui/components/ContactCard.kt` — hero/preview card and `Profile.cardContentColor()`.
 - `ui/components/Fields.kt` — `TxokaField`, `CountryChip`.
