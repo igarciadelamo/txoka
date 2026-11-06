@@ -89,7 +89,7 @@
     <string name="about_author_role">Diseño y desarrollo</string>
     <string name="about_tagline">Comparte tu tarjeta, guarda tus contactos</string>
     <string name="about_licence">Licencia</string>
-    <string name="about_licence_body">Software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la GNU General Public License, versión 3.</string>
+    <string name="about_licence_body">Software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la GNU General Public License, versión 3 únicamente.</string>
     <string name="about_font_licence">Fuente Manrope · SIL OFL 1.1</string>
     <plurals name="received_count">
         <item quantity="one">%d contacto</item>
