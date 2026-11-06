@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -92,80 +94,86 @@ fun ContactCard(
     val overlayTint = if (placeholder) Color.White else profile.cardOverlayTint()
     val accent = profile.card.accent.toComposeColor()
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .then(
-                if (placeholder) {
-                    Modifier
-                } else {
-                    Modifier.shadow(
-                        elevation = 22.dp,
-                        shape = CardShape,
-                        ambientColor = accent,
-                        spotColor = accent,
-                    )
-                },
-            )
-            .clip(CardShape)
-            .then(
-                if (placeholder) {
-                    Modifier
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CardShape)
-                        .dashedOutline(MaterialTheme.colorScheme.outline)
-                } else {
-                    Modifier
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    accent,
-                                    profile.card.accent2.toComposeColor(),
-                                ),
-                            ),
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                // The ratio is a minimum: a long name or a long email grows the card instead of
+                // being clipped by a fixed height.
+                .heightIn(min = maxWidth / layout.aspectRatio)
+                .then(
+                    if (placeholder) {
+                        Modifier
+                    } else {
+                        Modifier.shadow(
+                            elevation = 22.dp,
+                            shape = CardShape,
+                            ambientColor = accent,
+                            spotColor = accent,
                         )
-                        .highlight(overlayTint)
-                },
-            )
-            .then(
-                when (layout) {
-                    CardLayout.Hero -> Modifier.aspectRatio(HERO_ASPECT_RATIO)
-                    CardLayout.Preview -> Modifier.aspectRatio(PREVIEW_ASPECT_RATIO)
-                },
-            )
-            // TalkBack reads the card as one unit instead of five loose labels.
-            .semantics(mergeDescendants = true) {},
-    ) {
-        when (layout) {
-            CardLayout.Hero -> HeroContent(
-                profile = profile,
-                contentColor = contentColor,
-                overlayTint = overlayTint,
-            )
-            CardLayout.Preview -> PreviewContent(
-                profile = profile,
-                contentColor = contentColor,
-                overlayTint = overlayTint,
-            )
-        }
-        if (!placeholder) {
-            Text(
-                text = TXOKA_MARK,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 20.dp, bottom = 16.dp)
-                    .clearAndSetSemantics {},
-                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp),
-                color = contentColor.copy(alpha = BRANDMARK_ALPHA),
-            )
+                    },
+                )
+                .clip(CardShape)
+                .then(
+                    if (placeholder) {
+                        Modifier
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CardShape)
+                            .dashedOutline(MaterialTheme.colorScheme.outline)
+                    } else {
+                        Modifier
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        accent,
+                                        profile.card.accent2.toComposeColor(),
+                                    ),
+                                ),
+                            )
+                            .highlight(overlayTint)
+                    },
+                )
+                // TalkBack reads the card as one unit instead of five loose labels.
+                .semantics(mergeDescendants = true) {},
+        ) {
+            when (layout) {
+                CardLayout.Hero -> HeroContent(
+                    profile = profile,
+                    contentColor = contentColor,
+                    overlayTint = overlayTint,
+                )
+                CardLayout.Preview -> PreviewContent(
+                    profile = profile,
+                    contentColor = contentColor,
+                    overlayTint = overlayTint,
+                )
+            }
+            if (!placeholder) {
+                Text(
+                    text = TXOKA_MARK,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 20.dp, bottom = 16.dp)
+                        .clearAndSetSemantics {},
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp),
+                    color = contentColor.copy(alpha = BRANDMARK_ALPHA),
+                )
+            }
         }
     }
 }
+
+/** Width-to-height ratio of each layout, used as the minimum height of the card. */
+private val CardLayout.aspectRatio: Float
+    get() = when (this) {
+        CardLayout.Hero -> HERO_ASPECT_RATIO
+        CardLayout.Preview -> PREVIEW_ASPECT_RATIO
+    }
 
 @Composable
 private fun HeroContent(profile: Profile, contentColor: Color, overlayTint: Color) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = 22.dp, vertical = 20.dp),
     ) {
         Avatar(profile = profile, size = 52.dp, contentColor = contentColor, overlayTint = overlayTint)
@@ -192,7 +200,7 @@ private fun HeroContent(profile: Profile, contentColor: Color, overlayTint: Colo
 private fun PreviewContent(profile: Profile, contentColor: Color, overlayTint: Color) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = 22.dp, vertical = 18.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -258,6 +266,8 @@ private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Colo
         rows.forEach { (icon, text) ->
             ContactPill(icon = icon, text = text, contentColor = contentColor, overlayTint = overlayTint)
         }
+        // Keeps the pills clear of the brandmark anchored to the bottom-right corner.
+        Spacer(modifier = Modifier.height(BrandmarkReserve))
     }
 }
 
@@ -326,6 +336,7 @@ internal fun RgbColor.toComposeColor(): Color = Color(argb)
 
 private const val HERO_ASPECT_RATIO = 1.58f
 private const val PREVIEW_ASPECT_RATIO = 1.95f
+private val BrandmarkReserve = 16.dp
 private const val TXOKA_MARK = "TXOKA"
 private const val GHOST_CONTENT_ALPHA = 0.55f
 private const val AVATAR_BACKGROUND_ALPHA = 0.16f
@@ -349,6 +360,13 @@ private fun ContactCardPreview() {
                     phone = "+34 600 123 456",
                     email = "isidro@example.com",
                     card = CardPalette.Default,
+                ),
+            )
+            ContactCard(
+                profile = Profile(
+                    name = "María del Carmen Fernández de la Vega",
+                    phone = "+34 600 123 456",
+                    email = "maria.delcarmen.fernandez@example.com",
                 ),
             )
             ContactCard(
