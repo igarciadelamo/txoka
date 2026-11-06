@@ -10,6 +10,14 @@ class HceResponderTest {
     private val responder = HceResponder()
 
     @Test
+    fun `accepts the txoka aid as well as the ndef aid`() {
+        responder.update(card())
+
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(txokaAid(), deviceLocked = false)))
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(selectAid(), deviceLocked = false)))
+    }
+
+    @Test
     fun `answers file not found while no card is published`() {
         assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(selectAid(), deviceLocked = false)))
     }
@@ -87,6 +95,8 @@ class HceResponderTest {
     private fun card(requireUnlock: Boolean = false) = HceCard(NdefMessage.encode(vCard), requireUnlock)
 
     private fun selectAid(): ByteArray = command(0x00, 0xA4, 0x04, 0x00, 0x07, 0xD2, 0x76, 0x00, 0x00, 0x85, 0x01, 0x01)
+
+    private fun txokaAid(): ByteArray = command(0x00, 0xA4, 0x04, 0x00, 0x07, 0xF0, 0x54, 0x58, 0x4F, 0x4B, 0x41, 0x01)
 
     private fun selectFile(fileId: Int): ByteArray =
         command(0x00, 0xA4, 0x00, 0x0C, 0x02, fileId ushr 8, fileId and 0xFF)
