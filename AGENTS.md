@@ -19,7 +19,7 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 `main` is green. Milestones 0–6 and the polish phase are merged.
 
 - Unified app bar, hub/card actions, accessibility pass, string audit and licensing are done.
-- 112 JVM unit tests + 3 instrumented DAO tests.
+- 114 JVM unit tests + 3 instrumented DAO tests.
 - Remaining backlog: optional vCard/QR sharing fallback, real two-phone NFC validation.
 
 ## Non-negotiable rules
@@ -161,8 +161,7 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 - Gradle is pinned to JDK 21. Detekt 1.23.8 breaks on JDK 25; always export `JAVA_HOME`.
 - Room 2.6.1 fails under KSP1 with "unexpected jvm signature V". Room 2.8.5 is pinned.
-- `kotlinx-serialization-json` is pinned to 1.9.0; newer versions pull a kotlin-stdlib the
-  2.2.10 compiler cannot read.
+- `kotlinx-serialization-json` (1.12.0) and the Kotlin compiler (2.4.21) are bumped together.
 - `connectedDebugAndroidTest` uninstalls the app and clears its data; reinstall afterwards.
 - `gh` is not installed and there are no GitHub API credentials. You can push branches but not
   open PRs. Push and give the user:

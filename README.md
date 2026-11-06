@@ -5,34 +5,70 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 ## Features
 
-- **Your card.** Name plus a phone number or an email, and a two-colour gradient chosen from seven
-  presets or a custom hex value. Text colour adapts to the background for contrast.
-- **Sharing over NFC.** The phone emulates a NFC Forum Type 4 Tag that carries the card as a
-  vCard 3.0 NDEF record. Sharing can be switched off, and an optional setting requires the device
-  to be unlocked before the card is served.
-- **Receiving.** Tap a Txoka phone (or any NDEF tag with a `text/vcard` record) and the card opens
-  for confirmation before it is stored.
-- **Received contacts.** Searchable list grouped by date, editable notes, call, email, add to the
-  system contacts app and delete. Duplicates are detected by normalised phone or email.
-- **Settings.** Sharing switches, the received library and a separate About screen with the
-  version, credits and licence.
-- **Debug demo.** In debug builds, Settings offers *Simulate an incoming card*, which runs a demo
-  card through the real NDEF and vCard round trip. Useful on emulators, which have no NFC.
+### Your card
 
-The UI is available in English and Spanish, in light and dark theme, and does not require NFC
-hardware: when NFC is missing the app explains it and disables the sharing controls.
+- Name plus at least one contact channel: a phone number or an email address.
+- Every value you fill in is shared. There are no per-field sharing flags.
+- Seven gradient presets or a custom pair of `#RRGGBB` colours. The text colour adapts to the
+  background using WCAG luminance, so the card stays readable on every palette.
+- The editor validates the phone number and the email, keeps the preview in sync and saves the
+  whole card at once. Back discards the draft; the overflow menu deletes the card after a
+  confirmation.
 
-## Status
+### Sharing over NFC
 
-| Milestone | Scope | Status |
-| --- | --- | --- |
-| 0 | Project scaffolding, Hilt, navigation, lint and CI | Done |
-| 1 | Own profile, card palette and onboarding | Done |
-| 2 | Pure protocol: vCard, NDEF payload, T4T/APDU state machine | Done |
-| 3 | HCE emitter service | Done |
-| 4 | Receiving: reader mode, intent filter, confirmation | Done |
-| 5 | Room, received contacts list | Done |
-| 6 | Polish, accessibility, documentation, manual test matrix | Done |
+- The phone emulates an NFC Forum Type 4 Tag that carries the card as a vCard 3.0 NDEF record.
+- Sharing can be switched off at any time from the hub or from Settings.
+- An optional setting requires the device to be unlocked before the card is served.
+- When the device has no NFC hardware, the app explains the limitation and hides the sharing
+  controls instead of failing silently.
+
+### Receiving
+
+- Tap a Txoka phone, or any NDEF tag that carries a `text/vcard` record, and the card opens for
+  confirmation before it is stored.
+- Nothing is saved until the card is accepted.
+- The `NDEF_DISCOVERED` intent filter also handles a tag while Txoka is not in the foreground.
+
+### Received contacts
+
+- Searchable library grouped into Today and Earlier.
+- Detail view with the sender's card, the date, call and email actions, a note and delete.
+- *Add to contacts* opens the system editor prefilled through `ContactsContract.Intents.Insert`,
+  so Txoka never asks for `WRITE_CONTACTS`.
+- Duplicates are detected by normalised phone (digits only) or lowercased email. Cards that only
+  share a name are kept separately.
+- Received cards keep the sender's gradient colours.
+
+### Privacy and storage
+
+- Local-first: no backend, no account and no `INTERNET` permission.
+- The profile and the sharing preferences live in DataStore; received contacts and their notes live
+  in a local Room database.
+- Deleting the card clears only the profile. Share settings and received contacts stay.
+
+### Settings and About
+
+- Sharing switches, the received library and an About screen with the version, the author, the
+  licence summary and the Manrope attribution.
+- In debug builds, Settings offers *Simulate an incoming card*, which runs a demo card through the
+  real NDEF and vCard round trip. This is how the receive flow is exercised on emulators, which
+  have no NFC.
+
+### Languages and accessibility
+
+- English and Spanish, in light and dark theme, following the system setting.
+- Layouts are designed for 100 % and 200 % font scale.
+- 48 dp touch targets, content descriptions on icon-only buttons, merged semantics on cards and
+  list rows, labelled search fields and switch rows that act as a single target.
+- Palette swatches expose their preset number and radio-button role, and country rows announce the
+  country and dial code instead of the flag emoji.
+
+## Platform
+
+Kotlin and Jetpack Compose with Material 3. The app runs on Android 8.0 (API 26) and newer. NFC is
+optional: without NFC hardware the card can still be created and kept, but it cannot be shared or
+received.
 
 ## Design
 
@@ -49,9 +85,6 @@ shared buttons, so screens do not invent their own paddings.
 There is a single splash: the Android one. It shows the brand mark over the brand indigo and, on
 Android 12 and newer, the wordmark as a branding image at the bottom. Nothing else is drawn on top,
 so no second splash appears.
-
-Mockups of the direction are in `docs/design/mockups/` (`overview.jpg`), generated from
-`txoka-mock.html` with headless Chrome.
 
 ## Stack
 
@@ -104,7 +137,7 @@ state when the reader goes away.
 
 **Receiving.** Two paths feed the same confirmation overlay:
 
-1. `NfcReader` runs in reader mode while the activity is resumed and decodes NDEF tags itself.
+1. `NfcReader` polls tags while the activity is resumed and decodes NDEF tags itself.
 2. The activity's `NDEF_DISCOVERED` filter covers the case where the system launches Txoka with a
    tag intent while the app is not in the foreground.
 
@@ -180,9 +213,8 @@ while the unlock setting is on).
 ## Accessibility and localisation
 
 - Every user-visible string lives in `res/values` and `res/values-es`; the two files have the same
-  keys and the badge count uses plurals. No text is hardcoded in composables.
-- Icon buttons have content descriptions, and decorative icons are marked as such. The received
-  badge announces "1 received contact" instead of a bare number.
+  keys and the received count uses plurals. No text is hardcoded in composables.
+- Icon buttons have content descriptions, and decorative icons are marked as such.
 - Switch rows are single toggleable targets with `Role.Switch`, so the whole row can be activated
   by touch or screen reader, and the text wraps instead of colliding with the switch at large font
   sizes.
@@ -198,23 +230,6 @@ while the unlock setting is on).
   text, which also covers the 3:1 large-text rule. The glow, avatar and contact pills are tinted
   against the text colour, so they always add contrast instead of removing it. `CardContrastTest`
   guards the presets.
-- Layouts were checked on the Pixel 9 emulator at 100% and 200% font scale, in English and
-  Spanish, light and dark theme, with and without a card and with NFC reporting available or
-  missing.
-- *Pending device test*: full TalkBack walkthrough on a physical phone. TalkBack renders on the
-  emulator and the 48 dp focus boxes were checked there, but `adb` cannot drive its focus order
-  reliably, so the spoken order is not verified yet.
-
-## API levels
-
-`minSdk` is 26 and `targetSdk`/`compileSdk` are 37. `lintDebug` runs in CI and currently reports
-no errors. Findings fixed during the audit:
-
-- `ByteArrayOutputStream.writeBytes(ByteArray)` (API 33) was replaced with `write`, so the NDEF
-  encoder works from API 26.
-- `Intent.getParcelableArrayExtra` was replaced with `IntentCompat.getParcelableArrayExtra`.
-- The `mipmap-anydpi-v26` folder was renamed to `mipmap-anydpi`, since the minimum SDK already
-  implies the qualifier, and a redundant activity label was removed.
 
 ## Build and checks
 
@@ -234,7 +249,7 @@ to `main` and on every pull request.
 
 The JVM suite covers the protocol, the profile logic, the NFC responder and every view model.
 Kover enforces a 95% line coverage gate over those layers; Compose screens and the Android-only
-adapters are covered by the manual test plan instead. The HTML report is written to
+adapters are covered by manual checks instead. The HTML report is written to
 `app/build/reports/kover/htmlDebug/index.html`.
 
 ```sh
@@ -260,35 +275,6 @@ adb shell am instrument -w \
   es.igarciadelamo.txoka.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-## Manual test matrix
-
-### Emulator or any device without NFC (demo mode)
-
-| Scenario | Expected | Status |
-| --- | --- | --- |
-| First launch | Hub with "You don't have a card yet", sharing hint hidden, NFC banner | Pass |
-| Create a card | Preview updates live, card saved, hub shows it | Pass |
-| Invalid email / phone | Field error, save disabled | Pass |
-| Settings | Sharing controls hidden when NFC is unavailable, demo row in debug | Pass |
-| Demo card → Save contact | Contact stored, badge increments | Pass |
-| Demo card → Discard | Nothing stored, overlay closes | Pass |
-| Search | Filters by name, phone and email; empty state when nothing matches | Pass |
-| Detail | Notes persist after force-stop, delete asks for confirmation | Pass |
-| Font scale 200% | No clipped or overlapping labels, call/email wrap | Pass |
-| Spanish locale | Every screen translated, badge uses Spanish plurals | Pass |
-
-### Two NFC phones (pending device test)
-
-| Scenario | Expected |
-| --- | --- |
-| Share with default settings | Reader phone shows the confirmation screen with the sender's colours |
-| Save and repeat the tap | Second card is reported as a duplicate and not stored |
-| Sharing switched off | Reader sees no card, sender hub shows "Sharing is off" |
-| Require unlock on, phone locked | Reader gets `6985`, no card shown |
-| Android Beam-era Contacts apps | Vendor behaviour when scanning a `text/vcard` NDEF tag |
-| Txoka not installed on the reader | The system may offer nothing; noted as a limitation |
-| Reader and emitter on at once | Both phones poll and emulate; one reads the other without a mode switch |
-
 ## Known limitations
 
 - Phone numbers typed without a country prefix use the country picked in the editor. It defaults
@@ -296,16 +282,15 @@ adb shell am instrument -w \
 - HCE only answers while the screen is on. The hub keeps the display awake while sharing is
   enabled, but a locked device with *Require device unlock* on returns `6985`.
 - The NDEF AID `D2760000850101` is shared with every NDEF HCE app. When another app claims it,
-  Android should show a chooser; *pending device test*. The Txoka AID is registered too, so Txoka
-  to Txoka does not depend on that chooser.
+  Android should show a chooser.
 - Reading an emulated card needs an app that handles `NDEF_DISCOVERED` for `text/vcard`. Without
   Txoka installed the phone will not offer to save the contact on its own.
 - Reader mode is never used: it disables host card emulation, so Txoka reads tags with foreground
   dispatch while it keeps emulating. Two phones find each other without a mode switch.
 - Notes are plain text, one per contact, and there is no sync or export.
-- Sharing as a vCard file or a QR code is not implemented; the manual test plan covers NFC only.
-
-Everything that cannot be verified without hardware is marked *pending device test*.
+- Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
+- **Pending device test.** The NFC paths are unit-tested and the debug demo exercises the same
+  codec, but sharing and receiving have not been validated end to end with two physical phones.
 
 ## Licence
 
