@@ -6,10 +6,10 @@ The app links or bundles the following third-party components:
 
 | Component | Licence |
 | --- | --- |
-| AndroidX, Jetpack Compose, Navigation, Lifecycle, DataStore | Apache-2.0 |
+| AndroidX: Activity, Compose, Lifecycle, Navigation, Room, SQLite, DataStore | Apache-2.0 |
 | Kotlin, kotlinx.coroutines, kotlinx.serialization | Apache-2.0 |
-| Dagger Hilt | Apache-2.0 |
-| Room | Apache-2.0 |
+| Okio | Apache-2.0 |
+| Dagger Hilt, Jakarta Dependency Injection, javax.inject | Apache-2.0 |
 | libphonenumber | Apache-2.0 |
 | Manrope font | SIL Open Font License 1.1 |
 
@@ -18,6 +18,6 @@ Full licence texts:
 - Apache-2.0: `licenses/Apache-2.0.txt`
 - Manrope OFL 1.1: `licenses/Manrope-OFL.txt`
 
-The Manrope licence is also bundled in the APK at `app/src/main/res/raw/manrope_ofl.txt`, so the
-notice travels with the font. All licence texts are copied into `app/src/main/assets/` and ship
-inside the APK.
+The canonical copies live at the repository root. The same files are bundled under
+`app/src/main/assets/` so the notices travel inside the APK, and the Manrope OFL text is also kept
+in `app/src/main/res/raw/manrope_ofl.txt` so it stays attached to the font resource.
