@@ -21,13 +21,13 @@ class HceResponder {
             card?.requireUnlock == newCard?.requireUnlock
         card = newCard
         if (!unchanged || newCard == null) {
-            tag = newCard?.let { current -> Type4Tag(current.ndef) }
+            tag = newCard?.let(::tagFor)
         }
     }
 
     @Synchronized
     fun reset() {
-        tag = card?.let { current -> Type4Tag(current.ndef) }
+        tag = card?.let(::tagFor)
     }
 
     @Synchronized
@@ -37,5 +37,15 @@ class HceResponder {
             return Type4Tag.statusWord(Type4Tag.SW_CONDITIONS_NOT_SATISFIED)
         }
         return current.process(command)
+    }
+
+    private fun tagFor(card: HceCard): Type4Tag = Type4Tag(card.ndef, ACCEPTED_AIDS)
+
+    private companion object {
+        /** The NDEF Forum AID plus the Txoka one declared in `xml/apduservice.xml`. */
+        val ACCEPTED_AIDS = listOf(
+            Type4Tag.NDEF_AID,
+            byteArrayOf(0xF0.toByte(), 0x54, 0x58, 0x4F, 0x4B, 0x41, 0x01),
+        )
     }
 }

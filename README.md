@@ -143,6 +143,14 @@ The reader sequence is:
 2. `SELECT CC` (`E103`) and `READ BINARY` of the 15-byte capability container.
 3. `SELECT NDEF` (`E104`), `READ BINARY` of the two-byte NLEN and then of the message.
 
+The reading side deliberately uses `NfcAdapter.enableForegroundDispatch` instead of reader mode.
+Reader mode limits the controller to polling, and AOSP only enables host card emulation routing
+while no reader-mode request is active (`NfcService.computeDiscoveryParameters`), so a phone in
+reader mode stops emulating. Foreground dispatch keeps polling and emulation on at the same time,
+which is what two phones that both want to send and receive need. While the activity is visible it
+also calls `CardEmulation.setPreferredService`, so Txoka answers its own AIDs before any other
+installed NDEF card emulator.
+
 Status words: `9000` success, `6A82` file or AID not found, `6A86` wrong P1/P2, `6700` wrong
 length, `6986` no file selected, `6D00` unsupported instruction, `6E00` unsupported class,
 `6B00` offset past the end of the file and `6985` conditions of use not satisfied (device locked
@@ -279,7 +287,7 @@ adb shell am instrument -w \
 | Require unlock on, phone locked | Reader gets `6985`, no card shown |
 | Android Beam-era Contacts apps | Vendor behaviour when scanning a `text/vcard` NDEF tag |
 | Txoka not installed on the reader | The system may offer nothing; noted as a limitation |
-| Reader mode and HCE at once | Both work on the same radio |
+| Reader and emitter on at once | Both phones poll and emulate; one reads the other without a mode switch |
 
 ## Known limitations
 
@@ -292,8 +300,8 @@ adb shell am instrument -w \
   to Txoka does not depend on that chooser.
 - Reading an emulated card needs an app that handles `NDEF_DISCOVERED` for `text/vcard`. Without
   Txoka installed the phone will not offer to save the contact on its own.
-- Reader mode and HCE run at the same time on the same device; *pending device test* to confirm
-  both work on the same radio.
+- Reader mode is never used: it disables host card emulation, so Txoka reads tags with foreground
+  dispatch while it keeps emulating. Two phones find each other without a mode switch.
 - Notes are plain text, one per contact, and there is no sync or export.
 - Sharing as a vCard file or a QR code is not implemented; the manual test plan covers NFC only.
 
