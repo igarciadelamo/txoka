@@ -36,7 +36,9 @@ data class ProfileEditorUiState(
     val deleted: Boolean = false,
 ) {
     val canSave: Boolean
-        get() = name.isNotBlank() && !customHexError
+        get() = name.isNotBlank() &&
+            (phone.isNotBlank() || email.isNotBlank()) &&
+            !customHexError
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),

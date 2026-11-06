@@ -5,7 +5,7 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 ## Features
 
-- **Your card.** Name, optional phone and email, plus a two-colour gradient chosen from seven
+- **Your card.** Name plus a phone number or an email, and a two-colour gradient chosen from seven
   presets or a custom hex value. Text colour adapts to the background for contrast.
 - **Sharing over NFC.** The phone emulates a NFC Forum Type 4 Tag that carries the card as a
   vCard 3.0 NDEF record. Sharing can be switched off, and an optional setting requires the device

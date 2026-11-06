@@ -80,8 +80,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 ## Data model and protocol
 
-- `Profile(name, phone?, email?, card)`. The name is mandatory. **Every field that is present is
-  shared**: there are no per-field sharing flags. Removed `sharePhone`/`shareEmail` in PR #16.
+- `Profile(name, phone?, email?, card)`. The name and at least one of phone/email are mandatory in
+  the editor. **Every field that is present is shared**: there are no per-field sharing flags.
+  Removed `sharePhone`/`shareEmail` in PR #16.
 - Received contacts store the sender's name, phone, email, palette, note and timestamp.
 - Duplicates are matched by normalised phone (digits only) or lowercased email; same-name-only
   cards are stored separately.

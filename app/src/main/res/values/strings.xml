@@ -27,6 +27,7 @@
     <string name="phone_country_chip_short">Country, dial code +%1$s</string>
     <string name="phone_country_search">Search country</string>
     <string name="profile_card_footer">This is how others will see it. Nothing is saved yet.</string>
+    <string name="profile_contact_required">Add a phone number or an email to save.</string>
     <string name="profile_name_placeholder">Your name</string>
     <string name="profile_title_create">Your card</string>
     <string name="profile_title_edit">Edit profile</string>
@@ -67,10 +68,7 @@
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
     <string name="nfc_unavailable_title">NFC unavailable</string>
     <string name="nfc_disabled_title">NFC is off</string>
-    <string name="section_identity">Identity</string>
-    <string name="section_contact">Contact</string>
     <string name="section_style">Style</string>
-    <string name="field_optional">Optional</string>
     <string name="action_add">Add</string>
     <string name="action_more">More options</string>
     <string name="group_earlier">Earlier</string>
