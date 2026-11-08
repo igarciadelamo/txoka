@@ -93,7 +93,7 @@ All three keep the indigo → cyan brand gradient as the card identity and work 
 Warm neutral canvas, generous white space used deliberately, strong typography, cards as the only
 strong colour. Feels like a design-forward contact app (think things/Linear/Arc).
 
-- Background: warm off-white `#F7F5F2` (dark: `#121113`), surfaces `#FFFFFF` / `#1C1B1D`.
+- Background: warm off-white `#F2EDE6` (dark: `#121113`), surfaces `#FFFFFF` / `#1C1B1D`.
 - Type: **Manrope** for titles (bundled, OFL) with tight tracking, system Roboto for body.
 - Card: 1.58 aspect ratio, 28 dp radius, coloured ambient shadow, soft radial highlight in the
   top-left, name in display size, contact rows as translucent pills.
