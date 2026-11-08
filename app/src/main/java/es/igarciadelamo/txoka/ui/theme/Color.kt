@@ -11,9 +11,9 @@ val Cyan = Color(0xFF06B6D4)
 val IndigoSoft = Color(0xFFEDEBFD)
 
 // Light canvas
-val CanvasLight = Color(0xFFF7F5F2)
+val CanvasLight = Color(0xFFF2EDE6)
 val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceMutedLight = Color(0xFFF1EEE9)
+val SurfaceMutedLight = Color(0xFFEAE4DB)
 val InkLight = Color(0xFF171614)
 val InkSecondaryLight = Color(0xFF5F5C56)
 val InkTertiaryLight = Color(0xFF8E8A83)
