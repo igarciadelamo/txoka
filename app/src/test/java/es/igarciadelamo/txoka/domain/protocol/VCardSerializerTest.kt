@@ -4,6 +4,7 @@ import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -12,6 +13,8 @@ class VCardSerializerTest {
         name = "Isidro García",
         phone = "+34600123456",
         email = "isidro@example.com",
+        linkedin = "isidro-garcia",
+        instagram = "isidro.png",
         palette = CardPalette.Default,
         protocolVersion = 1,
     )
@@ -32,6 +35,8 @@ class VCardSerializerTest {
         assertTrue(text.contains("FN:Isidro García"))
         assertTrue(text.contains("TEL;TYPE=CELL:+34600123456"))
         assertTrue(text.contains("EMAIL;TYPE=INTERNET:isidro@example.com"))
+        assertTrue(text.contains("URL;TYPE=LINKEDIN:https://www.linkedin.com/in/isidro-garcia"))
+        assertTrue(text.contains("URL;TYPE=INSTAGRAM:https://www.instagram.com/isidro.png"))
         assertTrue(text.contains("X-TXOKA-PROTOCOL:1"))
         assertTrue(text.contains("X-TXOKA-CARD-ACCENT:#4F46E5"))
         assertTrue(text.contains("X-TXOKA-CARD-ACCENT2:#0E7490"))
@@ -132,6 +137,39 @@ class VCardSerializerTest {
         val decoded = VCardSerializer.decode(text) as VCardParseResult.Success
 
         assertEquals("+34600111222", decoded.payload.phone)
+    }
+
+    @Test
+    fun `reads social profiles from other apps`() {
+        val text = """
+            BEGIN:VCARD
+            VERSION:3.0
+            FN:Marta Ruiz
+            X-SOCIALPROFILE;TYPE=linkedin:https://www.linkedin.com/in/marta-ruiz
+            URL:https://www.instagram.com/marta.ruiz/
+            END:VCARD
+        """.trimIndent()
+
+        val decoded = VCardSerializer.decode(text) as VCardParseResult.Success
+
+        assertEquals("marta-ruiz", decoded.payload.linkedin)
+        assertEquals("marta.ruiz", decoded.payload.instagram)
+    }
+
+    @Test
+    fun `ignores links that belong to another network`() {
+        val text = """
+            BEGIN:VCARD
+            VERSION:3.0
+            FN:Marta Ruiz
+            URL;TYPE=WORK:https://example.com/in/marta
+            END:VCARD
+        """.trimIndent()
+
+        val decoded = VCardSerializer.decode(text) as VCardParseResult.Success
+
+        assertNull(decoded.payload.linkedin)
+        assertNull(decoded.payload.instagram)
     }
 
     @Test

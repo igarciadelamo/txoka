@@ -17,7 +17,14 @@ class ReceivedListViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val contacts = listOf(
-        ReceivedContact(id = 1, name = "Marta Ruiz", phone = "+34600111222", email = "marta@example.com"),
+        ReceivedContact(
+            id = 1,
+            name = "Marta Ruiz",
+            phone = "+34600111222",
+            email = "marta@example.com",
+            linkedin = "marta-ruiz",
+            instagram = "marta.png",
+        ),
         ReceivedContact(id = 2, name = "Ana López", phone = "+34600999888"),
         ReceivedContact(id = 3, name = "Luis Pérez", email = "luis@example.com"),
     )
@@ -47,6 +54,14 @@ class ReceivedListViewModelTest {
         viewModel.onQueryChange("LUIS@")
         advanceUntilIdle()
         assertEquals(listOf("Luis Pérez"), viewModel.state.value.contacts.map { it.name })
+
+        viewModel.onQueryChange("PNG")
+        advanceUntilIdle()
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
+
+        viewModel.onQueryChange("-ruiz")
+        advanceUntilIdle()
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
     }
 
     @Test

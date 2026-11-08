@@ -12,7 +12,8 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 - Hilt for DI, coroutines/Flow, Room for received contacts, DataStore for profile/settings,
   libphonenumber for phone handling, Manrope as the bundled font.
 - Packages: `ui/`, `domain/`, `data/`, `nfc/`, `di/`.
-- Version 1.0 (`versionCode = 1`). Room database version 1, no migrations yet.
+- Version 1.0 (`versionCode = 1`). Room database version 2, no migrations yet: pre-release
+  upgrades rebuild the table through a destructive fallback.
 
 ## Current status (November 2026)
 
@@ -82,10 +83,12 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 ## Data model and protocol
 
-- `Profile(name, phone?, email?, card)`. The name and at least one of phone/email are mandatory in
-  the editor. **Every field that is present is shared**: there are no per-field sharing flags.
-  Removed `sharePhone`/`shareEmail` in PR #16.
-- Received contacts store the sender's name, phone, email, palette, note and timestamp.
+- `Profile(name, phone?, email?, linkedin?, instagram?, card)`. The name and at least one of
+  phone/email are mandatory in the editor. **Every field that is present is shared**: there are no
+  per-field sharing flags. Removed `sharePhone`/`shareEmail` in PR #16. Social handles are stored
+  bare (`ana.ruiz`) and travel as standard `URL` properties.
+- Received contacts store the sender's name, phone, email, LinkedIn and Instagram handles, palette,
+  note and timestamp.
 - Duplicates are matched by normalised phone (digits only) or lowercased email; same-name-only
   cards are stored separately.
 - `ProfileRepository.delete()` clears only the `profile.*` DataStore keys; it keeps share settings

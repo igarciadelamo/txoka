@@ -43,7 +43,9 @@ class ReceivedListViewModel @Inject constructor(repository: ReceivedContactRepos
         if (text.isEmpty()) return true
         return name.contains(text, ignoreCase = true) ||
             phone.orEmpty().contains(text) ||
-            email.orEmpty().contains(text, ignoreCase = true)
+            email.orEmpty().contains(text, ignoreCase = true) ||
+            linkedin.orEmpty().contains(text, ignoreCase = true) ||
+            instagram.orEmpty().contains(text, ignoreCase = true)
     }
 
     private companion object {

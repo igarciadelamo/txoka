@@ -75,7 +75,6 @@ fun ProfileEditorScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
-    var menuOpen by remember { mutableStateOf(false) }
     var showColourSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.saved) {
@@ -97,28 +96,10 @@ fun ProfileEditorScreen(
             ),
             onBack = onCancel,
             actions = {
-                if (state.isEditing) {
-                    IconButton(onClick = { menuOpen = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = stringResource(R.string.action_more),
-                        )
-                    }
-                    DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.action_delete_card),
-                                    color = MaterialTheme.colorScheme.error,
-                                )
-                            },
-                            onClick = {
-                                menuOpen = false
-                                confirmDelete = true
-                            },
-                        )
-                    }
-                }
+                ProfileEditorMenu(
+                    visible = state.isEditing,
+                    onDeleteCard = { confirmDelete = true },
+                )
             },
         )
         EditorContent(
@@ -126,6 +107,8 @@ fun ProfileEditorScreen(
             onNameChange = viewModel::onNameChange,
             onPhoneChange = viewModel::onPhoneChange,
             onEmailChange = viewModel::onEmailChange,
+            onLinkedInChange = viewModel::onLinkedInChange,
+            onInstagramChange = viewModel::onInstagramChange,
             onCountrySelected = viewModel::onCountrySelected,
             onPresetSelected = viewModel::onPresetSelected,
             onCustomClick = { showColourSheet = true },
@@ -158,6 +141,32 @@ fun ProfileEditorScreen(
 }
 
 @Composable
+private fun ProfileEditorMenu(visible: Boolean, onDeleteCard: () -> Unit) {
+    if (!visible) return
+    var menuOpen by remember { mutableStateOf(false) }
+    IconButton(onClick = { menuOpen = true }) {
+        Icon(
+            imageVector = Icons.Filled.MoreVert,
+            contentDescription = stringResource(R.string.action_more),
+        )
+    }
+    DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(R.string.action_delete_card),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            },
+            onClick = {
+                menuOpen = false
+                onDeleteCard()
+            },
+        )
+    }
+}
+
+@Composable
 private fun DeleteCardDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -185,6 +194,8 @@ private fun EditorContent(
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
+    onLinkedInChange: (String) -> Unit,
+    onInstagramChange: (String) -> Unit,
     onCountrySelected: (PhoneCountry) -> Unit,
     onPresetSelected: (CardPalette) -> Unit,
     onCustomClick: () -> Unit,
@@ -205,6 +216,8 @@ private fun EditorContent(
             onNameChange = onNameChange,
             onPhoneChange = onPhoneChange,
             onEmailChange = onEmailChange,
+            onLinkedInChange = onLinkedInChange,
+            onInstagramChange = onInstagramChange,
             onOpenCountryPicker = { showCountryPicker = true },
         )
         StyleSection(
@@ -247,6 +260,8 @@ private fun ContactFields(
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
+    onLinkedInChange: (String) -> Unit,
+    onInstagramChange: (String) -> Unit,
     onOpenCountryPicker: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
@@ -281,6 +296,24 @@ private fun ContactFields(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             isError = state.emailError,
             supportingText = if (state.emailError) stringResource(R.string.error_email_invalid) else null,
+        )
+        TxokaField(
+            value = state.linkedin,
+            onValueChange = onLinkedInChange,
+            label = stringResource(R.string.field_linkedin),
+            placeholder = stringResource(R.string.profile_social_placeholder),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            isError = state.linkedinError,
+            supportingText = if (state.linkedinError) stringResource(R.string.error_social_invalid) else null,
+        )
+        TxokaField(
+            value = state.instagram,
+            onValueChange = onInstagramChange,
+            label = stringResource(R.string.field_instagram),
+            placeholder = stringResource(R.string.profile_social_placeholder),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            isError = state.instagramError,
+            supportingText = if (state.instagramError) stringResource(R.string.error_social_invalid) else null,
         )
         if (state.phone.isBlank() && state.email.isBlank()) {
             Text(
@@ -430,6 +463,8 @@ private fun ProfileEditorPreview() {
                     name = "Isidro García",
                     phone = "+34 600 123 456",
                     email = "isidro@example.com",
+                    linkedin = "isidro-garcia",
+                    instagram = "isidro.png",
                 ).toPreview(),
                 layout = CardLayout.Preview,
             )

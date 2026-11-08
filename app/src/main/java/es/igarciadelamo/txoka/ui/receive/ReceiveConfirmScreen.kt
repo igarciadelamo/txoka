@@ -147,6 +147,8 @@ private fun VCardPayload.toProfile(): Profile = Profile(
     name = name,
     phone = phone,
     email = email,
+    linkedin = linkedin,
+    instagram = instagram,
     card = palette,
 )
 
@@ -170,6 +172,8 @@ private fun ReceiveConfirmScreenPreview() {
                     name = "Marta Ruiz",
                     phone = "+34 600 111 222",
                     email = "marta@example.com",
+                    linkedin = "marta-ruiz",
+                    instagram = "marta.ruiz",
                     palette = CardPalette.Presets[2],
                 ).toProfile(),
                 layout = CardLayout.Preview,

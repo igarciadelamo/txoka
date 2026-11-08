@@ -35,6 +35,8 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
                 name = payload.name,
                 phone = payload.phone,
                 email = payload.email,
+                linkedin = payload.linkedin,
+                instagram = payload.instagram,
                 phoneKey = phoneKey,
                 emailKey = emailKey,
                 note = "",
@@ -59,6 +61,8 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         name = name,
         phone = phone,
         email = email,
+        linkedin = linkedin,
+        instagram = instagram,
         note = note,
         receivedAt = receivedAt,
         card = CardPalette(

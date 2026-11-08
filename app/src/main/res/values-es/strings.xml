@@ -16,8 +16,11 @@
     <string name="error_email_invalid">Introduce un email válido</string>
     <string name="error_name_required">El nombre es obligatorio</string>
     <string name="error_phone_invalid">Introduce un teléfono válido</string>
+    <string name="error_social_invalid">Introduce un usuario o el enlace a tu perfil</string>
 
     <string name="field_email">Email</string>
+    <string name="field_instagram">Instagram</string>
+    <string name="field_linkedin">LinkedIn</string>
     <string name="field_name">Nombre</string>
     <string name="field_phone">Teléfono</string>
 
@@ -28,6 +31,7 @@
     <string name="profile_card_footer">Así la verán los demás. Aún no se ha guardado.</string>
     <string name="profile_contact_required">Añade un teléfono o un email para guardar.</string>
     <string name="profile_name_placeholder">Tu nombre</string>
+    <string name="profile_social_placeholder">usuario</string>
     <string name="profile_title_create">Tu tarjeta</string>
     <string name="profile_title_edit">Editar perfil</string>
 
@@ -76,6 +80,8 @@
     <string name="received_empty_body">Pide a alguien que comparta la suya por NFC.</string>
     <string name="received_empty_title">Aún no hay tarjetas</string>
     <string name="received_meta">Recibida el %1$s · Compartida por NFC</string>
+    <string name="section_social">Enlaces</string>
+    <string name="social_handle_description">%1$s, %2$s</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_debug_only">Solo en versiones de depuración</string>
     <string name="settings_library">Biblioteca</string>

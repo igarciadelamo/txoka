@@ -35,6 +35,8 @@ class FakeTransport @Inject constructor(private val incomingCards: IncomingCards
             name = "Marta Ruiz",
             phone = "+34600111222",
             email = "marta@example.com",
+            linkedin = "marta-ruiz",
+            instagram = "marta.ruiz",
             palette = CardPalette.Presets[2],
         )
     }

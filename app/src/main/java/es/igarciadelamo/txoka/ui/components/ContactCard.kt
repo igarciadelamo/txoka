@@ -34,10 +34,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +51,8 @@ import es.igarciadelamo.txoka.domain.profile.CardContrast
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.RgbColor
+import es.igarciadelamo.txoka.domain.profile.SocialHandle
+import es.igarciadelamo.txoka.domain.profile.SocialNetwork
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
@@ -257,14 +259,42 @@ private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Colo
         profile.phone?.let { phone -> Icons.Filled.Phone to phone },
         profile.email?.let { email -> Icons.Filled.Email to email },
     )
-    if (rows.isEmpty()) return
+    val socials = listOfNotNull(
+        profile.linkedin?.let { handle -> SocialNetwork.LinkedIn to handle },
+        profile.instagram?.let { handle -> SocialNetwork.Instagram to handle },
+    )
+    if (rows.isEmpty() && socials.isEmpty()) return
 
     Column(
         modifier = Modifier.padding(top = 10.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        rows.forEach { (icon, text) ->
-            ContactPill(icon = icon, text = text, contentColor = contentColor, overlayTint = overlayTint)
+        rows.forEach { (image, text) ->
+            ContactPill(text = text, contentColor = contentColor, overlayTint = overlayTint) {
+                Icon(
+                    imageVector = image,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = contentColor,
+                )
+            }
+        }
+        if (socials.isNotEmpty()) {
+            // Both handles share one row and carry only the username, never the full link.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                socials.forEach { (network, handle) ->
+                    SocialPill(
+                        network = network,
+                        handle = handle,
+                        contentColor = contentColor,
+                        overlayTint = overlayTint,
+                        modifier = if (socials.size > 1) Modifier.weight(1f) else Modifier,
+                    )
+                }
+            }
         }
         // Keeps the pills clear of the brandmark anchored to the bottom-right corner.
         Spacer(modifier = Modifier.height(BrandmarkReserve))
@@ -272,21 +302,46 @@ private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Colo
 }
 
 @Composable
-private fun ContactPill(icon: ImageVector, text: String, contentColor: Color, overlayTint: Color) {
+private fun SocialPill(
+    network: SocialNetwork,
+    handle: String,
+    contentColor: Color,
+    overlayTint: Color,
+    modifier: Modifier = Modifier,
+) {
+    val description = stringResource(
+        R.string.social_handle_description,
+        network.label(),
+        SocialHandle.display(network, handle),
+    )
+    ContactPill(
+        text = SocialHandle.display(network, handle),
+        contentColor = contentColor,
+        overlayTint = overlayTint,
+        // The icon says which network it is, which TalkBack cannot see.
+        modifier = modifier.clearAndSetSemantics { contentDescription = description },
+    ) {
+        SocialIcon(network = network, tint = contentColor, modifier = Modifier.size(16.dp))
+    }
+}
+
+@Composable
+private fun ContactPill(
+    text: String,
+    contentColor: Color,
+    overlayTint: Color,
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit,
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(CircleShape)
             .background(overlayTint.copy(alpha = PILL_BACKGROUND_ALPHA))
             .padding(start = 12.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = contentColor,
-        )
+        icon()
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
@@ -359,6 +414,8 @@ private fun ContactCardPreview() {
                     name = "Isidro García",
                     phone = "+34 600 123 456",
                     email = "isidro@example.com",
+                    linkedin = "isidro-garcia",
+                    instagram = "isidro.png",
                     card = CardPalette.Default,
                 ),
             )

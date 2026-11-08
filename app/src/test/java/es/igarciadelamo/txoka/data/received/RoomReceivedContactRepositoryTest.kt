@@ -18,6 +18,8 @@ class RoomReceivedContactRepositoryTest {
         name = "Marta Ruiz",
         phone = "+34600111222",
         email = "marta@example.com",
+        linkedin = "marta-ruiz",
+        instagram = "marta.ruiz",
     )
 
     @Test
@@ -29,6 +31,8 @@ class RoomReceivedContactRepositoryTest {
         assertEquals("Marta Ruiz", saved.name)
         assertEquals("+34600111222", saved.phone)
         assertEquals("marta@example.com", saved.email)
+        assertEquals("marta-ruiz", saved.linkedin)
+        assertEquals("marta.ruiz", saved.instagram)
     }
 
     @Test

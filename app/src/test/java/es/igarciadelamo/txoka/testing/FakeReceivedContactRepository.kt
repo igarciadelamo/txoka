@@ -26,7 +26,14 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
         saved = payload
         val id = nextId++
         state.update { contacts ->
-            contacts + ReceivedContact(id = id, name = payload.name, phone = payload.phone, email = payload.email)
+            contacts + ReceivedContact(
+                id = id,
+                name = payload.name,
+                phone = payload.phone,
+                email = payload.email,
+                linkedin = payload.linkedin,
+                instagram = payload.instagram,
+            )
         }
         return SaveResult.Saved(id)
     }

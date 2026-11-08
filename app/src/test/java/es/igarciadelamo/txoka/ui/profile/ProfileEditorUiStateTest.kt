@@ -23,12 +23,26 @@ class ProfileEditorUiStateTest {
             name = "  Ana  ",
             phone = " ",
             email = " ana@example.com ",
+            linkedin = " https://www.linkedin.com/in/ana-ruiz ",
+            instagram = "@ana.ruiz",
             card = CardPalette.Presets[3],
         ).toPreview()
 
         assertEquals("Ana", preview.name)
         assertNull(preview.phone)
         assertEquals("ana@example.com", preview.email)
+        assertEquals("ana-ruiz", preview.linkedin)
+        assertEquals("ana.ruiz", preview.instagram)
         assertEquals(CardPalette.Presets[3], preview.card)
+    }
+
+    @Test
+    fun `drops a social handle the card cannot use`() {
+        val preview = ProfileEditorUiState(
+            name = "Ana",
+            linkedin = "https://instagram.com/ana.ruiz",
+        ).toPreview()
+
+        assertNull(preview.linkedin)
     }
 }
