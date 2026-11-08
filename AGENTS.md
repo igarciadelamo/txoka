@@ -61,8 +61,8 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   module, privacy footer.
 - `ui/profile/ProfileEditorScreen.kt` + ViewModel — create/edit the card: name, phone with country
   picker, email, colour grid + wheel sheet, delete in the overflow menu.
-- `ui/profile/ColourPickerSheet.kt` — custom colour: hue wheel, saturation/value square, live card
-  preview and a hex field.
+- `ui/profile/ColourPickerSheet.kt` — custom colour: hue wheel, saturation/value square and live
+  card preview.
 - `ui/received/` — list, detail, notes, delete, add to system contacts.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
 - `ui/settings/` — sharing switches, library, About, no separate licences screen.

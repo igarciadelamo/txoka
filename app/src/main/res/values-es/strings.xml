@@ -8,11 +8,8 @@
     <string name="action_settings">Ajustes</string>
 
     <string name="card_colour_custom">Color personalizado</string>
-    <string name="card_colour_custom_error">Usa seis dígitos hexadecimales, por ejemplo #4F46E5</string>
-    <string name="card_colour_custom_hint">#4F46E5</string>
     <string name="card_colour_preset">Color predefinido %1$d</string>
     <string name="card_colour_apply">Usar este color</string>
-    <string name="card_colour_hex">Hexadecimal</string>
     <string name="card_colour_sheet_title">Color de la tarjeta</string>
     <string name="card_colour_wheel">Rueda de color, %1$s</string>
 

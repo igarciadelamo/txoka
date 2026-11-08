@@ -9,9 +9,10 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 - Name plus at least one contact channel: a phone number or an email address.
 - Every value you fill in is shared. There are no per-field sharing flags.
-- Seven gradient presets in a grid, or a custom colour picked on a hue wheel (the hex field is there
-  for exact values). The second gradient stop is derived automatically. The text colour adapts to
-  the background using WCAG luminance, so the card stays readable on every palette.
+- Seven gradient presets in a grid, or a custom colour picked on a hue wheel. Presets keep their
+  curated two-colour gradient; a custom colour derives the second stop automatically. The text
+  colour adapts to the background using WCAG luminance, so the card stays readable on every
+  palette.
 - The editor validates the phone number and the email, keeps the preview in sync and saves the
   whole card at once. Back discards the draft; the overflow menu deletes the card after a
   confirmation.

@@ -44,11 +44,9 @@ import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.HsvColor
 import es.igarciadelamo.txoka.domain.profile.Profile
-import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
-import es.igarciadelamo.txoka.ui.components.TxokaField
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -95,8 +93,6 @@ private data class WheelGeometry(val center: Offset, val ringRadius: Float, val 
 fun ColourPickerSheet(profile: Profile, initial: CardPalette, onDismiss: () -> Unit, onApply: (CardPalette) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var hsv by remember(initial) { mutableStateOf(HsvColor.fromRgb(initial.accent)) }
-    var hex by remember(initial) { mutableStateOf(initial.accent.hex) }
-    var hexError by remember { mutableStateOf(false) }
     val accent = hsv.toRgb()
     // Keeping the untouched palette preserves a preset's curated second stop.
     val palette = if (accent == initial.accent) initial else CardPalette.fromAccent(accent)
@@ -125,29 +121,8 @@ fun ColourPickerSheet(profile: Profile, initial: CardPalette, onDismiss: () -> U
             ContactCard(profile = preview, layout = CardLayout.Preview)
             ColourWheel(
                 hsv = hsv,
-                onHsvChange = { updated ->
-                    hsv = updated
-                    hex = updated.toRgb().hex
-                    hexError = false
-                },
+                onHsvChange = { hsv = it },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            TxokaField(
-                value = hex,
-                onValueChange = { input ->
-                    hex = input
-                    val parsed = RgbColor.parse(input)
-                    if (parsed != null) {
-                        hsv = HsvColor.fromRgb(parsed)
-                        hexError = false
-                    } else {
-                        hexError = input.isNotBlank()
-                    }
-                },
-                label = stringResource(R.string.card_colour_hex),
-                placeholder = stringResource(R.string.card_colour_custom_hint),
-                isError = hexError,
-                supportingText = if (hexError) stringResource(R.string.card_colour_custom_error) else null,
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -163,7 +138,6 @@ fun ColourPickerSheet(profile: Profile, initial: CardPalette, onDismiss: () -> U
                         onApply(palette)
                         onDismiss()
                     },
-                    enabled = !hexError,
                     modifier = Modifier.weight(1f),
                 )
             }
