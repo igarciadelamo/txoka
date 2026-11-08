@@ -3,6 +3,7 @@ package es.igarciadelamo.txoka.ui.profile
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.PhoneCountries
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeSimRegionSource
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
@@ -110,20 +111,13 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
-    fun `custom hex updates the palette and flags invalid input`() = runTest {
+    fun `stores the selected custom palette`() = runTest {
         val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
-        viewModel.onNameChange("Isidro")
-        viewModel.onPhoneChange("+34600123456")
+        val palette = CardPalette.fromAccent(RgbColor(0x10, 0xB9, 0x81))
 
-        viewModel.onCustomHexChange("#10B981")
-        val custom = viewModel.uiState.value
-        assertEquals("#10B981", custom.card.accent.hex)
-        assertFalse(custom.customHexError)
-        assertTrue(custom.canSave)
+        viewModel.onCustomColourSelected(palette)
 
-        viewModel.onCustomHexChange("#12")
-        assertTrue(viewModel.uiState.value.customHexError)
-        assertFalse(viewModel.uiState.value.canSave)
+        assertEquals(palette, viewModel.uiState.value.card)
     }
 
     @Test
@@ -164,14 +158,12 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
-    fun `selecting a preset clears the custom colour`() = runTest {
+    fun `selecting a preset replaces the custom colour`() = runTest {
         val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
 
-        viewModel.onCustomHexChange("#E11D48")
+        viewModel.onCustomColourSelected(CardPalette.fromAccent(RgbColor(0xE1, 0x1D, 0x48)))
         viewModel.onPresetSelected(CardPalette.Presets[1])
 
-        val state = viewModel.uiState.value
-        assertEquals(CardPalette.Presets[1], state.card)
-        assertEquals("", state.customHex)
+        assertEquals(CardPalette.Presets[1], viewModel.uiState.value.card)
     }
 }

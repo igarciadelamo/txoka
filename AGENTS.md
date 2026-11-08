@@ -60,7 +60,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - `ui/share/ShareScreen.kt` + ViewModel — hub: app bar actions, hero card with edit overlay, NFC
   module, privacy footer.
 - `ui/profile/ProfileEditorScreen.kt` + ViewModel — create/edit the card: name, phone with country
-  picker, email, palette/custom hex, delete in the overflow menu.
+  picker, email, colour grid + wheel sheet, delete in the overflow menu.
+- `ui/profile/ColourPickerSheet.kt` — custom colour: hue wheel, saturation/value square and live
+  card preview.
 - `ui/received/` — list, detail, notes, delete, add to system contacts.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
 - `ui/settings/` — sharing switches, library, About, no separate licences screen.
@@ -106,8 +108,8 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   (no numeric badge) sits in the app bar left of Settings.
 - Editor: back discards (there is no Discard button), the footer is a single full-width Save, and
   "Delete card" lives in the app-bar overflow menu with a confirmation dialog.
-- Cards always use a two-colour gradient; 7 presets + custom hex. Text colour comes from
-  `Profile.cardContentColor()` using WCAG luminance.
+- Cards always use a two-colour gradient; 7 presets in a 4×2 grid plus a custom colour picked on a
+  hue wheel. Text colour comes from `Profile.cardContentColor()` using WCAG luminance.
 - Accessibility baseline: 48 dp targets, content descriptions on icon-only buttons, merged
   semantics on cards and list rows, contrast checked by tests.
 - Only `material-icons-core` is available; `material-icons-extended` is not a dependency.
