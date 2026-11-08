@@ -2,11 +2,11 @@ package es.igarciadelamo.txoka.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -63,6 +63,7 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
 /** Swatches must stay at least 48 dp so they are easy to hit. */
 private val PaletteSwatchSize = 48.dp
+private const val PALETTE_COLUMNS = 4
 
 @Composable
 fun ProfileEditorScreen(
@@ -75,6 +76,7 @@ fun ProfileEditorScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
+    var showColourSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.saved) {
         if (state.saved) onSaved()
@@ -126,7 +128,7 @@ fun ProfileEditorScreen(
             onEmailChange = viewModel::onEmailChange,
             onCountrySelected = viewModel::onCountrySelected,
             onPresetSelected = viewModel::onPresetSelected,
-            onCustomHexChange = viewModel::onCustomHexChange,
+            onCustomClick = { showColourSheet = true },
             modifier = Modifier.weight(1f),
         )
         BottomBar(
@@ -142,6 +144,15 @@ fun ProfileEditorScreen(
                 confirmDelete = false
                 viewModel.delete()
             },
+        )
+    }
+
+    if (showColourSheet) {
+        ColourPickerSheet(
+            profile = state.toPreview(),
+            initial = state.card,
+            onDismiss = { showColourSheet = false },
+            onApply = viewModel::onCustomColourSelected,
         )
     }
 }
@@ -176,11 +187,10 @@ private fun EditorContent(
     onEmailChange: (String) -> Unit,
     onCountrySelected: (PhoneCountry) -> Unit,
     onPresetSelected: (CardPalette) -> Unit,
-    onCustomHexChange: (String) -> Unit,
+    onCustomClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showCountryPicker by rememberSaveable { mutableStateOf(false) }
-    var showCustomColour by rememberSaveable { mutableStateOf(state.card !in CardPalette.Presets) }
 
     Column(
         modifier = modifier
@@ -198,14 +208,9 @@ private fun EditorContent(
             onOpenCountryPicker = { showCountryPicker = true },
         )
         StyleSection(
-            state = state,
-            customSelected = showCustomColour,
-            onPresetSelected = { palette ->
-                showCustomColour = false
-                onPresetSelected(palette)
-            },
-            onCustomClick = { showCustomColour = true },
-            onCustomHexChange = onCustomHexChange,
+            selected = state.card,
+            onPresetSelected = onPresetSelected,
+            onCustomClick = onCustomClick,
         )
     }
 
@@ -289,103 +294,96 @@ private fun ContactFields(
 }
 
 @Composable
-private fun StyleSection(
-    state: ProfileEditorUiState,
-    customSelected: Boolean,
-    onPresetSelected: (CardPalette) -> Unit,
-    onCustomClick: () -> Unit,
-    onCustomHexChange: (String) -> Unit,
-) {
+private fun StyleSection(selected: CardPalette, onPresetSelected: (CardPalette) -> Unit, onCustomClick: () -> Unit) {
+    val customSelected = selected !in CardPalette.Presets
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Eyebrow(text = stringResource(R.string.section_style))
-        PaletteRow(
-            selected = state.card,
+        PaletteGrid(
+            selected = selected,
             customSelected = customSelected,
             onSelect = onPresetSelected,
             onCustomClick = onCustomClick,
         )
-        if (customSelected) {
-            TxokaField(
-                value = state.customHex,
-                onValueChange = onCustomHexChange,
-                label = stringResource(R.string.card_colour_custom),
-                placeholder = stringResource(R.string.card_colour_custom_hint),
-                isError = state.customHexError,
-                supportingText = if (state.customHexError) {
-                    stringResource(R.string.card_colour_custom_error)
-                } else {
-                    null
-                },
-            )
-        }
     }
 }
 
 @Composable
-private fun PaletteRow(
+private fun PaletteGrid(
     selected: CardPalette,
     customSelected: Boolean,
     onSelect: (CardPalette) -> Unit,
     onCustomClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-    ) {
-        CardPalette.Presets.forEachIndexed { index, palette ->
-            val isSelected = !customSelected && palette == selected
-            val presetLabel = stringResource(R.string.card_colour_preset, index + 1)
-            Box(
-                modifier = Modifier
-                    .size(PaletteSwatchSize)
-                    .clip(CircleShape)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                palette.accent.toComposeColor(),
-                                palette.accent2.toComposeColor(),
-                            ),
-                        ),
-                    )
-                    .border(
-                        width = if (isSelected) 2.dp else 0.dp,
-                        color = if (isSelected) {
-                            MaterialTheme.colorScheme.onBackground
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
-                        shape = CircleShape,
-                    )
-                    .padding(if (isSelected) 3.dp else 0.dp)
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.RadioButton,
-                        onClick = { onSelect(palette) },
-                    )
-                    .semantics { contentDescription = presetLabel },
-            )
+    val cellCount = CardPalette.Presets.size + 1
+    val rows = (cellCount + PALETTE_COLUMNS - 1) / PALETTE_COLUMNS
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        repeat(rows) { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+            ) {
+                repeat(PALETTE_COLUMNS) { column ->
+                    val index = row * PALETTE_COLUMNS + column
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        when {
+                            index < CardPalette.Presets.size -> {
+                                val palette = CardPalette.Presets[index]
+                                PresetSwatch(
+                                    palette = palette,
+                                    selected = !customSelected && palette == selected,
+                                    label = stringResource(R.string.card_colour_preset, index + 1),
+                                    onClick = { onSelect(palette) },
+                                )
+                            }
+                            index == CardPalette.Presets.size -> CustomSwatch(
+                                palette = if (customSelected) selected else null,
+                                selected = customSelected,
+                                label = stringResource(R.string.card_colour_custom),
+                                onClick = onCustomClick,
+                            )
+                            else -> Spacer(modifier = Modifier.size(PaletteSwatchSize))
+                        }
+                    }
+                }
+            }
         }
-        val customLabel = stringResource(R.string.card_colour_custom)
-        Box(
-            modifier = Modifier
-                .size(PaletteSwatchSize)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
-                .border(
-                    width = if (customSelected) 2.dp else 0.dp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    shape = CircleShape,
-                )
-                .selectable(
-                    selected = customSelected,
-                    role = Role.RadioButton,
-                    onClick = onCustomClick,
-                )
-                .semantics { contentDescription = customLabel },
-            contentAlignment = Alignment.Center,
-        ) {
+    }
+}
+
+@Composable
+private fun PresetSwatch(palette: CardPalette, selected: Boolean, label: String, onClick: () -> Unit) {
+    val ring = if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape) else Modifier
+    Box(
+        modifier = Modifier
+            .size(PaletteSwatchSize)
+            .clip(CircleShape)
+            .background(brush = palette.brush())
+            .then(ring)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .semantics { contentDescription = label },
+    )
+}
+
+@Composable
+private fun CustomSwatch(palette: CardPalette?, selected: Boolean, label: String, onClick: () -> Unit) {
+    val ring = if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape) else Modifier
+    Box(
+        modifier = Modifier
+            .size(PaletteSwatchSize)
+            .clip(CircleShape)
+            .then(
+                if (palette != null) {
+                    Modifier.background(brush = palette.brush())
+                } else {
+                    Modifier.background(MaterialTheme.colorScheme.surface)
+                },
+            )
+            .then(ring)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (palette == null) {
             Text(
                 text = "+",
                 style = MaterialTheme.typography.titleMedium,
@@ -394,6 +392,10 @@ private fun PaletteRow(
         }
     }
 }
+
+private fun CardPalette.brush(): Brush = Brush.linearGradient(
+    colors = listOf(accent.toComposeColor(), accent2.toComposeColor()),
+)
 
 @Composable
 private fun BottomBar(canSave: Boolean, onSave: () -> Unit) {
@@ -431,7 +433,7 @@ private fun ProfileEditorPreview() {
                 ).toPreview(),
                 layout = CardLayout.Preview,
             )
-            PaletteRow(selected = CardPalette.Default, customSelected = false, onSelect = {}, onCustomClick = {})
+            PaletteGrid(selected = CardPalette.Default, customSelected = false, onSelect = {}, onCustomClick = {})
             BottomBar(canSave = true, onSave = {})
         }
     }

@@ -13,7 +13,6 @@ class ProfileEditorUiStateTest {
         assertFalse(ProfileEditorUiState(name = "   ", phone = "+34600123456").canSave)
         assertFalse(ProfileEditorUiState(name = "Ana").canSave)
         assertFalse(ProfileEditorUiState(name = "Ana", phone = " ").canSave)
-        assertFalse(ProfileEditorUiState(name = "Ana", phone = "+34600123456", customHexError = true).canSave)
         assertTrue(ProfileEditorUiState(name = "Ana", phone = "+34600123456").canSave)
         assertTrue(ProfileEditorUiState(name = "Ana", email = "ana@example.com").canSave)
     }

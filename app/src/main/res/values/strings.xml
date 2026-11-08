@@ -13,6 +13,10 @@
     <string name="card_colour_custom_error">Use six hex digits, for example #4F46E5</string>
     <string name="card_colour_custom_hint">#4F46E5</string>
     <string name="card_colour_preset">Colour preset %1$d</string>
+    <string name="card_colour_apply">Use this colour</string>
+    <string name="card_colour_hex">Hex</string>
+    <string name="card_colour_sheet_title">Card colour</string>
+    <string name="card_colour_wheel">Colour wheel, %1$s</string>
 
     <string name="error_email_invalid">Enter a valid email address</string>
     <string name="error_name_required">Name is required</string>

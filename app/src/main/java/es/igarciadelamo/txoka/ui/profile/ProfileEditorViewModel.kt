@@ -9,7 +9,6 @@ import es.igarciadelamo.txoka.domain.profile.PhoneCountry
 import es.igarciadelamo.txoka.domain.profile.PhoneNumbers
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
-import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,19 +25,15 @@ data class ProfileEditorUiState(
     val email: String = "",
     val country: PhoneCountry = PhoneCountries.byIsoOrFallback(PhoneCountries.FALLBACK_REGION),
     val card: CardPalette = CardPalette.Default,
-    val customHex: String = "",
     val nameError: Boolean = false,
     val phoneError: Boolean = false,
     val emailError: Boolean = false,
-    val customHexError: Boolean = false,
     val isEditing: Boolean = false,
     val saved: Boolean = false,
     val deleted: Boolean = false,
 ) {
     val canSave: Boolean
-        get() = name.isNotBlank() &&
-            (phone.isNotBlank() || email.isNotBlank()) &&
-            !customHexError
+        get() = name.isNotBlank() && (phone.isNotBlank() || email.isNotBlank())
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),
@@ -87,20 +82,11 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onPresetSelected(palette: CardPalette) {
-        _uiState.update {
-            it.copy(card = palette, customHex = "", customHexError = false)
-        }
+        _uiState.update { it.copy(card = palette) }
     }
 
-    fun onCustomHexChange(value: String) {
-        val parsed = RgbColor.parse(value)
-        _uiState.update {
-            it.copy(
-                customHex = value,
-                customHexError = value.isNotBlank() && parsed == null,
-                card = parsed?.let(CardPalette::fromAccent) ?: it.card,
-            )
-        }
+    fun onCustomColourSelected(palette: CardPalette) {
+        _uiState.update { it.copy(card = palette) }
     }
 
     fun save() {
