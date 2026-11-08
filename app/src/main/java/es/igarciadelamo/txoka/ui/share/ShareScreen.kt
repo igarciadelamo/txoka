@@ -344,6 +344,8 @@ private fun ShareScreenPreview() {
                 name = "Isidro García",
                 phone = "+34 600 123 456",
                 email = "isidro@example.com",
+                linkedin = "isidro-garcia",
+                instagram = "isidro.png",
                 card = CardPalette.Default,
             ),
             sharingEnabled = true,

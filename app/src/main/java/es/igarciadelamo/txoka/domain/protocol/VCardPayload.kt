@@ -11,6 +11,8 @@ data class VCardPayload(
     val name: String,
     val phone: String? = null,
     val email: String? = null,
+    val linkedin: String? = null,
+    val instagram: String? = null,
     val palette: CardPalette = CardPalette.Default,
     val protocolVersion: Int = CURRENT_PROTOCOL_VERSION,
 ) {
@@ -26,6 +28,8 @@ fun Profile.toVCardPayload(): VCardPayload = VCardPayload(
     name = name,
     phone = phone,
     email = email,
+    linkedin = linkedin,
+    instagram = instagram,
     palette = card,
     protocolVersion = VCardPayload.CURRENT_PROTOCOL_VERSION,
 )

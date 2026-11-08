@@ -12,6 +12,8 @@ data class ReceivedContact(
     val name: String,
     val phone: String? = null,
     val email: String? = null,
+    val linkedin: String? = null,
+    val instagram: String? = null,
     val note: String = "",
     val receivedAt: Long = 0L,
     val card: CardPalette = CardPalette.Default,

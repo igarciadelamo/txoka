@@ -21,7 +21,11 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TxokaDatabase =
-        Room.databaseBuilder(context, TxokaDatabase::class.java, DATABASE_NAME).build()
+        Room.databaseBuilder(context, TxokaDatabase::class.java, DATABASE_NAME)
+            // Pre-release: the schema still changes between builds, so an upgraded install rebuilds
+            // the table instead of crashing. Replace with a real migration before 1.0.
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
 
     @Provides
     fun provideReceivedContactDao(database: TxokaDatabase): ReceivedContactDao = database.receivedContactDao()

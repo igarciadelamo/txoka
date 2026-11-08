@@ -9,6 +9,8 @@ data class ReceivedContactEntity(
     val name: String,
     val phone: String?,
     val email: String?,
+    val linkedin: String?,
+    val instagram: String?,
     val phoneKey: String,
     val emailKey: String,
     val note: String,

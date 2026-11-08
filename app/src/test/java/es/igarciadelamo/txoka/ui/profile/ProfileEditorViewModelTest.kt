@@ -54,6 +54,51 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
+    fun `stores social handles as bare usernames`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+
+        viewModel.onNameChange("Isidro")
+        viewModel.onEmailChange("isidro@example.com")
+        viewModel.onLinkedInChange("https://www.linkedin.com/in/isidro-garcia/")
+        viewModel.onInstagramChange("@isidro.png")
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertEquals("isidro-garcia", repository.savedProfile?.linkedin)
+        assertEquals("isidro.png", repository.savedProfile?.instagram)
+        assertEquals("isidro-garcia", viewModel.uiState.value.linkedin)
+    }
+
+    @Test
+    fun `rejects a social handle that is not a username`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+
+        viewModel.onNameChange("Isidro")
+        viewModel.onEmailChange("isidro@example.com")
+        viewModel.onInstagramChange("ana ruiz")
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.instagramError)
+        assertNull(repository.savedProfile)
+    }
+
+    @Test
+    fun `loads the stored social handles`() = runTest {
+        val repository = FakeProfileRepository(
+            Profile(name = "Isidro", linkedin = "isidro-garcia", instagram = "isidro.png"),
+        )
+
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+        advanceUntilIdle()
+
+        assertEquals("isidro-garcia", viewModel.uiState.value.linkedin)
+        assertEquals("isidro.png", viewModel.uiState.value.instagram)
+    }
+
+    @Test
     fun `requires a name before saving`() = runTest {
         val repository = FakeProfileRepository()
         val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())

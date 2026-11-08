@@ -2,6 +2,8 @@ package es.igarciadelamo.txoka.domain.protocol
 
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
+import es.igarciadelamo.txoka.domain.profile.SocialHandle
+import es.igarciadelamo.txoka.domain.profile.SocialNetwork
 
 sealed interface VCardParseResult {
     data class Success(val payload: VCardPayload) : VCardParseResult
@@ -11,7 +13,8 @@ sealed interface VCardParseResult {
 
 /**
  * Reads and writes vCard 3.0 text. The card is plain vCard plus `X-TXOKA-*` properties, so other
- * readers get a usable contact and unknown extensions are ignored by both sides.
+ * readers get a usable contact and unknown extensions are ignored by both sides. Social handles
+ * travel as standard `URL` properties, which every contact app understands.
  */
 object VCardSerializer {
     private const val VERSION = "3.0"
@@ -22,6 +25,8 @@ object VCardSerializer {
     private const val PROPERTY_PROTOCOL = "X-TXOKA-PROTOCOL"
     private const val PROPERTY_ACCENT = "X-TXOKA-CARD-ACCENT"
     private const val PROPERTY_ACCENT2 = "X-TXOKA-CARD-ACCENT2"
+    private const val PROPERTY_SOCIAL = "X-SOCIALPROFILE"
+    private const val PROPERTY_URL = "URL"
 
     private val FOLD_PATTERN = Regex("\\r?\\n[ \t]")
     private val LINE_PATTERN = Regex("\\r\\n|\\n|\\r")
@@ -33,6 +38,8 @@ object VCardSerializer {
             add("FN:${escape(payload.name)}")
             payload.phone?.let { phone -> add("TEL;TYPE=CELL:${escape(phone)}") }
             payload.email?.let { email -> add("EMAIL;TYPE=INTERNET:${escape(email)}") }
+            payload.linkedin?.let { handle -> add(urlProperty(SocialNetwork.LinkedIn, handle)) }
+            payload.instagram?.let { handle -> add(urlProperty(SocialNetwork.Instagram, handle)) }
             add("$PROPERTY_PROTOCOL:${payload.protocolVersion}")
             add("$PROPERTY_ACCENT:${payload.palette.accent.hex}")
             add("$PROPERTY_ACCENT2:${payload.palette.accent2.hex}")
@@ -56,12 +63,15 @@ object VCardSerializer {
 
         val phones = properties.filter { property -> property.name == "TEL" }
         val emails = properties.filter { property -> property.name == "EMAIL" }
+        val links = properties.filter { property -> property.name == PROPERTY_URL || property.name == PROPERTY_SOCIAL }
 
         return VCardParseResult.Success(
             VCardPayload(
                 name = name,
                 phone = phones.preferred("CELL"),
                 email = emails.preferred("INTERNET"),
+                linkedin = links.handle(SocialNetwork.LinkedIn),
+                instagram = links.handle(SocialNetwork.Instagram),
                 palette = palette(properties),
                 protocolVersion = properties.firstOrNull { it.name == PROPERTY_PROTOCOL }
                     ?.value
@@ -81,6 +91,21 @@ object VCardSerializer {
             ?.value
             ?.let(RgbColor::parse)
         return if (accent2 == null) CardPalette.fromAccent(accent) else CardPalette(accent, accent2)
+    }
+
+    private fun urlProperty(network: SocialNetwork, handle: String): String =
+        "$PROPERTY_URL;TYPE=${network.vCardType}:${escape(SocialHandle.url(network, handle))}"
+
+    /**
+     * A handle can arrive as our `URL` property or as `X-SOCIALPROFILE` from other apps, and some
+     * readers leave the type out, so the network is also recognised from the link itself.
+     */
+    private fun List<Property>.handle(network: SocialNetwork): String? {
+        val typed = firstOrNull { property ->
+            property.params.any { param -> param.startsWith("TYPE=") && param.contains(network.vCardType) }
+        }
+        val property = typed ?: firstOrNull { link -> SocialHandle.normalize(link.value, network) != null }
+        return property?.let { link -> SocialHandle.normalize(link.value, network) }
     }
 
     private fun List<Property>.preferred(type: String): String? {

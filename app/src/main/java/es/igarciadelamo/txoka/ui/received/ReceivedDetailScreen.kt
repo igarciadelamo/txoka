@@ -50,11 +50,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.SocialHandle
+import es.igarciadelamo.txoka.domain.profile.SocialNetwork
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
+import es.igarciadelamo.txoka.ui.components.SocialIcon
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
+import es.igarciadelamo.txoka.ui.components.label
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -176,6 +180,8 @@ private fun DetailContent(
             onAdd = { context.startActivity(contact.toInsertIntent()) },
         )
 
+        SocialLinks(contact = contact)
+
         NotesCard(
             note = note,
             saved = saved,
@@ -258,6 +264,71 @@ private fun ActionButton(icon: ImageVector, label: String, onClick: () -> Unit, 
 }
 
 @Composable
+private fun SocialLinks(contact: ReceivedContact) {
+    val links = listOfNotNull(
+        contact.linkedin?.let { handle -> SocialNetwork.LinkedIn to handle },
+        contact.instagram?.let { handle -> SocialNetwork.Instagram to handle },
+    )
+    if (links.isEmpty()) return
+
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Corners.sheet))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = Spacing.md, vertical = Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        Eyebrow(text = stringResource(R.string.section_social))
+        links.forEach { (network, handle) ->
+            SocialLinkRow(
+                network = network,
+                handle = handle,
+                onClick = {
+                    // The browser or the installed app handles the link: the app needs no internet.
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, SocialHandle.url(network, handle).toUri()),
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SocialLinkRow(network: SocialNetwork, handle: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .minimumInteractiveComponentSize()
+            .clip(RoundedCornerShape(Corners.field))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = Spacing.xs, vertical = Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SocialIcon(
+            network = network,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp),
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = network.label(),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = SocialHandle.display(network, handle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+@Composable
 private fun NotesCard(note: String, saved: Boolean, onNoteChange: (String) -> Unit, onSave: () -> Unit) {
     Column(
         modifier = Modifier
@@ -322,6 +393,8 @@ private fun ReceivedContact.toProfile(): Profile = Profile(
     name = name,
     phone = phone,
     email = email,
+    linkedin = linkedin,
+    instagram = instagram,
     card = card,
 )
 
@@ -335,6 +408,8 @@ private fun ReceivedDetailScreenPreview() {
                 name = "Marta Ruiz",
                 phone = "+34 600 111 222",
                 email = "marta@example.com",
+                linkedin = "marta-ruiz",
+                instagram = "marta.ruiz",
                 note = "Met at the Compose meetup.",
                 receivedAt = System.currentTimeMillis(),
             ),

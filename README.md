@@ -8,6 +8,9 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 ### Your card
 
 - Name plus at least one contact channel: a phone number or an email address.
+- Optional LinkedIn and Instagram handles, shared as bare usernames. The card shows both in one row
+  with only the username, never the full link; tapping a link in the received detail opens the
+  browser or the installed app.
 - Every value you fill in is shared. There are no per-field sharing flags.
 - Seven gradient presets in a grid, or a custom colour picked on a hue wheel. Presets keep their
   curated two-colour gradient; a custom colour derives the second stop automatically. The text
@@ -36,6 +39,8 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 - Searchable library grouped into Today and Earlier.
 - Detail view with the sender's card, the date, call and email actions, a note and delete.
+- LinkedIn and Instagram handles, when present, open the profile in the browser or the installed
+  app. No permission is needed: the link leaves the app and Txoka never fetches anything.
 - *Add to contacts* opens the system editor prefilled through `ContactsContract.Intents.Insert`,
   so Txoka never asks for `WRITE_CONTACTS`.
 - Duplicates are detected by normalised phone (digits only) or lowercased email. Cards that only
@@ -159,11 +164,20 @@ Txoka adds three properties that other readers simply ignore:
 | `X-TXOKA-CARD-ACCENT` | First gradient colour, `#RRGGBB` |
 | `X-TXOKA-CARD-ACCENT2` | Second gradient colour |
 
+Social handles travel as standard `URL` properties, one per network, so any contact app can open
+them:
+
+```
+URL;TYPE=LINKEDIN:https://www.linkedin.com/in/isidro-garcia
+URL;TYPE=INSTAGRAM:https://www.instagram.com/isidro.png
+```
+
 Text values are escaped as vCard requires (`\n`, `\,`, `\;`, `\\`) and long lines are folded at
-75 octets. Only `FN`, `TEL`, `EMAIL`, `N`, the three `X-TXOKA-*` properties and `VERSION` are
-read; everything else, including photos and addresses, is ignored. Invalid colours fall back to
-the default palette, so a card written by another app still loads. The NDEF message is capped at
-768 bytes.
+75 octets. Only `FN`, `TEL`, `EMAIL`, `URL`/`X-SOCIALPROFILE`, `N`, the three `X-TXOKA-*` properties
+and `VERSION` are read; everything else, including photos and addresses, is ignored. A handle can
+arrive as `URL` or as `X-SOCIALPROFILE` from another app, and when the type is missing the network
+is recognised from the link itself. Invalid colours fall back to the default palette, so a card
+written by another app still loads. The NDEF message is capped at 768 bytes.
 
 The emitter emulates a NFC Forum Type 4 Tag. Two AIDs are registered:
 
@@ -202,6 +216,9 @@ while the unlock setting is on).
   property means version `0`, so payload changes never break older builds.
 - **Explicit colours.** Both gradient stops are sent instead of deriving the second colour on the
   receiving side, so every device renders the same card.
+- **Social handles stay bare.** The card stores `ana.ruiz`, not the full profile link, so the
+  payload grows by a few bytes per network and the editor can accept either a username or a pasted
+  link. `SocialHandle` normalises both into the stored form.
 - **Runtime unlock rule.** The HCE service is not declared with `requireDeviceUnlock`, because the
   switch can change while the service is bound. The responder returns `6985` per APDU instead.
 - **Duplicate detection.** A received card is a duplicate when the normalised phone (digits only)
@@ -209,8 +226,9 @@ while the unlock setting is on).
   same name are kept separately.
 - **No contact write permission.** *Add to contacts* opens the system editor prefilled with
   `ContactsContract.Intents.Insert`, so the app never requests `WRITE_CONTACTS`.
-- **Notes stay local.** Notes are plain text in the app database; the database is version 1 with
-  no migrations yet.
+- **Notes stay local.** Notes are plain text in the app database. The database is version 2 and,
+  while the app is pre-1.0, an upgrade rebuilds the table instead of migrating it. That fallback
+  must be replaced by a real migration before the first release.
 
 ## Accessibility and localisation
 

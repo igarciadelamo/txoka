@@ -67,6 +67,8 @@ class ReceivedContactDaoTest {
             name = name,
             phone = null,
             email = null,
+            linkedin = null,
+            instagram = null,
             phoneKey = phoneKey,
             emailKey = emailKey,
             note = "",

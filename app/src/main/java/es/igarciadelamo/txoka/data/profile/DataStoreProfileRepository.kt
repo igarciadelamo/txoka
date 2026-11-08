@@ -19,6 +19,8 @@ class DataStoreProfileRepository(private val dataStore: DataStore<Preferences>) 
             preferences[Keys.Name] = profile.name
             preferences[Keys.Phone] = profile.phone.orEmpty()
             preferences[Keys.Email] = profile.email.orEmpty()
+            preferences[Keys.LinkedIn] = profile.linkedin.orEmpty()
+            preferences[Keys.Instagram] = profile.instagram.orEmpty()
             preferences[Keys.Accent] = profile.card.accent.hex
             preferences[Keys.Accent2] = profile.card.accent2.hex
         }
@@ -29,6 +31,8 @@ class DataStoreProfileRepository(private val dataStore: DataStore<Preferences>) 
             preferences.remove(Keys.Name)
             preferences.remove(Keys.Phone)
             preferences.remove(Keys.Email)
+            preferences.remove(Keys.LinkedIn)
+            preferences.remove(Keys.Instagram)
             preferences.remove(Keys.Accent)
             preferences.remove(Keys.Accent2)
         }
@@ -40,6 +44,8 @@ class DataStoreProfileRepository(private val dataStore: DataStore<Preferences>) 
             name = name,
             phone = this[Keys.Phone]?.takeIf { it.isNotBlank() },
             email = this[Keys.Email]?.takeIf { it.isNotBlank() },
+            linkedin = this[Keys.LinkedIn]?.takeIf { it.isNotBlank() },
+            instagram = this[Keys.Instagram]?.takeIf { it.isNotBlank() },
             card = CardPalette(
                 accent = RgbColor.parse(this[Keys.Accent].orEmpty()) ?: CardPalette.Default.accent,
                 accent2 = RgbColor.parse(this[Keys.Accent2].orEmpty()) ?: CardPalette.Default.accent2,
@@ -51,6 +57,8 @@ class DataStoreProfileRepository(private val dataStore: DataStore<Preferences>) 
         val Name = stringPreferencesKey("profile.name")
         val Phone = stringPreferencesKey("profile.phone")
         val Email = stringPreferencesKey("profile.email")
+        val LinkedIn = stringPreferencesKey("profile.linkedin")
+        val Instagram = stringPreferencesKey("profile.instagram")
         val Accent = stringPreferencesKey("profile.card.accent")
         val Accent2 = stringPreferencesKey("profile.card.accent2")
     }
