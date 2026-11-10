@@ -73,12 +73,14 @@ class ReceivedContactDaoTest {
     }
 
     @Test
-    fun updatesTheCardButKeepsTheNote() = runTest {
+    fun updatesEveryColumnAndTheCallerCarriesTheNote() = runTest {
         val id = dao.insert(entity(name = "Marta", phoneKey = "34600111222", receivedAt = 1L))
         dao.updateNote(id, "Meetup")
 
+        // @Update replaces every column, so the repository copies the local note into the card.
         dao.updateCard(
-            entity(name = "Marta Ruiz", phoneKey = "34600999888", receivedAt = 2L).copy(id = id),
+            entity(name = "Marta Ruiz", phoneKey = "34600999888", receivedAt = 2L)
+                .copy(id = id, note = "Meetup"),
         )
 
         val stored = dao.observe(id).first()
