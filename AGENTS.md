@@ -21,7 +21,8 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 `main` is green. Milestones 0–6 and the polish phase are merged.
 
 - Unified app bar, hub/card actions, accessibility pass, string audit and licensing are done.
-- 114 JVM unit tests + 3 instrumented DAO tests.
+- 167 JVM unit tests + 5 instrumented DAO tests (the DAO tests currently fail to start on the
+  emulator with `NoSuchMethodError runBlockingK`; it reproduces on `main`).
 - Remaining backlog: optional vCard/QR sharing fallback, real two-phone NFC validation.
 
 ## Non-negotiable rules
@@ -67,7 +68,8 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   picker, email, colour grid + wheel sheet, delete in the overflow menu.
 - `ui/profile/ColourPickerSheet.kt` — custom colour: hue wheel, saturation/value square and live
   card preview.
-- `ui/received/` — list, detail, notes, delete, add to system contacts.
+- `ui/received/` — list, detail, notes, delete, add to system contacts, and "empty library" with a
+  confirmation dialog and an undo snackbar.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
 - `ui/settings/` — device unlock setting, library, About, no separate licences screen.
 - `ui/components/Layout.kt` — `Eyebrow`, `TxokaAppBar`, `ScreenColumn`, shared buttons.
@@ -96,7 +98,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - A repeated card matches on normalised phone (digits only), lowercased email or lowercased social
   handle. Saving it refreshes the sender's fields and bumps `receivedAt`, keeps the local note and
   returns `SaveResult.Updated`; the confirm sheet shows "You already have …" and "Update contact".
-  Same-name-only cards are stored separately.
+  Same-name-only cards are stored separately. Merging needs exactly one match: if the phone points
+  at one stored contact and the email at another, the card is stored as a new one instead of
+  overwriting either, and `match()` reports no owner.
 - `ProfileRepository.delete()` clears only the `profile.*` DataStore keys; it keeps share settings
   and received contacts. The hub falls back to its empty state and HCE stops publishing.
 - Payload: vCard 3.0 plus `X-TXOKA-PROTOCOL`, `X-TXOKA-CARD-ACCENT`, `X-TXOKA-CARD-ACCENT2`.
