@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -60,46 +62,56 @@ fun ReceiveConfirmScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = Spacing.xl)
-                .padding(bottom = Spacing.lg),
-            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+                .navigationBarsPadding(),
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                SenderAvatar(payload = payload)
-                Column(modifier = Modifier.weight(1f)) {
+            // The body scrolls and the actions stay pinned: in landscape the sheet is shorter than
+            // its content, and the user must still be able to accept or discard the card.
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = Spacing.xl),
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    SenderAvatar(payload = payload)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.sheet_incoming_title, payload.name),
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                        Text(
+                            text = stringResource(R.string.sheet_incoming_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    NfcWaves(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                     Text(
-                        text = stringResource(R.string.sheet_incoming_title, payload.name),
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                    Text(
-                        text = stringResource(R.string.sheet_incoming_body),
-                        style = MaterialTheme.typography.bodySmall,
+                        text = stringResource(R.string.sheet_shared_via_nfc),
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+
+                ContactCard(profile = payload.toProfile(), layout = CardLayout.Preview)
             }
 
-            Row(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = Spacing.md, vertical = Spacing.sm),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
+                modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                NfcWaves(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                Text(
-                    text = stringResource(R.string.sheet_shared_via_nfc),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
-            ContactCard(profile = payload.toProfile(), layout = CardLayout.Preview)
-
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 PrimaryButton(text = stringResource(R.string.action_save_contact), onClick = onSave)
                 TextButton(
                     onClick = onDiscard,

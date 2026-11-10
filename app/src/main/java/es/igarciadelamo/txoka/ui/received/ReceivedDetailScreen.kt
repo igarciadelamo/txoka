@@ -58,6 +58,7 @@ import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.SocialIcon
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
+import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.components.label
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -83,6 +84,7 @@ fun ReceivedDetailScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TxokaAppBar(
             title = contact.name,
@@ -112,7 +114,8 @@ fun ReceivedDetailScreen(
             onSaveNote = onSaveNote,
             modifier = Modifier
                 .weight(1f)
-                .navigationBarsPadding(),
+                .navigationBarsPadding()
+                .contentWidth(),
         )
     }
 

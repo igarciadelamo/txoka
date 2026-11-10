@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -57,13 +58,18 @@ import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.TxokaField
+import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.components.toComposeColor
+import es.igarciadelamo.txoka.ui.theme.ContentMaxWidth
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 
 /** Swatches must stay at least 48 dp so they are easy to hit. */
 private val PaletteSwatchSize = 48.dp
 private const val PALETTE_COLUMNS = 4
+
+/** The editor preview stays phone-sized even when the window is wide. */
+private val EditorPreviewMaxWidth = 360.dp
 
 @Composable
 fun ProfileEditorScreen(
@@ -89,6 +95,7 @@ fun ProfileEditorScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TxokaAppBar(
             title = stringResource(
@@ -112,7 +119,9 @@ fun ProfileEditorScreen(
             onCountrySelected = viewModel::onCountrySelected,
             onPresetSelected = viewModel::onPresetSelected,
             onCustomClick = { showColourSheet = true },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .contentWidth(),
         )
         BottomBar(
             canSave = state.canSave,
@@ -238,11 +247,17 @@ private fun EditorContent(
 
 @Composable
 private fun PreviewSection(state: ProfileEditorUiState) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         ContactCard(
             profile = state.toPreview(),
             placeholder = !state.isEditing,
             layout = CardLayout.Preview,
+            // A preview never needs the whole width, and a smaller card leaves more room for the
+            // fields when the window is short.
+            modifier = Modifier.widthIn(max = EditorPreviewMaxWidth),
         )
         if (!state.isEditing) {
             Text(
@@ -442,11 +457,13 @@ private fun BottomBar(canSave: Boolean, onSave: () -> Unit) {
             .navigationBarsPadding()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
+        contentAlignment = Alignment.Center,
     ) {
         PrimaryButton(
             text = stringResource(R.string.action_save),
             onClick = onSave,
             enabled = canSave,
+            modifier = Modifier.widthIn(max = ContentMaxWidth),
         )
     }
 }

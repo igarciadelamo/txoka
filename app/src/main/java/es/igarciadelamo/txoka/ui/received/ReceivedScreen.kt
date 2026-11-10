@@ -46,6 +46,7 @@ import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
+import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -66,12 +67,15 @@ fun ReceivedScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TxokaAppBar(title = stringResource(R.string.received_title), onBack = onBack)
         SearchField(
             value = state.query,
             onValueChange = onQueryChange,
-            modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.md),
+            modifier = Modifier
+                .contentWidth()
+                .padding(horizontal = Spacing.xl, vertical = Spacing.md),
         )
         if (state.contacts.isEmpty()) {
             EmptyState(
@@ -87,7 +91,8 @@ fun ReceivedScreen(
                 onOpenContact = onOpenContact,
                 modifier = Modifier
                     .weight(1f)
-                    .navigationBarsPadding(),
+                    .navigationBarsPadding()
+                    .contentWidth(),
             )
         }
     }

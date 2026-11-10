@@ -120,6 +120,11 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - Accessibility baseline: 48 dp targets, content descriptions on icon-only buttons, merged
   semantics on cards and list rows, contrast checked by tests.
 - Only `material-icons-core` is available; `material-icons-extended` is not a dependency.
+- Landscape and wide windows: content uses `Modifier.contentWidth()` (`ContentMaxWidth` = 560 dp)
+  inside a horizontally centred column, so nothing stretches edge to edge. Sheets scroll and pin
+  their actions, because a bottom sheet is shorter than its content in landscape. The hub and the
+  editor are still single columns in landscape: the card scrolls out of the fold, and a two-column
+  layout for them is the known follow-up.
 
 ## Licensing and About
 
