@@ -22,9 +22,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TxokaDatabase =
         Room.databaseBuilder(context, TxokaDatabase::class.java, DATABASE_NAME)
-            // Pre-release: the schema still changes between builds, so an upgraded install rebuilds
-            // the table instead of crashing. Replace with a real migration before 1.0.
-            .fallbackToDestructiveMigration(dropAllTables = true)
+            // Ship a migration for every version bump: a released database must never be rebuilt.
             .build()
 
     @Provides
