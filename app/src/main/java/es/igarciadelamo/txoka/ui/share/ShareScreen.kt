@@ -77,6 +77,7 @@ fun ShareScreen(
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
     modifier: Modifier = Modifier,
+    cardTooLarge: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -146,6 +147,7 @@ fun ShareScreen(
                         SharingModule(
                             role = role,
                             requireUnlock = requireUnlock,
+                            cardTooLarge = cardTooLarge,
                             nfc = nfc,
                             onRoleSelected = onRoleSelected,
                             onCancelReturn = onCancelReturn,
@@ -164,6 +166,7 @@ fun ShareScreen(
 private fun SharingModule(
     role: ShareRoleState,
     requireUnlock: Boolean,
+    cardTooLarge: Boolean,
     nfc: NfcStatus,
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
@@ -203,7 +206,7 @@ private fun SharingModule(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = moduleHint(nfc, role, requireUnlock),
+                    text = moduleHint(nfc, role, requireUnlock, cardTooLarge),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     // Two lines are always reserved so switching the role cannot resize the module
@@ -246,14 +249,16 @@ private fun moduleTitle(nfc: NfcStatus): String = when (nfc) {
 }
 
 @Composable
-private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Boolean): String = when {
-    nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
-    nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
-    role.returning -> stringResource(R.string.share_module_return_hint)
-    role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
-    requireUnlock -> stringResource(R.string.share_module_unlock_hint)
-    else -> stringResource(R.string.share_module_hint)
-}
+private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Boolean, cardTooLarge: Boolean): String =
+    when {
+        nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
+        nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
+        cardTooLarge -> stringResource(R.string.share_module_too_long_hint)
+        role.returning -> stringResource(R.string.share_module_return_hint)
+        role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
+        requireUnlock -> stringResource(R.string.share_module_unlock_hint)
+        else -> stringResource(R.string.share_module_hint)
+    }
 
 /** Two states instead of a switch: the label says what happens on the next tap. */
 @Composable

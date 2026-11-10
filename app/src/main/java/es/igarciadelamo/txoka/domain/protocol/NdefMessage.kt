@@ -20,10 +20,27 @@ object NdefMessage {
     private const val LONG_LENGTH_BYTES = 4
     private const val BYTE_MASK = 0xFF
     private const val BITS_PER_BYTE = 8
+    private const val RECORD_HEADER_BYTES = 2
+
+    private val TYPE_BYTES = MIME_TYPE.toByteArray(Charsets.US_ASCII)
+
+    /** Size of the encoded message for [vCard], so callers can check the budget before building it. */
+    fun encodedSize(vCard: String): Int {
+        val payloadSize = vCard.toByteArray(Charsets.UTF_8).size
+        val lengthBytes = if (payloadSize <= MAX_SHORT_PAYLOAD) 1 else LONG_LENGTH_BYTES
+        return RECORD_HEADER_BYTES + lengthBytes + TYPE_BYTES.size + payloadSize
+    }
+
+    /** False when [vCard] cannot travel in a Type 4 Tag file of [MAX_MESSAGE_BYTES] bytes. */
+    fun fits(vCard: String): Boolean = encodedSize(vCard) <= MAX_MESSAGE_BYTES
 
     fun encode(vCard: String): ByteArray {
+        require(fits(vCard)) {
+            "NDEF message of ${encodedSize(vCard)} bytes exceeds the limit of $MAX_MESSAGE_BYTES"
+        }
+
         val payload = vCard.toByteArray(Charsets.UTF_8)
-        val type = MIME_TYPE.toByteArray(Charsets.US_ASCII)
+        val type = TYPE_BYTES
         val isShort = payload.size <= MAX_SHORT_PAYLOAD
 
         val message = ByteArrayOutputStream()
@@ -39,12 +56,7 @@ object NdefMessage {
         // write(ByteArray) works on every API level; writeBytes(ByteArray) needs API 33.
         message.write(type)
         message.write(payload)
-
-        val bytes = message.toByteArray()
-        require(bytes.size <= MAX_MESSAGE_BYTES) {
-            "NDEF message of ${bytes.size} bytes exceeds the limit of $MAX_MESSAGE_BYTES"
-        }
-        return bytes
+        return message.toByteArray()
     }
 
     /** Returns the vCard text, or null when the message is not a single `text/vcard` record. */

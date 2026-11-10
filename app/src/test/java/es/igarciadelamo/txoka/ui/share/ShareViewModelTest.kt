@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.ui.share
 
+import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.nfc.NfcStatus
@@ -105,5 +106,43 @@ class ShareViewModelTest {
         viewModel.refreshNfcStatus()
 
         assertEquals(NfcStatus.Disabled, viewModel.state.value.nfc)
+    }
+
+    @Test
+    fun `flags a stored card that no longer fits in the tag`() = runTest {
+        val repository = FakeProfileRepository(
+            Profile(
+                name = "😀".repeat(64),
+                phone = "+34600123456",
+                email = "a".repeat(115) + "@b.cd",
+                linkedin = "a".repeat(60),
+                instagram = "b".repeat(60),
+            ),
+        )
+        val viewModel = ShareViewModel(
+            repository,
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.cardTooLarge)
+    }
+
+    @Test
+    fun `does not flag a card that fits`() = runTest {
+        val repository = FakeProfileRepository(
+            Profile(name = "Isidro", phone = "+34600123456", email = "isidro@example.com"),
+        )
+        val viewModel = ShareViewModel(
+            repository,
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.cardTooLarge)
     }
 }

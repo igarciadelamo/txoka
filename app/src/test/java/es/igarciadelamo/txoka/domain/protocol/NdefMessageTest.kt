@@ -1,8 +1,10 @@
 package es.igarciadelamo.txoka.domain.protocol
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class NdefMessageTest {
@@ -41,6 +43,31 @@ class NdefMessageTest {
     }
 
     @Test
+    fun `sizes a card before encoding it`() {
+        assertEquals(NdefMessage.encode(vCard).size, NdefMessage.encodedSize(vCard))
+        assertTrue(NdefMessage.fits(vCard))
+    }
+
+    @Test
+    fun `fits a card that fills the payload exactly`() {
+        // A long record spends four length bytes on the header: flags, type length, length and type.
+        val card = "A".repeat(NdefMessage.MAX_MESSAGE_BYTES - LONG_RECORD_OVERHEAD)
+        val message = NdefMessage.encode(card)
+
+        assertEquals(NdefMessage.MAX_MESSAGE_BYTES, message.size)
+        assertTrue(NdefMessage.fits(card))
+        assertFalse(NdefMessage.fits("$card "))
+    }
+
+    @Test
+    fun `counts multibyte text in bytes`() {
+        val emoji = "😀".repeat(200)
+
+        assertEquals(800, emoji.toByteArray(Charsets.UTF_8).size)
+        assertFalse(NdefMessage.fits(emoji))
+    }
+
+    @Test
     fun `returns null for other mime types`() {
         val message = NdefMessage.encode(vCard)
             .copyOf()
@@ -64,5 +91,10 @@ class NdefMessageTest {
         var length = 0
         repeat(4) { index -> length = (length shl 8) or (message[2 + index].toInt() and 0xFF) }
         return length
+    }
+
+    private companion object {
+        /** Flags, type length, the four length bytes and the `text/vcard` type. */
+        const val LONG_RECORD_OVERHEAD = 2 + 4 + 10
     }
 }

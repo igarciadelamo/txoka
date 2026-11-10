@@ -15,6 +15,7 @@
     <string name="card_colour_sheet_title">Card colour</string>
     <string name="card_colour_wheel">Colour wheel, %1$s</string>
 
+    <string name="error_card_too_long">This card is too long to share over NFC. Shorten your name, email or links.</string>
     <string name="error_email_invalid">Enter a valid email address</string>
     <string name="error_name_required">Name is required</string>
     <string name="error_phone_invalid">Enter a valid phone number</string>
@@ -70,6 +71,7 @@
     <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>
     <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
     <string name="share_module_hint">Hold near a phone to send your card</string>
+    <string name="share_module_too_long_hint">This card is too long to share. Edit it to shorten it.</string>
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
     <string name="share_module_receive_hint">Hold near a phone to receive a card</string>
     <string name="share_module_return_hint">Hold again to share yours back</string>

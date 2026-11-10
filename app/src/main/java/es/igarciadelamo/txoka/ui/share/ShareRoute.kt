@@ -36,6 +36,7 @@ fun ShareRoute(
         onRoleSelected = viewModel::onRoleSelected,
         onCancelReturn = viewModel::onCancelReturn,
         requireUnlock = state.requireUnlock,
+        cardTooLarge = state.cardTooLarge,
         modifier = modifier,
     )
 }
