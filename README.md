@@ -7,10 +7,12 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 ### Your card
 
-- Name plus at least one contact channel: a phone number or an email address.
+- Name plus at least one of the four details: a phone number, an email address, a LinkedIn handle or
+  an Instagram handle.
 - Optional LinkedIn and Instagram handles, shared as bare usernames. The card shows both in one row
   with only the username, never the full link; tapping a link in the received detail opens the
-  browser or the installed app.
+  browser or the installed app. When a card has no phone or email the handles take the main slot,
+  full width and at title size.
 - Every value you fill in is shared. There are no per-field sharing flags.
 - Seven gradient presets in a grid, or a custom colour picked on a hue wheel. Presets keep their
   curated two-colour gradient; a custom colour derives the second stop automatically. The text

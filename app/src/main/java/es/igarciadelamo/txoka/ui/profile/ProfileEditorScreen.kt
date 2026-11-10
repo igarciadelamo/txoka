@@ -315,12 +315,16 @@ private fun ContactFields(
             isError = state.instagramError,
             supportingText = if (state.instagramError) stringResource(R.string.error_social_invalid) else null,
         )
-        if (state.phone.isBlank() && state.email.isBlank()) {
+        if (!state.hasContact) {
             Text(
                 text = stringResource(R.string.profile_contact_required),
                 modifier = Modifier.padding(start = Spacing.xs),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (state.contactError) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
             )
         }
     }

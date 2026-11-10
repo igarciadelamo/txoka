@@ -34,12 +34,17 @@ data class ProfileEditorUiState(
     val emailError: Boolean = false,
     val linkedinError: Boolean = false,
     val instagramError: Boolean = false,
+    val contactError: Boolean = false,
     val isEditing: Boolean = false,
     val saved: Boolean = false,
     val deleted: Boolean = false,
 ) {
+    /** True as soon as any of the four detail fields carries text. */
+    val hasContact: Boolean
+        get() = phone.isNotBlank() || email.isNotBlank() || linkedin.isNotBlank() || instagram.isNotBlank()
+
     val canSave: Boolean
-        get() = name.isNotBlank() && (phone.isNotBlank() || email.isNotBlank())
+        get() = name.isNotBlank() && hasContact
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),
@@ -78,19 +83,19 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onPhoneChange(value: String) {
-        _uiState.update { it.copy(phone = value, phoneError = false) }
+        _uiState.update { it.copy(phone = value, phoneError = false, contactError = false) }
     }
 
     fun onEmailChange(value: String) {
-        _uiState.update { it.copy(email = value, emailError = false) }
+        _uiState.update { it.copy(email = value, emailError = false, contactError = false) }
     }
 
     fun onLinkedInChange(value: String) {
-        _uiState.update { it.copy(linkedin = value, linkedinError = false) }
+        _uiState.update { it.copy(linkedin = value, linkedinError = false, contactError = false) }
     }
 
     fun onInstagramChange(value: String) {
-        _uiState.update { it.copy(instagram = value, instagramError = false) }
+        _uiState.update { it.copy(instagram = value, instagramError = false, contactError = false) }
     }
 
     fun onCountrySelected(country: PhoneCountry) {
@@ -119,8 +124,10 @@ class ProfileEditorViewModel @Inject constructor(
         val instagram = SocialHandle.normalize(state.instagram, SocialNetwork.Instagram)
         val linkedinError = state.linkedin.isNotBlank() && linkedin == null
         val instagramError = state.instagram.isNotBlank() && instagram == null
+        // The button already blocks a blank card; this keeps the rule true outside the UI.
+        val contactError = !state.hasContact
 
-        val errors = listOf(nameError, phoneError, emailError, linkedinError, instagramError)
+        val errors = listOf(nameError, phoneError, emailError, linkedinError, instagramError, contactError)
         if (errors.any { it }) {
             _uiState.update {
                 it.copy(
@@ -129,6 +136,7 @@ class ProfileEditorViewModel @Inject constructor(
                     emailError = emailError,
                     linkedinError = linkedinError,
                     instagramError = instagramError,
+                    contactError = contactError,
                 )
             }
             return
