@@ -22,15 +22,14 @@ interface ReceivedContactDao {
            OR (:linkedinKey <> '' AND LOWER(TRIM(linkedin)) = :linkedinKey)
            OR (:instagramKey <> '' AND LOWER(TRIM(instagram)) = :instagramKey)
         ORDER BY receivedAt DESC
-        LIMIT 1
         """,
     )
-    suspend fun findMatch(
+    suspend fun findMatches(
         phoneKey: String,
         emailKey: String,
         linkedinKey: String,
         instagramKey: String,
-    ): ReceivedContactEntity?
+    ): List<ReceivedContactEntity>
 
     @Insert
     suspend fun insert(contact: ReceivedContactEntity): Long
@@ -44,4 +43,7 @@ interface ReceivedContactDao {
 
     @Query("DELETE FROM received_contacts WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("DELETE FROM received_contacts")
+    suspend fun deleteAll()
 }

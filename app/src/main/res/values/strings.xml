@@ -82,12 +82,20 @@
     <string name="section_style">Style</string>
     <string name="action_add">Add</string>
     <string name="action_more">More options</string>
+    <string name="action_undo">Undo</string>
     <string name="group_earlier">Earlier</string>
     <string name="group_today">Today</string>
+    <string name="library_clear">Empty library</string>
+    <string name="library_clear_title">Empty the library?</string>
+    <string name="library_cleared">Library emptied</string>
+    <plurals name="library_clear_message">
+        <item quantity="one">The card you received will be deleted from this phone.</item>
+        <item quantity="other">The %d cards you received will be deleted from this phone.</item>
+    </plurals>
     <string name="note_saved">Saved</string>
     <string name="received_empty_body">Ask someone to share theirs over NFC.</string>
     <string name="received_empty_title">No cards yet</string>
-    <string name="received_meta">Received %1$s · Shared via NFC</string>
+    <string name="received_meta">Received %1$s</string>
     <string name="received_saved">Contact saved</string>
     <string name="received_updated">Contact updated</string>
     <string name="section_social">Links</string>

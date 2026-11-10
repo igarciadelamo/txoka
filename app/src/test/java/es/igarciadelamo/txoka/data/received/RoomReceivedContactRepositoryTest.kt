@@ -108,4 +108,34 @@ class RoomReceivedContactRepositoryTest {
         repository.delete(saved.id)
         assertNull(repository.contact(saved.id).first())
     }
+
+    @Test
+    fun `keeps the card apart when the keys point at different contacts`() = runTest {
+        repository.save(VCardPayload(name = "Marta por teléfono", phone = "+34600111222"))
+        repository.save(VCardPayload(name = "Marta por email", email = "marta@example.com"))
+
+        val result = repository.save(marta)
+
+        assertTrue(result is SaveResult.Saved)
+        assertEquals(3, repository.contacts.first().size)
+        assertNull(repository.match(marta))
+    }
+
+    @Test
+    fun `empties the library and restores it on undo`() = runTest {
+        val first = repository.save(marta) as SaveResult.Saved
+        repository.updateNote(first.id, "Meetup")
+        repository.save(VCardPayload(name = "Ana", instagram = "ana.ruiz"))
+
+        val removed = repository.deleteAll()
+
+        assertTrue(repository.contacts.first().isEmpty())
+        assertEquals(2, removed.size)
+
+        repository.restore(removed)
+
+        val restored = repository.contacts.first()
+        assertEquals(setOf("Marta Ruiz", "Ana"), restored.map { it.name }.toSet())
+        assertEquals("Meetup", restored.first { it.name == "Marta Ruiz" }.note)
+    }
 }

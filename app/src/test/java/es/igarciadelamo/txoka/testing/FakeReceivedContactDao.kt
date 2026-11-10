@@ -17,19 +17,19 @@ class FakeReceivedContactDao : ReceivedContactDao {
         contacts.firstOrNull { contact -> contact.id == id }
     }
 
-    override suspend fun findMatch(
+    override suspend fun findMatches(
         phoneKey: String,
         emailKey: String,
         linkedinKey: String,
         instagramKey: String,
-    ): ReceivedContactEntity? = state.value
+    ): List<ReceivedContactEntity> = state.value
         .filter { contact ->
             (phoneKey.isNotEmpty() && contact.phoneKey == phoneKey) ||
                 (emailKey.isNotEmpty() && contact.emailKey == emailKey) ||
                 (linkedinKey.isNotEmpty() && contact.linkedin?.lowercase() == linkedinKey) ||
                 (instagramKey.isNotEmpty() && contact.instagram?.lowercase() == instagramKey)
         }
-        .maxByOrNull { contact -> contact.receivedAt }
+        .sortedByDescending { contact -> contact.receivedAt }
 
     override suspend fun insert(contact: ReceivedContactEntity): Long {
         val id = nextId++
@@ -47,5 +47,9 @@ class FakeReceivedContactDao : ReceivedContactDao {
 
     override suspend fun delete(id: Long) {
         state.update { contacts -> contacts.filterNot { it.id == id } }
+    }
+
+    override suspend fun deleteAll() {
+        state.value = emptyList()
     }
 }

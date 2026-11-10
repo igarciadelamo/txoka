@@ -24,7 +24,7 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
     }
 
     override suspend fun match(payload: VCardPayload): ReceivedContact? =
-        state.value.firstOrNull { contact -> contact.matches(payload) }
+        state.value.filter { contact -> contact.matches(payload) }.singleOrNull()
 
     override suspend fun save(payload: VCardPayload): SaveResult {
         saved = payload
@@ -59,6 +59,19 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
 
     override suspend fun delete(id: Long) {
         state.update { contacts -> contacts.filterNot { it.id == id } }
+    }
+
+    override suspend fun deleteAll(): List<ReceivedContact> {
+        val removed = state.value
+        state.value = emptyList()
+        return removed
+    }
+
+    override suspend fun restore(contacts: List<ReceivedContact>) {
+        state.update { current ->
+            val restored = contacts.map { contact -> contact.copy(id = nextId++) }
+            (current + restored).sortedByDescending { contact -> contact.receivedAt }
+        }
     }
 
     private fun ReceivedContact.matches(payload: VCardPayload): Boolean {

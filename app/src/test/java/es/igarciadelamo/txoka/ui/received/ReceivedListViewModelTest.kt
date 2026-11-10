@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -73,6 +74,30 @@ class ReceivedListViewModelTest {
         advanceUntilIdle()
 
         assertEquals(emptyList<String>(), viewModel.state.value.contacts.map { it.name })
+        assertEquals(true, viewModel.state.value.hasContacts)
+    }
+
+    @Test
+    fun `empties the library and puts it back on undo`() = runTest {
+        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val events = mutableListOf<ReceivedListEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.events.collect { event -> events += event }
+        }
+        collect(viewModel)
+
+        viewModel.clearLibrary()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.contacts.isEmpty())
+        assertEquals(false, viewModel.state.value.hasContacts)
+        assertEquals(listOf(ReceivedListEvent.LibraryCleared), events)
+
+        viewModel.undoClear()
+        advanceUntilIdle()
+
+        assertEquals(3, viewModel.state.value.contacts.size)
+        assertEquals(true, viewModel.state.value.hasContacts)
     }
 
     private fun kotlinx.coroutines.test.TestScope.collect(viewModel: ReceivedListViewModel) {

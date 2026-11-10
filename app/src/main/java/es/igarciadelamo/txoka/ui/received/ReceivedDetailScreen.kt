@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.ui.received
 
+import android.content.ContentValues
 import android.content.Intent
 import android.provider.ContactsContract
 import androidx.compose.foundation.background
@@ -65,6 +66,7 @@ import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 import es.igarciadelamo.txoka.ui.theme.txoka
 import java.text.DateFormat
+import java.util.ArrayList
 import java.util.Date
 
 @Composable
@@ -390,6 +392,22 @@ private fun ReceivedContact.toInsertIntent(): Intent = Intent(ContactsContract.I
     putExtra(ContactsContract.Intents.Insert.NAME, name)
     phone?.let { putExtra(ContactsContract.Intents.Insert.PHONE, it) }
     email?.let { putExtra(ContactsContract.Intents.Insert.EMAIL, it) }
+    val links = socialLinks()
+    if (links.isNotEmpty()) {
+        putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, ArrayList(links))
+    }
+}
+
+/** The contact editor has no LinkedIn or Instagram field, so each handle goes in as a link. */
+private fun ReceivedContact.socialLinks(): List<ContentValues> = listOfNotNull(
+    linkedin?.let { handle -> websiteRow(SocialNetwork.LinkedIn, handle) },
+    instagram?.let { handle -> websiteRow(SocialNetwork.Instagram, handle) },
+)
+
+private fun websiteRow(network: SocialNetwork, handle: String): ContentValues = ContentValues().apply {
+    put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
+    put(ContactsContract.CommonDataKinds.Website.URL, SocialHandle.url(network, handle))
+    put(ContactsContract.CommonDataKinds.Website.TYPE, ContactsContract.CommonDataKinds.Website.TYPE_PROFILE)
 }
 
 private fun ReceivedContact.toProfile(): Profile = Profile(

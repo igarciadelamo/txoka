@@ -19,17 +19,30 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -58,44 +71,122 @@ import java.time.ZoneId
 @Composable
 fun ReceivedScreen(
     state: ReceivedListUiState,
+    snackbarHostState: SnackbarHostState,
     onQueryChange: (String) -> Unit,
     onOpenContact: (Long) -> Unit,
+    onClearLibrary: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    var confirmClear by remember { mutableStateOf(false) }
+
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TxokaAppBar(title = stringResource(R.string.received_title), onBack = onBack)
-        SearchField(
-            value = state.query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .contentWidth()
-                .padding(horizontal = Spacing.xl, vertical = Spacing.md),
-        )
-        if (state.contacts.isEmpty()) {
-            EmptyState(
-                isLoading = state.isLoading,
-                searching = state.query.isNotBlank(),
-                modifier = Modifier
-                    .weight(1f)
-                    .navigationBarsPadding(),
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            LibraryAppBar(
+                canClear = state.hasContacts,
+                onClear = { confirmClear = true },
+                onBack = onBack,
             )
-        } else {
-            ContactList(
-                contacts = state.contacts,
-                onOpenContact = onOpenContact,
+            SearchField(
+                value = state.query,
+                onValueChange = onQueryChange,
                 modifier = Modifier
-                    .weight(1f)
-                    .navigationBarsPadding()
-                    .contentWidth(),
+                    .contentWidth()
+                    .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             )
+            if (state.contacts.isEmpty()) {
+                EmptyState(
+                    isLoading = state.isLoading,
+                    searching = state.query.isNotBlank(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .navigationBarsPadding(),
+                )
+            } else {
+                ContactList(
+                    contacts = state.contacts,
+                    onOpenContact = onOpenContact,
+                    modifier = Modifier
+                        .weight(1f)
+                        .navigationBarsPadding()
+                        .contentWidth(),
+                )
+            }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding(),
+        )
     }
+
+    if (confirmClear) {
+        ClearLibraryDialog(
+            count = state.contacts.size,
+            onConfirm = {
+                confirmClear = false
+                onClearLibrary()
+            },
+            onDismiss = { confirmClear = false },
+        )
+    }
+}
+
+@Composable
+private fun LibraryAppBar(canClear: Boolean, onClear: () -> Unit, onBack: () -> Unit) {
+    var menuOpen by remember { mutableStateOf(false) }
+    TxokaAppBar(
+        title = stringResource(R.string.received_title),
+        onBack = onBack,
+        actions = {
+            if (canClear) {
+                IconButton(onClick = { menuOpen = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = stringResource(R.string.action_more),
+                    )
+                }
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.library_clear)) },
+                        onClick = {
+                            menuOpen = false
+                            onClear()
+                        },
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun ClearLibraryDialog(count: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.library_clear_title)) },
+        text = {
+            Text(text = pluralStringResource(R.plurals.library_clear_message, count, count))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(R.string.library_clear))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.action_cancel))
+            }
+        },
+    )
 }
 
 @Composable
@@ -284,6 +375,7 @@ private fun ReceivedContact.initials(): String = name
 @Composable
 private fun ReceivedScreenPreview() {
     val now = System.currentTimeMillis()
+    val snackbarHostState = remember { SnackbarHostState() }
     TxokaTheme {
         ReceivedScreen(
             state = ReceivedListUiState(
@@ -301,9 +393,12 @@ private fun ReceivedScreenPreview() {
                     ),
                 ),
                 isLoading = false,
+                hasContacts = true,
             ),
+            snackbarHostState = snackbarHostState,
             onQueryChange = {},
             onOpenContact = {},
+            onClearLibrary = {},
             onBack = {},
         )
     }
