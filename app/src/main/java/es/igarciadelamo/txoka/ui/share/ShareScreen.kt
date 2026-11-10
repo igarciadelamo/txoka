@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -202,7 +203,21 @@ private fun SharingModule(
                     text = moduleHint(nfc, role, requireUnlock),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // Two lines are always reserved so switching the role cannot resize the module
+                    // and shift the card above it.
+                    minLines = 2,
                 )
+            }
+            Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                if (role.returning) {
+                    IconButton(onClick = onCancelReturn) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.action_cancel),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
         if (!unavailable) {
@@ -215,11 +230,6 @@ private fun SharingModule(
         if (nfc == NfcStatus.Disabled) {
             TextButton(onClick = onOpenNfcSettings) {
                 Text(text = stringResource(R.string.action_open_settings))
-            }
-        }
-        if (role.returning) {
-            TextButton(onClick = onCancelReturn) {
-                Text(text = stringResource(R.string.action_cancel))
             }
         }
     }
