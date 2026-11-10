@@ -27,13 +27,14 @@ fun ShareRoute(
 
     ShareScreen(
         profile = state.profile,
-        sharingEnabled = state.sharingEnabled,
+        role = state.role,
         nfc = state.nfc,
         onOpenReceived = onOpenReceived,
         onOpenSettings = onOpenSettings,
         onCreateCard = onCreateCard,
         onEditProfile = onEditProfile,
-        onSharingChanged = viewModel::onSharingChanged,
+        onRoleSelected = viewModel::onRoleSelected,
+        onCancelReturn = viewModel::onCancelReturn,
         requireUnlock = state.requireUnlock,
         modifier = modifier,
     )

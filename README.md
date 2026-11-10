@@ -25,7 +25,11 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 ### Sharing over NFC
 
 - The phone emulates an NFC Forum Type 4 Tag that carries the card as a vCard 3.0 NDEF record.
-- Sharing can be switched off at any time from the hub or from Settings.
+- Which phone acts as the card is a controller race, so the hub picks the role: **Send** advertises
+  the card, **Receive** only polls. The role lives in memory and starts on Send at every launch.
+- After receiving a card while in Receive, the phone offers its own card for 60 seconds so the
+  other phone can read it back on a second tap. The offer is one shot, which is what stops two
+  phones from bouncing cards forever.
 - An optional setting requires the device to be unlocked before the card is served.
 - When the device has no NFC hardware, the app explains the limitation and hides the sharing
   controls instead of failing silently.
@@ -308,7 +312,8 @@ adb shell am instrument -w \
 - Reading an emulated card needs an app that handles `NDEF_DISCOVERED` for `text/vcard`. Without
   Txoka installed the phone will not offer to save the contact on its own.
 - Reader mode is never used: it disables host card emulation, so Txoka reads tags with foreground
-  dispatch while it keeps emulating. Two phones find each other without a mode switch.
+  dispatch while it keeps emulating. Two phones find each other without a mode switch, but which
+  one wins as the card is up to the controllers, so the hub role makes the exchange predictable.
 - Notes are plain text, one per contact, and there is no sync or export.
 - Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
 - **Pending device test.** The NFC paths are unit-tested and the debug demo exercises the same

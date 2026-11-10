@@ -1,6 +1,7 @@
 package es.igarciadelamo.txoka.nfc
 
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.domain.protocol.Type4Tag
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
@@ -18,17 +19,17 @@ class HceCardPublisherTest {
     private val profile = Profile(name = "Isidro", phone = "+34600123456")
 
     @Test
-    fun `publishes the card when profile and sharing are on`() = runTest {
+    fun `publishes the card while sending`() = runTest {
         val responder = HceResponder()
-        publisher(profile, ShareSettings(sharingEnabled = true), responder).publishCurrent()
+        publisher(profile, ShareSettings(), responder).publishCurrent()
 
         assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
-    fun `publishes nothing when sharing is off`() = runTest {
+    fun `publishes nothing while receiving`() = runTest {
         val responder = HceResponder()
-        publisher(profile, ShareSettings(sharingEnabled = false), responder).publishCurrent()
+        publisher(profile, ShareSettings(), responder, role = ShareRole.Receive).publishCurrent()
 
         assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
@@ -38,7 +39,7 @@ class HceCardPublisherTest {
         val responder = HceResponder()
         publisher(
             profile = null,
-            settings = ShareSettings(sharingEnabled = true),
+            settings = ShareSettings(),
             responder = responder,
         ).publishCurrent()
 
@@ -48,26 +49,27 @@ class HceCardPublisherTest {
     @Test
     fun `forwards the unlock requirement`() = runTest {
         val responder = HceResponder()
-        publisher(profile, ShareSettings(sharingEnabled = true, requireDeviceUnlock = true), responder).publishCurrent()
+        publisher(profile, ShareSettings(requireDeviceUnlock = true), responder).publishCurrent()
 
         assertEquals(Type4Tag.SW_CONDITIONS_NOT_SATISFIED, status(responder.respond(SelectAid, deviceLocked = true)))
         assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
     @Test
-    fun `start follows the sharing settings`() = runTest {
-        val settings = FakeShareSettingsRepository(ShareSettings(sharingEnabled = true))
+    fun `start follows the share role`() = runTest {
+        val roles = ShareRoleController(backgroundScope)
         val responder = HceResponder()
         HceCardPublisher(
             profileRepository = FakeProfileRepository(profile),
-            settingsRepository = settings,
+            settingsRepository = FakeShareSettingsRepository(),
+            roles = roles,
             responder = responder,
             scope = backgroundScope,
         ).start()
         runCurrent()
         assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
 
-        settings.setSharingEnabled(false)
+        roles.select(ShareRole.Receive)
         runCurrent()
 
         assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
@@ -76,14 +78,20 @@ class HceCardPublisherTest {
     @Test
     fun `publishes nothing when the card does not fit`() = runTest {
         val responder = HceResponder()
-        publisher(Profile(name = "A".repeat(900)), ShareSettings(sharingEnabled = true), responder).publishCurrent()
+        publisher(Profile(name = "A".repeat(900)), ShareSettings(), responder).publishCurrent()
 
         assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }
 
-    private fun publisher(profile: Profile?, settings: ShareSettings, responder: HceResponder) = HceCardPublisher(
+    private fun publisher(
+        profile: Profile?,
+        settings: ShareSettings,
+        responder: HceResponder,
+        role: ShareRole = ShareRole.Send,
+    ) = HceCardPublisher(
         profileRepository = FakeProfileRepository(profile),
         settingsRepository = FakeShareSettingsRepository(settings),
+        roles = ShareRoleController(CoroutineScope(Dispatchers.Unconfined)).apply { select(role) },
         responder = responder,
         scope = CoroutineScope(Dispatchers.Unconfined),
     )

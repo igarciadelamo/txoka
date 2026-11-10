@@ -58,6 +58,7 @@ kover {
                     "es.igarciadelamo.txoka.nfc.HceCard*",
                     "es.igarciadelamo.txoka.nfc.HceResponder*",
                     "es.igarciadelamo.txoka.nfc.IncomingCards*",
+                    "es.igarciadelamo.txoka.nfc.ShareRole*",
                     "es.igarciadelamo.txoka.nfc.FakeTransport*",
                     "es.igarciadelamo.txoka.nfc.NdefHceTransport*",
                     "es.igarciadelamo.txoka.nfc.NfcStatus",

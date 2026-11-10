@@ -24,11 +24,15 @@ import es.igarciadelamo.txoka.domain.protocol.NdefMessage as TxokaNdefMessage
  * controller to polling, and AOSP only enables host card emulation routing while no reader-mode
  * request is active, so the same phone could not receive a card and send its own at once. With
  * foreground dispatch the controller keeps polling and emulating, which is what two phones need.
+ *
+ * Which phone ends up as the card is decided by the controllers, not by the app, so the session
+ * role in [ShareRoleController] is what makes the exchange predictable.
  */
 @Singleton
 class NfcReader @Inject constructor(
     @ApplicationContext private val context: Context,
     private val incomingCards: IncomingCards,
+    private val roles: ShareRoleController,
 ) {
     private val adapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(context)
 
@@ -62,6 +66,7 @@ class NfcReader @Inject constructor(
         val parsed = VCardSerializer.decode(vCard)
         if (parsed is VCardParseResult.Success) {
             incomingCards.offer(parsed.payload)
+            roles.onCardReceived()
         }
     }
 

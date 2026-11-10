@@ -58,7 +58,6 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onOpenReceived: () -> Unit,
     onOpenAbout: () -> Unit,
-    onSharingChanged: (Boolean) -> Unit,
     onRequireUnlockChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onSimulateIncomingCard: () -> Unit = {},
@@ -92,7 +91,6 @@ fun SettingsScreen(
             if (state.nfc != NfcStatus.Unavailable) {
                 SharingGroup(
                     state = state,
-                    onSharingChanged = onSharingChanged,
                     onRequireUnlockChanged = onRequireUnlockChanged,
                 )
             }
@@ -109,23 +107,12 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SharingGroup(
-    state: SettingsUiState,
-    onSharingChanged: (Boolean) -> Unit,
-    onRequireUnlockChanged: (Boolean) -> Unit,
-) {
+private fun SharingGroup(state: SettingsUiState, onRequireUnlockChanged: (Boolean) -> Unit) {
     SettingsGroup(title = stringResource(R.string.settings_sharing)) {
-        SwitchRow(
-            title = stringResource(R.string.share_toggle),
-            checked = state.sharingEnabled,
-            enabled = state.nfc == NfcStatus.Enabled,
-            onCheckedChange = onSharingChanged,
-            leading = { NfcWaves(color = MaterialTheme.colorScheme.primary) },
-        )
         SwitchRow(
             title = stringResource(R.string.share_require_unlock),
             checked = state.requireUnlock,
-            enabled = state.sharingEnabled && state.nfc == NfcStatus.Enabled,
+            enabled = state.nfc == NfcStatus.Enabled,
             onCheckedChange = onRequireUnlockChanged,
             leading = {
                 Icon(
@@ -337,7 +324,6 @@ private fun SettingsScreenPreview() {
             onBack = {},
             onOpenReceived = {},
             onOpenAbout = {},
-            onSharingChanged = {},
             onRequireUnlockChanged = {},
         )
     }

@@ -11,14 +11,7 @@ import kotlinx.coroutines.flow.map
 
 class DataStoreShareSettingsRepository(private val dataStore: DataStore<Preferences>) : ShareSettingsRepository {
     override val settings: Flow<ShareSettings> = dataStore.data.map { preferences ->
-        ShareSettings(
-            sharingEnabled = preferences[Keys.Sharing] ?: true,
-            requireDeviceUnlock = preferences[Keys.RequireUnlock] ?: false,
-        )
-    }
-
-    override suspend fun setSharingEnabled(enabled: Boolean) {
-        dataStore.edit { preferences -> preferences[Keys.Sharing] = enabled }
+        ShareSettings(requireDeviceUnlock = preferences[Keys.RequireUnlock] ?: false)
     }
 
     override suspend fun setRequireDeviceUnlock(enabled: Boolean) {
@@ -26,7 +19,6 @@ class DataStoreShareSettingsRepository(private val dataStore: DataStore<Preferen
     }
 
     private object Keys {
-        val Sharing = booleanPreferencesKey("share.enabled")
         val RequireUnlock = booleanPreferencesKey("share.require_unlock")
     }
 }

@@ -22,6 +22,7 @@ class NdefHceTransportTest {
     private val publisher = HceCardPublisher(
         profileRepository = FakeProfileRepository(Profile(name = "Isidro")),
         settingsRepository = FakeShareSettingsRepository(),
+        roles = ShareRoleController(CoroutineScope(Dispatchers.Unconfined)),
         responder = responder,
         scope = CoroutineScope(Dispatchers.Unconfined),
     )

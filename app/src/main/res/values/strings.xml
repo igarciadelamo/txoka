@@ -60,9 +60,8 @@
     <string name="hce_service_description">Share your card over NFC</string>
     <string name="nfc_disabled">NFC is turned off</string>
     <string name="action_open_settings">Open NFC settings</string>
-    <string name="share_hint_disabled">Sharing is off</string>
     <string name="share_require_unlock">Require device unlock</string>
-    <string name="share_toggle">Share over NFC</string>
+    <string name="share_module_title">Share over NFC</string>
     <string name="hub_empty_body">Create it once and share it by holding two phones together.</string>
     <string name="hub_empty_title">Your card, one tap away</string>
     <string name="hub_privacy_footer">Your card stays on this device · No internet</string>
@@ -71,6 +70,10 @@
     <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
     <string name="share_module_hint">Hold near a phone to send your card</string>
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
+    <string name="share_module_receive_hint">Hold near a phone to receive a card</string>
+    <string name="share_module_return_hint">Hold again to share yours back</string>
+    <string name="share_role_send">Send</string>
+    <string name="share_role_receive">Receive</string>
     <string name="nfc_unavailable_title">NFC unavailable</string>
     <string name="nfc_disabled_title">NFC is off</string>
     <string name="section_style">Style</string>
