@@ -30,7 +30,10 @@ interface ReceivedContactRepository {
 
     fun contact(id: Long): Flow<ReceivedContact?>
 
-    /** The stored contact the card belongs to, matching on phone, email or a social handle. */
+    /**
+     * The stored contact the card belongs to, matching on phone, email or a social handle. A card
+     * whose keys point at different stored contacts is ambiguous and has no owner.
+     */
     suspend fun match(payload: VCardPayload): ReceivedContact?
 
     /**
@@ -42,4 +45,10 @@ interface ReceivedContactRepository {
     suspend fun updateNote(id: Long, note: String)
 
     suspend fun delete(id: Long)
+
+    /** Empties the library and returns the removed cards, so the caller can offer an undo. */
+    suspend fun deleteAll(): List<ReceivedContact>
+
+    /** Puts back cards removed by [deleteAll]; notes and dates are kept. */
+    suspend fun restore(contacts: List<ReceivedContact>)
 }

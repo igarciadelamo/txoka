@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,12 +54,22 @@ class ReceivedContactDaoTest {
             ),
         )
 
-        assertEquals(id, dao.findMatch("34600111222", "", "", "")?.id)
-        assertEquals(id, dao.findMatch("", "marta@example.com", "", "")?.id)
-        assertEquals(id, dao.findMatch("", "", "marta-ruiz", "")?.id)
-        assertEquals(id, dao.findMatch("", "", "", "marta.ruiz")?.id)
-        assertNull(dao.findMatch("", "", "", ""))
-        assertNull(dao.findMatch("1", "other@example.com", "", ""))
+        assertEquals(listOf(id), dao.findMatches("34600111222", "", "", "").map { it.id })
+        assertEquals(listOf(id), dao.findMatches("", "marta@example.com", "", "").map { it.id })
+        assertEquals(listOf(id), dao.findMatches("", "", "marta-ruiz", "").map { it.id })
+        assertEquals(listOf(id), dao.findMatches("", "", "", "marta.ruiz").map { it.id })
+        assertTrue(dao.findMatches("", "", "", "").isEmpty())
+        assertTrue(dao.findMatches("1", "other@example.com", "", "").isEmpty())
+    }
+
+    @Test
+    fun returnsEveryContactWhenTheKeysPointAtDifferentRows() = runTest {
+        val byPhone = dao.insert(entity(name = "Marta", phoneKey = "34600111222", receivedAt = 1L))
+        val byEmail = dao.insert(entity(name = "Marta Ruiz", emailKey = "marta@example.com", receivedAt = 2L))
+
+        val matches = dao.findMatches("34600111222", "marta@example.com", "", "")
+
+        assertEquals(setOf(byPhone, byEmail), matches.map { it.id }.toSet())
     }
 
     @Test
@@ -86,6 +97,16 @@ class ReceivedContactDaoTest {
 
         dao.delete(id)
         assertNull(dao.observe(id).first())
+    }
+
+    @Test
+    fun deletesEveryCard() = runTest {
+        dao.insert(entity(name = "Marta"))
+        dao.insert(entity(name = "Ana"))
+
+        dao.deleteAll()
+
+        assertTrue(dao.observeAll().first().isEmpty())
     }
 
     private fun entity(
