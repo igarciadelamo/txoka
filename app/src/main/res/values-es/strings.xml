@@ -63,7 +63,7 @@
     <string name="share_module_title">Compartir por NFC</string>
     <string name="hub_empty_body">Créala una vez y compártela acercando dos móviles.</string>
     <string name="hub_empty_title">Tu tarjeta, a un toque</string>
-    <string name="hub_privacy_footer">Tu tarjeta se queda en este dispositivo · Sin internet</string>
+    <string name="hub_privacy_footer">Sin cuenta · Sin rastreo · Sin internet</string>
     <string name="hub_your_card">Tu tarjeta</string>
     <string name="nfc_disabled_body">Vuelve a activar el NFC para seguir compartiendo tu tarjeta.</string>
     <string name="nfc_unavailable_body">Aún puedes crear y guardar tarjetas, pero no compartirlas por NFC.</string>

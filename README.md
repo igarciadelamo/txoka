@@ -1,7 +1,7 @@
 # Txoka
 
 Share your contact card by holding two phones close together over NFC, and keep the cards you
-receive. Everything stays on the device: no backend, no account and no `INTERNET` permission.
+receive. Txoka never uploads anything: no backend, no account and no `INTERNET` permission.
 
 ## Features
 
