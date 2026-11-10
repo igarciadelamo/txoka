@@ -1,7 +1,7 @@
 # Txoka
 
 Share your contact card by holding two phones close together over NFC, and keep the cards you
-receive. Everything stays on the device: no backend, no account and no `INTERNET` permission.
+receive. Txoka never uploads anything: no backend, no account and no `INTERNET` permission.
 
 ## Features
 
@@ -57,9 +57,12 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
 
 ### Privacy and storage
 
-- Local-first: no backend, no account and no `INTERNET` permission.
+- Local-first: no backend, no account and no `INTERNET` permission. The app itself never uploads
+  anything.
 - The profile and the sharing preferences live in DataStore; received contacts and their notes live
   in a local Room database.
+- Both stay in the user's own Google backup, so a reinstall or a new phone restores the library.
+  That copy belongs to the device's account, not to Txoka.
 - Deleting the card clears only the profile. Share settings and received contacts stay.
 
 ### Settings and About
@@ -236,9 +239,9 @@ while the unlock setting is on).
   separately.
 - **No contact write permission.** *Add to contacts* opens the system editor prefilled with
   `ContactsContract.Intents.Insert`, so the app never requests `WRITE_CONTACTS`.
-- **Notes stay local.** Notes are plain text in the app database. The database is version 2 and,
-  while the app is pre-1.0, an upgrade rebuilds the table instead of migrating it. That fallback
-  must be replaced by a real migration before the first release.
+- **Notes stay local.** Notes are plain text in the app database. The schema is exported to
+  `app/schemas/` and committed, so every version bump must ship a `Migration`; release builds have
+  no destructive fallback.
 
 ## Accessibility and localisation
 
@@ -269,11 +272,31 @@ while the unlock setting is on).
 ./gradlew detekt ktlintCheck
 ./gradlew :app:lintDebug
 ./gradlew :app:koverVerifyDebug
+./gradlew :app:assembleRelease :app:lintRelease
 ```
 
 The Gradle daemon JVM is pinned to 21 through `gradle/gradle-daemon-jvm.properties`, because
 Detekt 1.23.8 cannot parse the version string of newer JDKs. CI runs the same tasks on every push
-to `main` and on every pull request.
+to `main` and on every pull request, including the release build so R8 stays verified.
+
+### Release signing
+
+The release build reads `keystore.properties` from the project root. The file is not committed:
+
+```properties
+storeFile=txoka-release.jks
+storePassword=…
+keyAlias=txoka
+keyPassword=…
+```
+
+`storeFile` is relative to the project root. Without the file, `:app:assembleRelease` still runs
+and writes an unsigned APK, which is what CI checks. Publish the bundle instead of the APK:
+
+```sh
+./gradlew :app:bundleRelease
+```
+
 
 ### Unit tests and coverage
 

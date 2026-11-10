@@ -12,8 +12,9 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 - Hilt for DI, coroutines/Flow, Room for received contacts, DataStore for profile/settings,
   libphonenumber for phone handling, Manrope as the bundled font.
 - Packages: `ui/`, `domain/`, `data/`, `nfc/`, `di/`.
-- Version 1.0 (`versionCode = 1`). Room database version 2, no migrations yet: pre-release
-  upgrades rebuild the table through a destructive fallback.
+- Version 1.0 (`versionCode = 1`). Room database version 2; the schema is exported to
+  `app/schemas/` and committed, and every version bump must ship a real `Migration` (release builds
+  have no destructive fallback).
 
 ## Current status (November 2026)
 
@@ -45,6 +46,8 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
     ./gradlew :app:assembleDebug :app:testDebugUnitTest detekt ktlintCheck
     ./gradlew :app:installDebug
     ./gradlew :app:lintDebug
+    ./gradlew :app:assembleRelease :app:lintRelease   # R8 path; unsigned without keystore
+    ./gradlew :app:bundleRelease                     # what gets published, if signed
     ./gradlew :app:connectedDebugAndroidTest   # uninstalls the app and wipes its data
 
 Instrumented tests without wiping the installed app:
@@ -186,7 +189,8 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   Ktlint wants single-expression bodies on one line when they fit (120 columns max).
 - `docs/` is documentation only; only files under `app/src/main/res/` and `app/src/main/assets/`
   are packaged in the APK.
-- Do not commit `local.properties` or build outputs.
+- Do not commit `local.properties`, `keystore.properties`, keystores or build outputs. Release
+  signing reads `keystore.properties` from the project root; without it the APK stays unsigned.
 
 ## Roadmap
 

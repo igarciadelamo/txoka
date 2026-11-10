@@ -65,7 +65,7 @@
     <string name="share_module_title">Share over NFC</string>
     <string name="hub_empty_body">Create it once and share it by holding two phones together.</string>
     <string name="hub_empty_title">Your card, one tap away</string>
-    <string name="hub_privacy_footer">Your card stays on this device · No internet</string>
+    <string name="hub_privacy_footer">No account · No tracking · No internet</string>
     <string name="hub_your_card">Your card</string>
     <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>
     <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
