@@ -48,4 +48,20 @@ class ProfileEditorUiStateTest {
 
         assertNull(preview.linkedin)
     }
+
+    @Test
+    fun `blocks a card that does not fit in the tag`() {
+        val oversized = ProfileEditorUiState(
+            name = "😀".repeat(64),
+            phone = "+34600123456",
+            email = "a".repeat(115) + "@b.cd",
+            linkedin = "a".repeat(60),
+            instagram = "b".repeat(60),
+        )
+
+        assertTrue(oversized.hasContact)
+        assertTrue(oversized.cardTooLarge)
+        assertFalse(oversized.canSave)
+        assertFalse(ProfileEditorUiState(name = "Ana", email = "ana@example.com").cardTooLarge)
+    }
 }

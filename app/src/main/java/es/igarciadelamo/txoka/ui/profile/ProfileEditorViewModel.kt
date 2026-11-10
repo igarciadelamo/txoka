@@ -8,10 +8,13 @@ import es.igarciadelamo.txoka.domain.profile.PhoneCountries
 import es.igarciadelamo.txoka.domain.profile.PhoneCountry
 import es.igarciadelamo.txoka.domain.profile.PhoneNumbers
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.ProfileLimits
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import es.igarciadelamo.txoka.domain.profile.SocialHandle
 import es.igarciadelamo.txoka.domain.profile.SocialNetwork
+import es.igarciadelamo.txoka.domain.protocol.fitsInTag
+import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,8 +46,15 @@ data class ProfileEditorUiState(
     val hasContact: Boolean
         get() = phone.isNotBlank() || email.isNotBlank() || linkedin.isNotBlank() || instagram.isNotBlank()
 
+    /**
+     * The card is encoded as vCard inside a 768-byte tag, and HCE silently publishes nothing above
+     * the limit, so an oversized card cannot be saved.
+     */
+    val cardTooLarge: Boolean
+        get() = !toPreview().toVCardPayload().fitsInTag()
+
     val canSave: Boolean
-        get() = name.isNotBlank() && hasContact
+        get() = name.isNotBlank() && hasContact && !cardTooLarge
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),
@@ -79,23 +89,49 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onNameChange(value: String) {
-        _uiState.update { it.copy(name = value, nameError = false) }
+        _uiState.update {
+            it.copy(name = ProfileLimits.limit(value, ProfileLimits.NAME), nameError = false)
+        }
     }
 
     fun onPhoneChange(value: String) {
-        _uiState.update { it.copy(phone = value, phoneError = false, contactError = false) }
+        _uiState.update {
+            it.copy(
+                phone = ProfileLimits.limit(value, ProfileLimits.PHONE),
+                phoneError = false,
+                contactError = false,
+            )
+        }
     }
 
     fun onEmailChange(value: String) {
-        _uiState.update { it.copy(email = value, emailError = false, contactError = false) }
+        _uiState.update {
+            it.copy(
+                email = ProfileLimits.limit(value, ProfileLimits.EMAIL),
+                emailError = false,
+                contactError = false,
+            )
+        }
     }
 
     fun onLinkedInChange(value: String) {
-        _uiState.update { it.copy(linkedin = value, linkedinError = false, contactError = false) }
+        _uiState.update {
+            it.copy(
+                linkedin = ProfileLimits.limit(value, ProfileLimits.HANDLE),
+                linkedinError = false,
+                contactError = false,
+            )
+        }
     }
 
     fun onInstagramChange(value: String) {
-        _uiState.update { it.copy(instagram = value, instagramError = false, contactError = false) }
+        _uiState.update {
+            it.copy(
+                instagram = ProfileLimits.limit(value, ProfileLimits.HANDLE),
+                instagramError = false,
+                contactError = false,
+            )
+        }
     }
 
     fun onCountrySelected(country: PhoneCountry) {
@@ -112,6 +148,9 @@ class ProfileEditorViewModel @Inject constructor(
 
     fun save() {
         val state = _uiState.value
+        // HCE has nothing to publish for an oversized card, so it must not reach the store.
+        if (state.cardTooLarge) return
+
         val name = state.name.trim()
         val email = state.email.trim()
         val rawPhone = state.phone.trim()

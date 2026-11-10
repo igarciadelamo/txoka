@@ -342,6 +342,14 @@ private fun ContactFields(
                 },
             )
         }
+        if (state.cardTooLarge) {
+            Text(
+                text = stringResource(R.string.error_card_too_long),
+                modifier = Modifier.padding(start = Spacing.xs),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
     }
 }
 

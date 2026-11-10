@@ -3,6 +3,7 @@ package es.igarciadelamo.txoka.ui.profile
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.PhoneCountries
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.ProfileLimits
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeSimRegionSource
@@ -267,5 +268,42 @@ class ProfileEditorViewModelTest {
         viewModel.onPresetSelected(CardPalette.Presets[1])
 
         assertEquals(CardPalette.Presets[1], viewModel.uiState.value.card)
+    }
+
+    @Test
+    fun `truncates the fields at their limits`() = runTest {
+        val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
+
+        viewModel.onNameChange("N".repeat(ProfileLimits.NAME + 20))
+        viewModel.onPhoneChange("6".repeat(ProfileLimits.PHONE + 20))
+        viewModel.onEmailChange("e".repeat(ProfileLimits.EMAIL + 20))
+        viewModel.onLinkedInChange("l".repeat(ProfileLimits.HANDLE + 20))
+        viewModel.onInstagramChange("i".repeat(ProfileLimits.HANDLE + 20))
+
+        val state = viewModel.uiState.value
+        assertEquals(ProfileLimits.NAME, state.name.length)
+        assertEquals(ProfileLimits.PHONE, state.phone.length)
+        assertEquals(ProfileLimits.EMAIL, state.email.length)
+        assertEquals(ProfileLimits.HANDLE, state.linkedin.length)
+        assertEquals(ProfileLimits.HANDLE, state.instagram.length)
+    }
+
+    @Test
+    fun `refuses to save a card above the tag limit`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+
+        viewModel.onNameChange("😀".repeat(ProfileLimits.NAME))
+        viewModel.onPhoneChange("600123456")
+        viewModel.onEmailChange("a".repeat(ProfileLimits.EMAIL - 5) + "@b.cd")
+        viewModel.onLinkedInChange("a".repeat(ProfileLimits.HANDLE))
+        viewModel.onInstagramChange("b".repeat(ProfileLimits.HANDLE))
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.cardTooLarge)
+        assertFalse(viewModel.uiState.value.canSave)
+        assertNull(repository.savedProfile)
+        assertFalse(viewModel.uiState.value.saved)
     }
 }

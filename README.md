@@ -188,7 +188,9 @@ Text values are escaped as vCard requires (`\n`, `\,`, `\;`, `\\`) and long line
 and `VERSION` are read; everything else, including photos and addresses, is ignored. A handle can
 arrive as `URL` or as `X-SOCIALPROFILE` from another app, and when the type is missing the network
 is recognised from the link itself. Invalid colours fall back to the default palette, so a card
-written by another app still loads. The NDEF message is capped at 768 bytes.
+written by another app still loads. The NDEF message is capped at 768 bytes: the editor limits the
+name, the phone, the email and the handles, and refuses to save a card whose encoded vCard would
+not fit, because HCE publishes nothing above the limit.
 
 The emitter emulates a NFC Forum Type 4 Tag. Two AIDs are registered:
 

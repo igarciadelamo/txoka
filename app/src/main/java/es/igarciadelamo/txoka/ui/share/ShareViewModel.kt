@@ -7,6 +7,8 @@ import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
+import es.igarciadelamo.txoka.domain.protocol.fitsInTag
+import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import es.igarciadelamo.txoka.nfc.NfcAvailability
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleController
@@ -24,7 +26,14 @@ data class ShareUiState(
     val role: ShareRoleState = ShareRoleState(),
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
-)
+) {
+    /**
+     * A stored card above the tag limit is published as nothing, so the module explains it instead
+     * of waiting for a tap that will never send.
+     */
+    val cardTooLarge: Boolean
+        get() = profile?.toVCardPayload()?.fitsInTag() == false
+}
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
