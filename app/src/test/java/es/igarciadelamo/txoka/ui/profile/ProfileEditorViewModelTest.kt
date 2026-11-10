@@ -126,10 +126,22 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
-    fun `enables save once a phone or an email is present`() = runTest {
+    fun `enables save once any of the four details is present`() = runTest {
         val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
 
         viewModel.onNameChange("Isidro")
+        assertFalse(viewModel.uiState.value.canSave)
+
+        viewModel.onInstagramChange("isidro.png")
+        assertTrue(viewModel.uiState.value.canSave)
+
+        viewModel.onInstagramChange(" ")
+        assertFalse(viewModel.uiState.value.canSave)
+
+        viewModel.onLinkedInChange("isidro-garcia")
+        assertTrue(viewModel.uiState.value.canSave)
+
+        viewModel.onLinkedInChange(" ")
         assertFalse(viewModel.uiState.value.canSave)
 
         viewModel.onEmailChange("isidro@example.com")
@@ -139,6 +151,51 @@ class ProfileEditorViewModelTest {
         assertFalse(viewModel.uiState.value.canSave)
 
         viewModel.onPhoneChange("+34600123456")
+        assertTrue(viewModel.uiState.value.canSave)
+    }
+
+    @Test
+    fun `saves a card that only carries a social handle`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+
+        viewModel.onNameChange("Marta")
+        viewModel.onInstagramChange("@marta.ruiz")
+        viewModel.save()
+        advanceUntilIdle()
+
+        val saved = repository.savedProfile
+        assertEquals("Marta", saved?.name)
+        assertEquals("marta.ruiz", saved?.instagram)
+        assertNull(saved?.phone)
+        assertNull(saved?.email)
+        assertTrue(viewModel.uiState.value.saved)
+    }
+
+    @Test
+    fun `refuses to save a card without any detail`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+
+        viewModel.onNameChange("Marta")
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.contactError)
+        assertNull(repository.savedProfile)
+    }
+
+    @Test
+    fun `clears the missing detail error when a detail is typed`() = runTest {
+        val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
+
+        viewModel.onNameChange("Marta")
+        viewModel.save()
+        assertTrue(viewModel.uiState.value.contactError)
+
+        viewModel.onInstagramChange("marta.ruiz")
+
+        assertFalse(viewModel.uiState.value.contactError)
         assertTrue(viewModel.uiState.value.canSave)
     }
 

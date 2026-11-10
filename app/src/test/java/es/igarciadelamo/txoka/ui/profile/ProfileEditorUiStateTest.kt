@@ -9,12 +9,15 @@ import org.junit.Test
 
 class ProfileEditorUiStateTest {
     @Test
-    fun `requires a name and one contact channel`() {
+    fun `requires a name and at least one detail`() {
         assertFalse(ProfileEditorUiState(name = "   ", phone = "+34600123456").canSave)
         assertFalse(ProfileEditorUiState(name = "Ana").canSave)
         assertFalse(ProfileEditorUiState(name = "Ana", phone = " ").canSave)
         assertTrue(ProfileEditorUiState(name = "Ana", phone = "+34600123456").canSave)
         assertTrue(ProfileEditorUiState(name = "Ana", email = "ana@example.com").canSave)
+        assertTrue(ProfileEditorUiState(name = "Ana", linkedin = "ana-ruiz").canSave)
+        assertTrue(ProfileEditorUiState(name = "Ana", instagram = "@ana.ruiz").canSave)
+        assertFalse(ProfileEditorUiState(name = "Ana", instagram = " ").canSave)
     }
 
     @Test
