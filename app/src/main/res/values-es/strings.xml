@@ -111,6 +111,9 @@
     <string name="sheet_shared_via_nfc">Compartida por NFC</string>
     <string name="settings_received">Contactos recibidos</string>
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
+    <string name="about_privacy">Privacidad</string>
+    <string name="about_privacy_local">Tu tarjeta y las que recibes se quedan en este teléfono. Txoka no tiene cuenta, ni rastreo, ni permiso de internet.</string>
+    <string name="about_privacy_backup">La copia de seguridad de Android puede copiarlas a tu propia cuenta de Google, para que una reinstalación o un móvil nuevo las recuperen. Esa copia pertenece a tu cuenta, no a Txoka.</string>
     <string name="about_author_title">Autor</string>
     <string name="about_author_role">Diseño y desarrollo</string>
     <string name="about_tagline">Comparte tu tarjeta, guarda tus contactos</string>
