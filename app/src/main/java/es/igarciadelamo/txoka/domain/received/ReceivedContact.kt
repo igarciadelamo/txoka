@@ -22,7 +22,7 @@ data class ReceivedContact(
 sealed interface SaveResult {
     data class Saved(val id: Long) : SaveResult
 
-    data class Duplicate(val id: Long) : SaveResult
+    data class Updated(val id: Long) : SaveResult
 }
 
 interface ReceivedContactRepository {
@@ -30,7 +30,13 @@ interface ReceivedContactRepository {
 
     fun contact(id: Long): Flow<ReceivedContact?>
 
-    /** Stores the card, or reports the existing contact whose phone or email already matches. */
+    /** The stored contact the card belongs to, matching on phone, email or a social handle. */
+    suspend fun match(payload: VCardPayload): ReceivedContact?
+
+    /**
+     * Stores the card, or refreshes the matching contact: the sender's card wins and the local
+     * note is kept.
+     */
     suspend fun save(payload: VCardPayload): SaveResult
 
     suspend fun updateNote(id: Long, note: String)

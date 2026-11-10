@@ -46,6 +46,7 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 @Composable
 fun ReceiveConfirmScreen(
     payload: VCardPayload,
+    alreadyStored: Boolean,
     onSave: () -> Unit,
     onDiscard: () -> Unit,
     modifier: Modifier = Modifier,
@@ -73,21 +74,7 @@ fun ReceiveConfirmScreen(
                     .padding(horizontal = Spacing.xl),
                 verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                    SenderAvatar(payload = payload)
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.sheet_incoming_title, payload.name),
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                        Text(
-                            text = stringResource(R.string.sheet_incoming_body),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+                IncomingHeader(payload = payload, alreadyStored = alreadyStored)
 
                 Row(
                     modifier = Modifier
@@ -112,7 +99,14 @@ fun ReceiveConfirmScreen(
                 modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                PrimaryButton(text = stringResource(R.string.action_save_contact), onClick = onSave)
+                PrimaryButton(
+                    text = if (alreadyStored) {
+                        stringResource(R.string.action_update_contact)
+                    } else {
+                        stringResource(R.string.action_save_contact)
+                    },
+                    onClick = onSave,
+                )
                 TextButton(
                     onClick = onDiscard,
                     modifier = Modifier.fillMaxWidth(),
@@ -124,6 +118,33 @@ fun ReceiveConfirmScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun IncomingHeader(payload: VCardPayload, alreadyStored: Boolean) {
+    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        SenderAvatar(payload = payload)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = if (alreadyStored) {
+                    stringResource(R.string.sheet_incoming_title_existing, payload.name)
+                } else {
+                    stringResource(R.string.sheet_incoming_title, payload.name)
+                },
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = if (alreadyStored) {
+                    stringResource(R.string.sheet_incoming_body_existing)
+                } else {
+                    stringResource(R.string.sheet_incoming_body)
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

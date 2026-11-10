@@ -1,6 +1,7 @@
 package es.igarciadelamo.txoka.testing
 
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
+import es.igarciadelamo.txoka.domain.received.ContactKeys
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.domain.received.SaveResult
@@ -22,8 +23,21 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
         contacts.firstOrNull { it.id == id }
     }
 
+    override suspend fun match(payload: VCardPayload): ReceivedContact? =
+        state.value.firstOrNull { contact -> contact.matches(payload) }
+
     override suspend fun save(payload: VCardPayload): SaveResult {
         saved = payload
+        val existing = match(payload)
+        if (existing != null) {
+            state.update { contacts ->
+                contacts.map { contact ->
+                    if (contact.id == existing.id) contact.from(payload) else contact
+                }
+            }
+            return SaveResult.Updated(existing.id)
+        }
+
         val id = nextId++
         state.update { contacts ->
             contacts + ReceivedContact(
@@ -33,6 +47,7 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
                 email = payload.email,
                 linkedin = payload.linkedin,
                 instagram = payload.instagram,
+                card = payload.palette,
             )
         }
         return SaveResult.Saved(id)
@@ -45,4 +60,25 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
     override suspend fun delete(id: Long) {
         state.update { contacts -> contacts.filterNot { it.id == id } }
     }
+
+    private fun ReceivedContact.matches(payload: VCardPayload): Boolean {
+        val phoneKey = ContactKeys.phone(payload.phone)
+        val emailKey = ContactKeys.email(payload.email)
+        val linkedinKey = ContactKeys.social(payload.linkedin)
+        val instagramKey = ContactKeys.social(payload.instagram)
+        return (phoneKey.isNotEmpty() && ContactKeys.phone(phone) == phoneKey) ||
+            (emailKey.isNotEmpty() && ContactKeys.email(email) == emailKey) ||
+            (linkedinKey.isNotEmpty() && ContactKeys.social(linkedin) == linkedinKey) ||
+            (instagramKey.isNotEmpty() && ContactKeys.social(instagram) == instagramKey)
+    }
+
+    private fun ReceivedContact.from(payload: VCardPayload): ReceivedContact = copy(
+        name = payload.name,
+        phone = payload.phone,
+        email = payload.email,
+        linkedin = payload.linkedin,
+        instagram = payload.instagram,
+        receivedAt = System.currentTimeMillis(),
+        card = payload.palette,
+    )
 }

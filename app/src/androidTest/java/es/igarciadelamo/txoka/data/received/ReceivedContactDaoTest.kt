@@ -42,13 +42,39 @@ class ReceivedContactDaoTest {
     }
 
     @Test
-    fun findsDuplicatesByPhoneOrEmail() = runTest {
-        val id = dao.insert(entity(name = "Marta", phoneKey = "34600111222", emailKey = "marta@example.com"))
+    fun findsMatchesByPhoneEmailOrHandle() = runTest {
+        val id = dao.insert(
+            entity(
+                name = "Marta",
+                phoneKey = "34600111222",
+                emailKey = "marta@example.com",
+                linkedin = "marta-ruiz",
+                instagram = "marta.ruiz",
+            ),
+        )
 
-        assertEquals(id, dao.findDuplicate(phoneKey = "34600111222", emailKey = "")?.id)
-        assertEquals(id, dao.findDuplicate(phoneKey = "", emailKey = "marta@example.com")?.id)
-        assertNull(dao.findDuplicate(phoneKey = "", emailKey = ""))
-        assertNull(dao.findDuplicate(phoneKey = "1", emailKey = "other@example.com"))
+        assertEquals(id, dao.findMatch("34600111222", "", "", "")?.id)
+        assertEquals(id, dao.findMatch("", "marta@example.com", "", "")?.id)
+        assertEquals(id, dao.findMatch("", "", "marta-ruiz", "")?.id)
+        assertEquals(id, dao.findMatch("", "", "", "marta.ruiz")?.id)
+        assertNull(dao.findMatch("", "", "", ""))
+        assertNull(dao.findMatch("1", "other@example.com", "", ""))
+    }
+
+    @Test
+    fun updatesTheCardButKeepsTheNote() = runTest {
+        val id = dao.insert(entity(name = "Marta", phoneKey = "34600111222", receivedAt = 1L))
+        dao.updateNote(id, "Meetup")
+
+        dao.updateCard(
+            entity(name = "Marta Ruiz", phoneKey = "34600999888", receivedAt = 2L).copy(id = id),
+        )
+
+        val stored = dao.observe(id).first()
+        assertEquals("Marta Ruiz", stored?.name)
+        assertEquals("34600999888", stored?.phoneKey)
+        assertEquals(2L, stored?.receivedAt)
+        assertEquals("Meetup", stored?.note)
     }
 
     @Test
@@ -62,18 +88,24 @@ class ReceivedContactDaoTest {
         assertNull(dao.observe(id).first())
     }
 
-    private fun entity(name: String, phoneKey: String = "", emailKey: String = "", receivedAt: Long = 0L) =
-        ReceivedContactEntity(
-            name = name,
-            phone = null,
-            email = null,
-            linkedin = null,
-            instagram = null,
-            phoneKey = phoneKey,
-            emailKey = emailKey,
-            note = "",
-            receivedAt = receivedAt,
-            accentHex = "#4F46E5",
-            accent2Hex = "#06B6D4",
-        )
+    private fun entity(
+        name: String,
+        phoneKey: String = "",
+        emailKey: String = "",
+        linkedin: String? = null,
+        instagram: String? = null,
+        receivedAt: Long = 0L,
+    ) = ReceivedContactEntity(
+        name = name,
+        phone = null,
+        email = null,
+        linkedin = linkedin,
+        instagram = instagram,
+        phoneKey = phoneKey,
+        emailKey = emailKey,
+        note = "",
+        receivedAt = receivedAt,
+        accentHex = "#4F46E5",
+        accent2Hex = "#06B6D4",
+    )
 }

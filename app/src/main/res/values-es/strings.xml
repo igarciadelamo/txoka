@@ -37,6 +37,7 @@
 
     <string name="action_discard">Descartar</string>
     <string name="action_save_contact">Guardar contacto</string>
+    <string name="action_update_contact">Actualizar contacto</string>
     <string name="action_call">Llamar</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_delete">Borrar</string>
@@ -83,6 +84,8 @@
     <string name="received_empty_body">Pide a alguien que comparta la suya por NFC.</string>
     <string name="received_empty_title">Aún no hay tarjetas</string>
     <string name="received_meta">Recibida el %1$s · Compartida por NFC</string>
+    <string name="received_saved">Contacto guardado</string>
+    <string name="received_updated">Contacto actualizado</string>
     <string name="section_social">Enlaces</string>
     <string name="social_handle_description">%1$s, %2$s</string>
     <string name="settings_about">Acerca de</string>
@@ -91,7 +94,9 @@
     <string name="settings_sharing">Compartir</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="sheet_incoming_body">No se guarda nada hasta que aceptes.</string>
+    <string name="sheet_incoming_body_existing">Se actualiza la tarjeta que ya tienes y tu nota se conserva.</string>
     <string name="sheet_incoming_title">%1$s quiere compartir su tarjeta</string>
+    <string name="sheet_incoming_title_existing">Ya tienes a %1$s</string>
     <string name="sheet_shared_via_nfc">Compartida por NFC</string>
     <string name="settings_received">Contactos recibidos</string>
     <string name="received_note_hint">Añade una nota sobre esta persona</string>

@@ -49,8 +49,10 @@ receive. Everything stays on the device: no backend, no account and no `INTERNET
   app. No permission is needed: the link leaves the app and Txoka never fetches anything.
 - *Add to contacts* opens the system editor prefilled through `ContactsContract.Intents.Insert`,
   so Txoka never asks for `WRITE_CONTACTS`.
-- Duplicates are detected by normalised phone (digits only) or lowercased email. Cards that only
-  share a name are kept separately.
+- Sharing a card again refreshes the stored contact instead of adding a copy: a normalised phone
+  (digits only), a lowercased email or a bare social handle identifies it, the sender's fields win,
+  the date moves the contact to the top and the local note is kept. Cards that only share a name are
+  kept separately.
 - Received cards keep the sender's gradient colours.
 
 ### Privacy and storage
@@ -156,8 +158,8 @@ state when the reader goes away.
 
 Both push a `VCardPayload` into `IncomingCards`, which the UI collects.
 
-**Storing.** `RoomReceivedContactRepository` maps entities to domain objects, keeps two indexed
-keys for duplicate detection and persists the sender's colours with the contact.
+**Storing.** `RoomReceivedContactRepository` maps entities to domain objects, finds the contact a
+card belongs to by its keys and persists the sender's colours with the contact.
 
 ## Protocol
 
@@ -227,9 +229,11 @@ while the unlock setting is on).
   link. `SocialHandle` normalises both into the stored form.
 - **Runtime unlock rule.** The HCE service is not declared with `requireDeviceUnlock`, because the
   switch can change while the service is bound. The responder returns `6985` per APDU instead.
-- **Duplicate detection.** A received card is a duplicate when the normalised phone (digits only)
-  or the normalised email (trimmed, lower case) matches a stored contact. Two cards with only the
-  same name are kept separately.
+- **Repeated cards merge.** A received card belongs to a stored contact when the normalised phone
+  (digits only), the normalised email (trimmed, lower case) or a bare social handle matches. Saving
+  it again refreshes the sender's fields and bumps the received date but keeps the local note, and
+  the confirm sheet says so before the user accepts. Two cards with only the same name are kept
+  separately.
 - **No contact write permission.** *Add to contacts* opens the system editor prefilled with
   `ContactsContract.Intents.Insert`, so the app never requests `WRITE_CONTACTS`.
 - **Notes stay local.** Notes are plain text in the app database. The database is version 2 and,
@@ -284,7 +288,7 @@ adapters are covered by manual checks instead. The HTML report is written to
 
 ### Instrumented tests
 
-`ReceivedContactDaoTest` covers ordering, duplicate lookup and note/delete queries against an
+`ReceivedContactDaoTest` covers ordering, match lookup and note/delete queries against an
 in-memory Room database. Run them with the emulator or device attached:
 
 ```sh
