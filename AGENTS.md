@@ -21,8 +21,11 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 `main` is green. Milestones 0–6 and the polish phase are merged.
 
 - Unified app bar, hub/card actions, accessibility pass, string audit and licensing are done.
-- 167 JVM unit tests + 5 instrumented DAO tests (the DAO tests currently fail to start on the
-  emulator with `NoSuchMethodError runBlockingK`; it reproduces on `main`).
+- 167 JVM unit tests + 6 instrumented DAO tests, all green on the emulator. The old
+  `NoSuchMethodError runBlockingK` was a version split: `kotlinx-coroutines-test` came in at
+  1.11.0 while the app runtime resolved `kotlinx-coroutines-core` 1.9.0 (Room's BOM), and AGP's
+  consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
+  now declared explicitly at the catalog version.
 - Remaining backlog: optional vCard/QR sharing fallback, real two-phone NFC validation.
 
 ## Non-negotiable rules
