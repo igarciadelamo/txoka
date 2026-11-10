@@ -63,12 +63,15 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
   in a local Room database.
 - Both stay in the user's own Google backup, so a reinstall or a new phone restores the library.
   That copy belongs to the device's account, not to Txoka.
+- The full wording, including the backup caveat, is in `docs/privacy-policy.md`. It is a draft for
+  the public URL that Play Console requires and is mirrored in the About screen.
 - Deleting the card clears only the profile. Share settings and received contacts stay.
 
 ### Settings and About
 
-- Sharing switches, the received library and an About screen with the version, the author, the
-  licence summary and the Manrope attribution.
+- Sharing switches, the received library and an About screen with the version, a privacy summary
+  (local storage plus the Android backup caveat), the author, the licence summary and the Manrope
+  attribution.
 - In debug builds, Settings offers *Simulate an incoming card*, which runs a demo card through the
   real NDEF and vCard round trip. This is how the receive flow is exercised on emulators, which
   have no NFC.

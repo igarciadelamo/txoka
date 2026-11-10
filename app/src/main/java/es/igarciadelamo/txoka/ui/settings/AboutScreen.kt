@@ -76,6 +76,14 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(top = Spacing.xxl),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
+                Eyebrow(text = stringResource(R.string.about_privacy))
+                PrivacyCard()
+            }
+
+            Column(
+                modifier = Modifier.padding(top = Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
                 Eyebrow(text = stringResource(R.string.about_author_title))
                 AuthorCard()
             }
@@ -88,6 +96,29 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 LicenceCard()
             }
         }
+    }
+}
+
+@Composable
+private fun PrivacyCard() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Corners.sheet))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        Text(
+            text = stringResource(R.string.about_privacy_local),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(R.string.about_privacy_backup),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

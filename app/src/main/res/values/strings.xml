@@ -112,6 +112,9 @@
     <string name="sheet_shared_via_nfc">Shared via NFC</string>
     <string name="settings_received">Received contacts</string>
     <string name="received_note_hint">Add a note about this person</string>
+    <string name="about_privacy">Privacy</string>
+    <string name="about_privacy_local">Your card and the cards you receive stay on this phone. Txoka has no account, no tracking and no internet permission.</string>
+    <string name="about_privacy_backup">Android\'s system backup can copy them to your own Google account, so a reinstall or a new phone can restore them. That copy belongs to your account, not to Txoka.</string>
     <string name="about_author_title">Author</string>
     <string name="about_author_role">Design and development</string>
     <string name="about_tagline">Share your card, keep your contacts</string>
