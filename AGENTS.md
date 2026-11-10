@@ -90,8 +90,10 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   standard `URL` properties.
 - Received contacts store the sender's name, phone, email, LinkedIn and Instagram handles, palette,
   note and timestamp.
-- Duplicates are matched by normalised phone (digits only) or lowercased email; same-name-only
-  cards are stored separately.
+- A repeated card matches on normalised phone (digits only), lowercased email or lowercased social
+  handle. Saving it refreshes the sender's fields and bumps `receivedAt`, keeps the local note and
+  returns `SaveResult.Updated`; the confirm sheet shows "You already have …" and "Update contact".
+  Same-name-only cards are stored separately.
 - `ProfileRepository.delete()` clears only the `profile.*` DataStore keys; it keeps share settings
   and received contacts. The hub falls back to its empty state and HCE stops publishing.
 - Payload: vCard 3.0 plus `X-TXOKA-PROTOCOL`, `X-TXOKA-CARD-ACCENT`, `X-TXOKA-CARD-ACCENT2`.

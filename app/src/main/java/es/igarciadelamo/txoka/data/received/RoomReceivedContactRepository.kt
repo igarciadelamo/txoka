@@ -23,29 +23,16 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         contact?.toDomain()
     }
 
+    override suspend fun match(payload: VCardPayload): ReceivedContact? = findMatch(payload)?.toDomain()
+
     override suspend fun save(payload: VCardPayload): SaveResult {
-        val phoneKey = ContactKeys.phone(payload.phone)
-        val emailKey = ContactKeys.email(payload.email)
+        val card = payload.toEntity()
+        val existing = findMatch(payload)
+            ?: return SaveResult.Saved(dao.insert(card))
 
-        val duplicate = dao.findDuplicate(phoneKey, emailKey)
-        if (duplicate != null) return SaveResult.Duplicate(duplicate.id)
-
-        val id = dao.insert(
-            ReceivedContactEntity(
-                name = payload.name,
-                phone = payload.phone,
-                email = payload.email,
-                linkedin = payload.linkedin,
-                instagram = payload.instagram,
-                phoneKey = phoneKey,
-                emailKey = emailKey,
-                note = "",
-                receivedAt = System.currentTimeMillis(),
-                accentHex = payload.palette.accent.hex,
-                accent2Hex = payload.palette.accent2.hex,
-            ),
-        )
-        return SaveResult.Saved(id)
+        // Sharing again refreshes the card, not the local note.
+        dao.updateCard(card.copy(id = existing.id, note = existing.note))
+        return SaveResult.Updated(existing.id)
     }
 
     override suspend fun updateNote(id: Long, note: String) {
@@ -55,6 +42,27 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
     override suspend fun delete(id: Long) {
         dao.delete(id)
     }
+
+    private suspend fun findMatch(payload: VCardPayload): ReceivedContactEntity? = dao.findMatch(
+        phoneKey = ContactKeys.phone(payload.phone),
+        emailKey = ContactKeys.email(payload.email),
+        linkedinKey = ContactKeys.social(payload.linkedin),
+        instagramKey = ContactKeys.social(payload.instagram),
+    )
+
+    private fun VCardPayload.toEntity(): ReceivedContactEntity = ReceivedContactEntity(
+        name = name,
+        phone = phone,
+        email = email,
+        linkedin = linkedin,
+        instagram = instagram,
+        phoneKey = ContactKeys.phone(phone),
+        emailKey = ContactKeys.email(email),
+        note = "",
+        receivedAt = System.currentTimeMillis(),
+        accentHex = palette.accent.hex,
+        accent2Hex = palette.accent2.hex,
+    )
 
     private fun ReceivedContactEntity.toDomain(): ReceivedContact = ReceivedContact(
         id = id,

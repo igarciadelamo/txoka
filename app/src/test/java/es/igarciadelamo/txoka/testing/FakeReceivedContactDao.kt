@@ -17,16 +17,28 @@ class FakeReceivedContactDao : ReceivedContactDao {
         contacts.firstOrNull { contact -> contact.id == id }
     }
 
-    override suspend fun findDuplicate(phoneKey: String, emailKey: String): ReceivedContactEntity? =
-        state.value.firstOrNull { contact ->
+    override suspend fun findMatch(
+        phoneKey: String,
+        emailKey: String,
+        linkedinKey: String,
+        instagramKey: String,
+    ): ReceivedContactEntity? = state.value
+        .filter { contact ->
             (phoneKey.isNotEmpty() && contact.phoneKey == phoneKey) ||
-                (emailKey.isNotEmpty() && contact.emailKey == emailKey)
+                (emailKey.isNotEmpty() && contact.emailKey == emailKey) ||
+                (linkedinKey.isNotEmpty() && contact.linkedin?.lowercase() == linkedinKey) ||
+                (instagramKey.isNotEmpty() && contact.instagram?.lowercase() == instagramKey)
         }
+        .maxByOrNull { contact -> contact.receivedAt }
 
     override suspend fun insert(contact: ReceivedContactEntity): Long {
         val id = nextId++
         state.update { contacts -> contacts + contact.copy(id = id) }
         return id
+    }
+
+    override suspend fun updateCard(card: ReceivedContactEntity) {
+        state.update { contacts -> contacts.map { if (it.id == card.id) card else it } }
     }
 
     override suspend fun updateNote(id: Long, note: String) {

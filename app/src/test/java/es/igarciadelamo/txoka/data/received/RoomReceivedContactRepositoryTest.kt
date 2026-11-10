@@ -36,27 +36,62 @@ class RoomReceivedContactRepositoryTest {
     }
 
     @Test
-    fun `rejects a card with the same phone`() = runTest {
+    fun `refreshes the card when the phone matches`() = runTest {
         val first = repository.save(marta) as SaveResult.Saved
 
-        val second = repository.save(marta.copy(name = "Marta", email = null))
+        val result = repository.save(VCardPayload(name = "Marta Ruiz Gómez", phone = "+34600111222"))
 
-        assertEquals(SaveResult.Duplicate(first.id), second)
-        assertEquals(1, repository.contacts.first().size)
+        assertEquals(SaveResult.Updated(first.id), result)
+        val saved = repository.contacts.first().single()
+        assertEquals("Marta Ruiz Gómez", saved.name)
+        assertNull(saved.email)
+        assertNull(saved.instagram)
     }
 
     @Test
-    fun `rejects a card with the same email`() = runTest {
+    fun `refreshes the card when the email matches, ignoring case`() = runTest {
         repository.save(marta)
 
-        val second = repository.save(VCardPayload(name = "Otra Marta", email = "MARTA@example.com"))
+        val result = repository.save(VCardPayload(name = "Otra Marta", email = "MARTA@example.com"))
 
-        assertTrue(second is SaveResult.Duplicate)
+        assertTrue(result is SaveResult.Updated)
+        assertEquals(1, repository.contacts.first().size)
+        assertEquals("Otra Marta", repository.contacts.first().single().name)
+    }
+
+    @Test
+    fun `refreshes the card when a social handle matches`() = runTest {
+        repository.save(VCardPayload(name = "Ana", instagram = "ana.ruiz"))
+
+        val result = repository.save(VCardPayload(name = "Ana Ruiz", instagram = "@Ana.Ruiz"))
+
+        assertTrue(result is SaveResult.Updated)
         assertEquals(1, repository.contacts.first().size)
     }
 
     @Test
-    fun `stores contacts without phone or email`() = runTest {
+    fun `keeps the note and bumps the date when a card is refreshed`() = runTest {
+        val first = repository.save(marta) as SaveResult.Saved
+        repository.updateNote(first.id, "Meetup")
+        val receivedAt = repository.contact(first.id).first()?.receivedAt
+
+        repository.save(marta.copy(name = "Marta"))
+
+        val saved = repository.contacts.first().single()
+        assertEquals("Meetup", saved.note)
+        assertTrue(saved.receivedAt >= (receivedAt ?: 0L))
+    }
+
+    @Test
+    fun `match reports the stored contact`() = runTest {
+        val first = repository.save(marta) as SaveResult.Saved
+
+        assertEquals(first.id, repository.match(marta.copy(name = "Marta"))?.id)
+        assertNull(repository.match(VCardPayload(name = "Marta", phone = "+34600999888")))
+    }
+
+    @Test
+    fun `stores contacts without phone, email or handles`() = runTest {
         repository.save(VCardPayload(name = "Ana"))
         repository.save(VCardPayload(name = "Luis"))
 
