@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -40,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.igarciadelamo.txoka.R
+import es.igarciadelamo.txoka.ui.theme.ContentMaxWidth
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -186,6 +188,13 @@ fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modi
         Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
+
+/**
+ * Caps the content at [ContentMaxWidth] and fills whatever is left. Screens add it to their
+ * content column and centre it, so a phone in landscape or a tablet reads as a column instead of
+ * a stretched phone layout.
+ */
+fun Modifier.contentWidth(): Modifier = widthIn(max = ContentMaxWidth).fillMaxWidth()
 
 /** Column with the shared screen padding, so every screen starts from the same grid. */
 @Composable

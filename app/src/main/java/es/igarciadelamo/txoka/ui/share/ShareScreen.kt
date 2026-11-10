@@ -58,6 +58,7 @@ import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.cardContentColor
 import es.igarciadelamo.txoka.ui.components.cardOverlayTint
+import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
@@ -111,7 +112,9 @@ fun ShareScreen(
             contentAlignment = Alignment.Center,
         ) {
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .contentWidth()
+                    .verticalScroll(rememberScrollState()),
             ) {
                 if (profile == null) {
                     EmptyHub(onCreateCard = onCreateCard)
@@ -444,6 +447,30 @@ private fun ShareScreenNoCardPreview() {
             role = ShareRoleState(role = ShareRole.Receive),
             requireUnlock = false,
             nfc = NfcStatus.Unavailable,
+            onOpenReceived = {},
+            onOpenSettings = {},
+            onCreateCard = {},
+            onEditProfile = {},
+            onRoleSelected = {},
+            onCancelReturn = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 808, heightDp = 360)
+@Composable
+private fun ShareScreenLandscapePreview() {
+    TxokaTheme {
+        ShareScreen(
+            profile = Profile(
+                name = "Isidro García",
+                phone = "+34 600 123 456",
+                email = "isidro@example.com",
+                card = CardPalette.Default,
+            ),
+            role = ShareRoleState(),
+            requireUnlock = false,
+            nfc = NfcStatus.Enabled,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
