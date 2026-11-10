@@ -95,14 +95,16 @@ fun ContactCard(
     }
     val overlayTint = if (placeholder) Color.White else profile.cardOverlayTint()
     val accent = profile.card.accent.toComposeColor()
+    val details = profile.details()
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 // The ratio is a minimum: a long name or a long email grows the card instead of
-                // being clipped by a fixed height.
-                .heightIn(min = maxWidth / layout.aspectRatio)
+                // being clipped by a fixed height. Sparse cards hug their content so a single
+                // detail never leaves a dead gap at the bottom.
+                .heightIn(min = layout.minHeight(width = maxWidth, rows = details.rowCount))
                 .then(
                     if (placeholder) {
                         Modifier
@@ -164,12 +166,49 @@ fun ContactCard(
     }
 }
 
-/** Width-to-height ratio of each layout, used as the minimum height of the card. */
+/** Width-to-height ratio of each layout, used as the minimum height of a full card. */
 private val CardLayout.aspectRatio: Float
     get() = when (this) {
         CardLayout.Hero -> HERO_ASPECT_RATIO
         CardLayout.Preview -> PREVIEW_ASPECT_RATIO
     }
+
+/** Height a card with fewer than [DENSE_ROW_COUNT] detail rows falls back to. */
+private val CardLayout.sparseMinHeight: Dp
+    get() = when (this) {
+        CardLayout.Hero -> SparseHeroMinHeight
+        CardLayout.Preview -> SparsePreviewMinHeight
+    }
+
+private fun CardLayout.minHeight(width: Dp, rows: Int): Dp =
+    if (rows >= DENSE_ROW_COUNT) width / aspectRatio else sparseMinHeight
+
+/** Details a card can show, in paint order. */
+private data class CardDetails(val phone: String?, val email: String?, val socials: List<SocialDetail>) {
+    val isEmpty: Boolean get() = phone == null && email == null && socials.isEmpty()
+
+    /** Without a phone or an email the handles are the only contact, so they lead the card. */
+    val promotesSocials: Boolean get() = phone == null && email == null && socials.isNotEmpty()
+
+    /** Detail rows on screen, which decide how tall the card has to be. */
+    val rowCount: Int
+        get() = listOfNotNull(phone, email).size + when {
+            socials.isEmpty() -> 0
+            promotesSocials -> socials.size
+            else -> 1
+        }
+}
+
+private data class SocialDetail(val network: SocialNetwork, val handle: String)
+
+private fun Profile.details(): CardDetails = CardDetails(
+    phone = phone?.takeIf { it.isNotBlank() },
+    email = email?.takeIf { it.isNotBlank() },
+    socials = listOfNotNull(
+        linkedin?.takeIf { it.isNotBlank() }?.let { SocialDetail(SocialNetwork.LinkedIn, it) },
+        instagram?.takeIf { it.isNotBlank() }?.let { SocialDetail(SocialNetwork.Instagram, it) },
+    ),
+)
 
 @Composable
 private fun HeroContent(profile: Profile, contentColor: Color, overlayTint: Color) {
@@ -255,44 +294,60 @@ private fun Avatar(profile: Profile, size: Dp, contentColor: Color, overlayTint:
 
 @Composable
 private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Color) {
-    val rows = listOfNotNull(
-        profile.phone?.let { phone -> Icons.Filled.Phone to phone },
-        profile.email?.let { email -> Icons.Filled.Email to email },
-    )
-    val socials = listOfNotNull(
-        profile.linkedin?.let { handle -> SocialNetwork.LinkedIn to handle },
-        profile.instagram?.let { handle -> SocialNetwork.Instagram to handle },
-    )
-    if (rows.isEmpty() && socials.isEmpty()) return
+    val details = profile.details()
+    if (details.isEmpty) return
 
     Column(
         modifier = Modifier.padding(top = 10.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        rows.forEach { (image, text) ->
-            ContactPill(text = text, contentColor = contentColor, overlayTint = overlayTint) {
-                Icon(
-                    imageVector = image,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = contentColor,
+        if (details.promotesSocials) {
+            // No phone or email: each handle takes a full row and the title size, because it is the
+            // only way to reach the owner instead of a small footnote under the name.
+            details.socials.forEach { social ->
+                SocialPill(
+                    social = social,
+                    contentColor = contentColor,
+                    overlayTint = overlayTint,
+                    modifier = Modifier.fillMaxWidth(),
+                    prominent = true,
                 )
             }
-        }
-        if (socials.isNotEmpty()) {
-            // Both handles share one row and carry only the username, never the full link.
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                socials.forEach { (network, handle) ->
-                    SocialPill(
-                        network = network,
-                        handle = handle,
-                        contentColor = contentColor,
-                        overlayTint = overlayTint,
-                        modifier = if (socials.size > 1) Modifier.weight(1f) else Modifier,
+        } else {
+            details.phone?.let { phone ->
+                ContactPill(text = phone, contentColor = contentColor, overlayTint = overlayTint) { size ->
+                    Icon(
+                        imageVector = Icons.Filled.Phone,
+                        contentDescription = null,
+                        modifier = Modifier.size(size),
+                        tint = contentColor,
                     )
+                }
+            }
+            details.email?.let { email ->
+                ContactPill(text = email, contentColor = contentColor, overlayTint = overlayTint) { size ->
+                    Icon(
+                        imageVector = Icons.Filled.Email,
+                        contentDescription = null,
+                        modifier = Modifier.size(size),
+                        tint = contentColor,
+                    )
+                }
+            }
+            if (details.socials.isNotEmpty()) {
+                // Both handles share one row and carry only the username, never the full link.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    details.socials.forEach { social ->
+                        SocialPill(
+                            social = social,
+                            contentColor = contentColor,
+                            overlayTint = overlayTint,
+                            modifier = if (details.socials.size > 1) Modifier.weight(1f) else Modifier,
+                        )
+                    }
                 }
             }
         }
@@ -303,25 +358,26 @@ private fun ContactRows(profile: Profile, contentColor: Color, overlayTint: Colo
 
 @Composable
 private fun SocialPill(
-    network: SocialNetwork,
-    handle: String,
+    social: SocialDetail,
     contentColor: Color,
     overlayTint: Color,
     modifier: Modifier = Modifier,
+    prominent: Boolean = false,
 ) {
     val description = stringResource(
         R.string.social_handle_description,
-        network.label(),
-        SocialHandle.display(network, handle),
+        social.network.label(),
+        SocialHandle.display(social.network, social.handle),
     )
     ContactPill(
-        text = SocialHandle.display(network, handle),
+        text = SocialHandle.display(social.network, social.handle),
         contentColor = contentColor,
         overlayTint = overlayTint,
         // The icon says which network it is, which TalkBack cannot see.
         modifier = modifier.clearAndSetSemantics { contentDescription = description },
-    ) {
-        SocialIcon(network = network, tint = contentColor, modifier = Modifier.size(16.dp))
+        prominent = prominent,
+    ) { size ->
+        SocialIcon(network = social.network, tint = contentColor, modifier = Modifier.size(size))
     }
 }
 
@@ -331,20 +387,26 @@ private fun ContactPill(
     contentColor: Color,
     overlayTint: Color,
     modifier: Modifier = Modifier,
-    icon: @Composable () -> Unit,
+    prominent: Boolean = false,
+    icon: @Composable (Dp) -> Unit,
 ) {
     Row(
         modifier = modifier
             .clip(CircleShape)
             .background(overlayTint.copy(alpha = PILL_BACKGROUND_ALPHA))
-            .padding(start = 12.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(
+                start = if (prominent) 16.dp else 12.dp,
+                end = if (prominent) 18.dp else 14.dp,
+                top = if (prominent) 9.dp else 6.dp,
+                bottom = if (prominent) 9.dp else 6.dp,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(if (prominent) 10.dp else 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon()
+        icon(if (prominent) ProminentIconSize else PillIconSize)
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
+            style = if (prominent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
             color = contentColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -391,6 +453,13 @@ internal fun RgbColor.toComposeColor(): Color = Color(argb)
 
 private const val HERO_ASPECT_RATIO = 1.58f
 private const val PREVIEW_ASPECT_RATIO = 1.95f
+
+/** Rows a card needs before it keeps the layout ratio instead of hugging its content. */
+private const val DENSE_ROW_COUNT = 2
+private val SparseHeroMinHeight = 176.dp
+private val SparsePreviewMinHeight = 152.dp
+private val PillIconSize = 16.dp
+private val ProminentIconSize = 20.dp
 private val BrandmarkReserve = 16.dp
 private const val TXOKA_MARK = "TXOKA"
 private const val GHOST_CONTENT_ALPHA = 0.55f
@@ -401,36 +470,64 @@ private const val HIGHLIGHT_ALPHA = 0.30f
 private const val HIGHLIGHT_X = 0.08f
 private const val BRANDMARK_ALPHA = 0.45f
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1600)
 @Composable
-private fun ContactCardPreview() {
+private fun ContactCardMatrixPreview() {
     TxokaTheme {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            ContactCard(
-                profile = Profile(
-                    name = "Isidro García",
-                    phone = "+34 600 123 456",
-                    email = "isidro@example.com",
-                    linkedin = "isidro-garcia",
-                    instagram = "isidro.png",
-                    card = CardPalette.Default,
-                ),
-            )
+            // Every detail combination the card has to survive, from full to name only.
+            ContactCard(profile = fullProfile())
             ContactCard(
                 profile = Profile(
                     name = "María del Carmen Fernández de la Vega",
-                    phone = "+34 600 123 456",
-                    email = "maria.delcarmen.fernandez@example.com",
+                    linkedin = "maria-fernandez",
+                    instagram = "maria.png",
                 ),
+            )
+            ContactCard(profile = Profile(name = "Marta Ruiz", instagram = "marta.ruiz", card = CardPalette.Presets[2]))
+            ContactCard(profile = Profile(name = "Marta Ruiz", linkedin = "marta-ruiz", card = CardPalette.Presets[4]))
+            ContactCard(profile = Profile(name = "Isidro García", email = "isidro@example.com"))
+            ContactCard(profile = Profile(name = "Isidro García", phone = "+34 600 123 456"))
+            ContactCard(profile = Profile(name = "Isidro García", phone = "+34 600 123 456", instagram = "isidro.png"))
+            ContactCard(profile = Profile(name = "Legacy contact", card = CardPalette.Presets[5]))
+        }
+    }
+}
+
+@Preview(showBackground = true, heightDp = 1100)
+@Composable
+private fun ContactCardPreviewMatrixPreview() {
+    TxokaTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            ContactCard(profile = fullProfile(), layout = CardLayout.Preview)
+            ContactCard(
+                profile = Profile(name = "Marta Ruiz", instagram = "marta.ruiz", card = CardPalette.Presets[2]),
+                layout = CardLayout.Preview,
+            )
+            ContactCard(
+                profile = Profile(name = "Marta Ruiz", linkedin = "marta-ruiz", instagram = "marta.ruiz"),
+                layout = CardLayout.Preview,
             )
             ContactCard(
                 profile = Profile(name = "Isidro García", phone = "+34 600 123 456"),
                 layout = CardLayout.Preview,
             )
-            ContactCard(profile = Profile(name = ""), placeholder = true)
+            ContactCard(profile = Profile(name = ""), placeholder = true, layout = CardLayout.Preview)
         }
     }
 }
+
+private fun fullProfile(): Profile = Profile(
+    name = "Isidro García",
+    phone = "+34 600 123 456",
+    email = "isidro@example.com",
+    linkedin = "isidro-garcia",
+    instagram = "isidro.png",
+    card = CardPalette.Default,
+)
