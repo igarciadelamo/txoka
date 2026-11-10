@@ -1,12 +1,15 @@
 package es.igarciadelamo.txoka.ui.share
 
+import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
 import es.igarciadelamo.txoka.nfc.NfcStatus
+import es.igarciadelamo.txoka.nfc.ShareRoleController
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeShareSettingsRepository
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -20,40 +23,81 @@ class ShareViewModelTest {
 
     @Test
     fun `reflects the stored settings`() = runTest {
-        val repository = FakeShareSettingsRepository(ShareSettings(sharingEnabled = false, requireDeviceUnlock = true))
-        val viewModel =
-            ShareViewModel(FakeProfileRepository(), repository, FakeNfcAvailability())
+        val repository = FakeShareSettingsRepository(ShareSettings(requireDeviceUnlock = true))
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            repository,
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
         advanceUntilIdle()
 
-        val state = viewModel.state.value
-        assertFalse(state.sharingEnabled)
-        assertTrue(state.requireUnlock)
+        assertTrue(viewModel.state.value.requireUnlock)
     }
 
     @Test
-    fun `persists the sharing switches`() = runTest {
-        val repository = FakeShareSettingsRepository(ShareSettings(sharingEnabled = true))
-        val viewModel =
-            ShareViewModel(FakeProfileRepository(), repository, FakeNfcAvailability())
+    fun `starts on the send role`() = runTest {
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
         advanceUntilIdle()
 
-        viewModel.onSharingChanged(false)
-        viewModel.onRequireUnlockChanged(true)
+        assertEquals(ShareRole.Send, viewModel.state.value.role.role)
+        assertFalse(viewModel.state.value.role.returning)
+    }
+
+    @Test
+    fun `selects the role`() = runTest {
+        val roles = ShareRoleController(backgroundScope)
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            roles,
+            FakeNfcAvailability(),
+        )
         advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.sharingEnabled)
-        assertTrue(viewModel.state.value.requireUnlock)
+        viewModel.onRoleSelected(ShareRole.Receive)
+        advanceUntilIdle()
+
+        assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
+    }
+
+    @Test
+    fun `cancels the return offer`() = runTest {
+        val roles = ShareRoleController(backgroundScope)
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            roles,
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+
+        viewModel.onRoleSelected(ShareRole.Receive)
+        roles.onCardReceived()
+        runCurrent()
+        assertTrue(viewModel.state.value.role.returning)
+
+        viewModel.onCancelReturn()
+        runCurrent()
+
+        assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
+        assertFalse(viewModel.state.value.role.returning)
     }
 
     @Test
     fun `refreshes the nfc status on demand`() = runTest {
         val availability = FakeNfcAvailability(NfcStatus.Enabled)
-        val viewModel =
-            ShareViewModel(
-                FakeProfileRepository(),
-                FakeShareSettingsRepository(),
-                availability,
-            )
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            availability,
+        )
         advanceUntilIdle()
         assertEquals(NfcStatus.Enabled, viewModel.state.value.nfc)
 

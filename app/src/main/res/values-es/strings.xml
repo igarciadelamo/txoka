@@ -58,9 +58,8 @@
     <string name="hce_service_description">Comparte tu tarjeta por NFC</string>
     <string name="nfc_disabled">El NFC está apagado</string>
     <string name="action_open_settings">Abrir ajustes de NFC</string>
-    <string name="share_hint_disabled">Compartir desactivado</string>
     <string name="share_require_unlock">Pedir desbloqueo</string>
-    <string name="share_toggle">Compartir por NFC</string>
+    <string name="share_module_title">Compartir por NFC</string>
     <string name="hub_empty_body">Créala una vez y compártela acercando dos móviles.</string>
     <string name="hub_empty_title">Tu tarjeta, a un toque</string>
     <string name="hub_privacy_footer">Tu tarjeta se queda en este dispositivo · Sin internet</string>
@@ -69,6 +68,10 @@
     <string name="nfc_unavailable_body">Aún puedes crear y guardar tarjetas, pero no compartirlas por NFC.</string>
     <string name="share_module_hint">Acércalo a un móvil para enviar tu tarjeta</string>
     <string name="share_module_unlock_hint">Desbloquea el móvil para compartir</string>
+    <string name="share_module_receive_hint">Acércalo a un móvil para recibir una tarjeta</string>
+    <string name="share_module_return_hint">Acércalo otra vez para devolver la tuya</string>
+    <string name="share_role_send">Enviar</string>
+    <string name="share_role_receive">Recibir</string>
     <string name="nfc_unavailable_title">NFC no disponible</string>
     <string name="nfc_disabled_title">El NFC está apagado</string>
     <string name="section_style">Estilo</string>

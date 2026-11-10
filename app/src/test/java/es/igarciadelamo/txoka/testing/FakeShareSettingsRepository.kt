@@ -11,10 +11,6 @@ class FakeShareSettingsRepository(initial: ShareSettings = ShareSettings()) : Sh
 
     override val settings: Flow<ShareSettings> = state
 
-    override suspend fun setSharingEnabled(enabled: Boolean) {
-        state.update { it.copy(sharingEnabled = enabled) }
-    }
-
     override suspend fun setRequireDeviceUnlock(enabled: Boolean) {
         state.update { it.copy(requireDeviceUnlock = enabled) }
     }

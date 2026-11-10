@@ -38,11 +38,11 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `reflects the stored sharing settings`() = runTest {
+    fun `reflects the stored unlock setting`() = runTest {
         val viewModel = SettingsViewModel(
             profileRepository = FakeProfileRepository(null),
             settingsRepository = FakeShareSettingsRepository(
-                ShareSettings(sharingEnabled = false, requireDeviceUnlock = true),
+                ShareSettings(requireDeviceUnlock = true),
             ),
             receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
@@ -52,7 +52,6 @@ class SettingsViewModelTest {
 
         val state = viewModel.state.value
         assertFalse(state.hasProfile)
-        assertFalse(state.sharingEnabled)
         assertTrue(state.requireUnlock)
     }
 
@@ -67,11 +66,9 @@ class SettingsViewModelTest {
         )
         advanceUntilIdle()
 
-        viewModel.onSharingChanged(false)
         viewModel.onRequireUnlockChanged(true)
         advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.sharingEnabled)
         assertTrue(viewModel.state.value.requireUnlock)
     }
 

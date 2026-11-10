@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
+import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
 import es.igarciadelamo.txoka.nfc.NfcAvailability
 import es.igarciadelamo.txoka.nfc.NfcStatus
+import es.igarciadelamo.txoka.nfc.ShareRoleController
+import es.igarciadelamo.txoka.nfc.ShareRoleState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +21,7 @@ import javax.inject.Inject
 
 data class ShareUiState(
     val profile: Profile? = null,
-    val sharingEnabled: Boolean = true,
+    val role: ShareRoleState = ShareRoleState(),
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
 )
@@ -27,6 +30,7 @@ data class ShareUiState(
 class ShareViewModel @Inject constructor(
     profileRepository: ProfileRepository,
     private val settingsRepository: ShareSettingsRepository,
+    private val roles: ShareRoleController,
     private val nfcAvailability: NfcAvailability,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ShareUiState(nfc = nfcAvailability.status()))
@@ -37,10 +41,11 @@ class ShareViewModel @Inject constructor(
             combine(
                 profileRepository.profile,
                 settingsRepository.settings,
-            ) { profile, settings ->
+                roles.state,
+            ) { profile, settings, role ->
                 _state.value.copy(
                     profile = profile,
-                    sharingEnabled = settings.sharingEnabled,
+                    role = role,
                     requireUnlock = settings.requireDeviceUnlock,
                 )
             }.collect { state -> _state.value = state }
@@ -51,11 +56,11 @@ class ShareViewModel @Inject constructor(
         _state.update { it.copy(nfc = nfcAvailability.status()) }
     }
 
-    fun onSharingChanged(enabled: Boolean) {
-        viewModelScope.launch { settingsRepository.setSharingEnabled(enabled) }
+    fun onRoleSelected(role: ShareRole) {
+        roles.select(role)
     }
 
-    fun onRequireUnlockChanged(enabled: Boolean) {
-        viewModelScope.launch { settingsRepository.setRequireDeviceUnlock(enabled) }
+    fun onCancelReturn() {
+        roles.cancelReturn()
     }
 }

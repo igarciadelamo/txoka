@@ -19,7 +19,6 @@ import javax.inject.Inject
 
 data class SettingsUiState(
     val hasProfile: Boolean = false,
-    val sharingEnabled: Boolean = true,
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
     val receivedCount: Int = 0,
@@ -46,7 +45,6 @@ class SettingsViewModel @Inject constructor(
             ) { profile, settings, contacts ->
                 SettingsUiState(
                     hasProfile = profile != null,
-                    sharingEnabled = settings.sharingEnabled,
                     requireUnlock = settings.requireDeviceUnlock,
                     nfc = nfcAvailability.status(),
                     receivedCount = contacts.size,
@@ -58,10 +56,6 @@ class SettingsViewModel @Inject constructor(
 
     fun refreshNfcStatus() {
         _state.update { it.copy(nfc = nfcAvailability.status()) }
-    }
-
-    fun onSharingChanged(enabled: Boolean) {
-        viewModelScope.launch { settingsRepository.setSharingEnabled(enabled) }
     }
 
     fun onRequireUnlockChanged(enabled: Boolean) {

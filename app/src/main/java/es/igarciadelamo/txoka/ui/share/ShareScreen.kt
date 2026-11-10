@@ -9,15 +9,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -25,7 +28,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,7 +47,9 @@ import androidx.compose.ui.unit.sp
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
+import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.nfc.NfcStatus
+import es.igarciadelamo.txoka.nfc.ShareRoleState
 import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
@@ -62,20 +66,21 @@ import es.igarciadelamo.txoka.ui.theme.txoka
 @Composable
 fun ShareScreen(
     profile: Profile?,
-    sharingEnabled: Boolean,
+    role: ShareRoleState,
     requireUnlock: Boolean,
     nfc: NfcStatus,
     onOpenReceived: () -> Unit,
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
     onEditProfile: () -> Unit,
-    onSharingChanged: (Boolean) -> Unit,
+    onRoleSelected: (ShareRole) -> Unit,
+    onCancelReturn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
 
     if (profile != null) {
-        KeepScreenOn(enabled = sharingEnabled)
+        KeepScreenOn(enabled = nfc == NfcStatus.Enabled)
     }
 
     Column(
@@ -136,10 +141,11 @@ fun ShareScreen(
                             }
                         }
                         SharingModule(
-                            sharingEnabled = sharingEnabled,
+                            role = role,
                             requireUnlock = requireUnlock,
                             nfc = nfc,
-                            onSharingChanged = onSharingChanged,
+                            onRoleSelected = onRoleSelected,
+                            onCancelReturn = onCancelReturn,
                             onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
                         )
                     }
@@ -153,10 +159,11 @@ fun ShareScreen(
 
 @Composable
 private fun SharingModule(
-    sharingEnabled: Boolean,
+    role: ShareRoleState,
     requireUnlock: Boolean,
     nfc: NfcStatus,
-    onSharingChanged: (Boolean) -> Unit,
+    onRoleSelected: (ShareRole) -> Unit,
+    onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
 ) {
     val extras = MaterialTheme.txoka
@@ -164,37 +171,15 @@ private fun SharingModule(
     val tint = if (nfc == NfcStatus.Enabled) MaterialTheme.colorScheme.primary else extras.warning
     val background = if (nfc == NfcStatus.Enabled) extras.accentSoft else extras.warningSoft
 
-    val title = when {
-        unavailable -> stringResource(R.string.nfc_unavailable_title)
-        nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_title)
-        else -> stringResource(R.string.share_toggle)
-    }
-    val hint = when {
-        unavailable -> stringResource(R.string.nfc_unavailable_body)
-        nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
-        !sharingEnabled -> stringResource(R.string.share_hint_disabled)
-        requireUnlock -> stringResource(R.string.share_module_unlock_hint)
-        else -> stringResource(R.string.share_module_hint)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Corners.sheet))
             .background(MaterialTheme.colorScheme.surface)
             .padding(Spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        val switchEnabled = !unavailable && nfc == NfcStatus.Enabled
-        Row(
-            modifier = Modifier.toggleable(
-                value = sharingEnabled,
-                enabled = switchEnabled,
-                role = Role.Switch,
-                onValueChange = onSharingChanged,
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -207,32 +192,121 @@ private fun SharingModule(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = Spacing.md, end = Spacing.sm),
+                    .padding(start = Spacing.md),
             ) {
                 Text(
-                    text = title,
+                    text = moduleTitle(nfc),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = hint,
+                    text = moduleHint(nfc, role, requireUnlock),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // Two lines are always reserved so switching the role cannot resize the module
+                    // and shift the card above it.
+                    minLines = 2,
                 )
             }
-            if (!unavailable) {
-                Switch(
-                    checked = sharingEnabled,
-                    onCheckedChange = null,
-                    enabled = switchEnabled,
-                )
+            Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                if (role.returning) {
+                    IconButton(onClick = onCancelReturn) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.action_cancel),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
+        }
+        if (!unavailable) {
+            RoleSelector(
+                role = role.role,
+                enabled = nfc == NfcStatus.Enabled,
+                onSelect = onRoleSelected,
+            )
         }
         if (nfc == NfcStatus.Disabled) {
             TextButton(onClick = onOpenNfcSettings) {
                 Text(text = stringResource(R.string.action_open_settings))
             }
         }
+    }
+}
+
+@Composable
+private fun moduleTitle(nfc: NfcStatus): String = when (nfc) {
+    NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_title)
+    NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_title)
+    NfcStatus.Enabled -> stringResource(R.string.share_module_title)
+}
+
+@Composable
+private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Boolean): String = when {
+    nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
+    nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
+    role.returning -> stringResource(R.string.share_module_return_hint)
+    role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
+    requireUnlock -> stringResource(R.string.share_module_unlock_hint)
+    else -> stringResource(R.string.share_module_hint)
+}
+
+/** Two states instead of a switch: the label says what happens on the next tap. */
+@Composable
+private fun RoleSelector(role: ShareRole, enabled: Boolean, onSelect: (ShareRole) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Corners.field))
+            .background(MaterialTheme.txoka.surfaceMuted)
+            .padding(Spacing.xs)
+            .selectableGroup(),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        RoleOption(
+            label = stringResource(R.string.share_role_send),
+            selected = role == ShareRole.Send,
+            enabled = enabled,
+            onClick = { onSelect(ShareRole.Send) },
+            modifier = Modifier.weight(1f),
+        )
+        RoleOption(
+            label = stringResource(R.string.share_role_receive),
+            selected = role == ShareRole.Receive,
+            enabled = enabled,
+            onClick = { onSelect(ShareRole.Receive) },
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun RoleOption(
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(Corners.chip))
+            .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
+            .selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = Spacing.md),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
     }
 }
 
@@ -348,14 +422,15 @@ private fun ShareScreenPreview() {
                 instagram = "isidro.png",
                 card = CardPalette.Default,
             ),
-            sharingEnabled = true,
+            role = ShareRoleState(),
             requireUnlock = false,
             nfc = NfcStatus.Enabled,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
             onEditProfile = {},
-            onSharingChanged = {},
+            onRoleSelected = {},
+            onCancelReturn = {},
         )
     }
 }
@@ -366,14 +441,34 @@ private fun ShareScreenNoCardPreview() {
     TxokaTheme {
         ShareScreen(
             profile = null,
-            sharingEnabled = false,
+            role = ShareRoleState(role = ShareRole.Receive),
             requireUnlock = false,
             nfc = NfcStatus.Unavailable,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},
             onEditProfile = {},
-            onSharingChanged = {},
+            onRoleSelected = {},
+            onCancelReturn = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ShareScreenReturningPreview() {
+    TxokaTheme {
+        ShareScreen(
+            profile = Profile(name = "Isidro García", phone = "+34 600 123 456", card = CardPalette.Default),
+            role = ShareRoleState(role = ShareRole.Send, returning = true),
+            requireUnlock = false,
+            nfc = NfcStatus.Enabled,
+            onOpenReceived = {},
+            onOpenSettings = {},
+            onCreateCard = {},
+            onEditProfile = {},
+            onRoleSelected = {},
+            onCancelReturn = {},
         )
     }
 }

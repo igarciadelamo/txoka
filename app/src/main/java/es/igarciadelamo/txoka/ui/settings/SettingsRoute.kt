@@ -27,7 +27,6 @@ fun SettingsRoute(
         onBack = onBack,
         onOpenReceived = onOpenReceived,
         onOpenAbout = onOpenAbout,
-        onSharingChanged = viewModel::onSharingChanged,
         onRequireUnlockChanged = viewModel::onRequireUnlockChanged,
         onSimulateIncomingCard = viewModel::onSimulateIncomingCard,
         modifier = modifier,

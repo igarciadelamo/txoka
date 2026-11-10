@@ -66,7 +66,7 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   card preview.
 - `ui/received/` — list, detail, notes, delete, add to system contacts.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
-- `ui/settings/` — sharing switches, library, About, no separate licences screen.
+- `ui/settings/` — device unlock setting, library, About, no separate licences screen.
 - `ui/components/Layout.kt` — `Eyebrow`, `TxokaAppBar`, `ScreenColumn`, shared buttons.
 - `ui/components/ContactCard.kt` — hero/preview card and `Profile.cardContentColor()`.
 - `ui/components/Fields.kt` — `TxokaField`, `CountryChip`.
@@ -110,6 +110,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
     `HairlineDark = 0x33FFFFFF`) and an 8 dp, 7%-black shadow.
 - Hub: no bottom quick actions. A pencil overlay on the card opens the editor; a contacts icon
   (no numeric badge) sits in the app bar left of Settings.
+- The hub sharing module is a two-state control (Send / Receive), not an on/off switch, because
+  "stop sending" means "start receiving". The role is session only, in memory, and resets to Send.
+  After a card arrives while receiving, the phone offers its own for 60 s with a Cancel action.
 - Editor: back discards (there is no Discard button), the footer is a single full-width Save, and
   "Delete card" lives in the app-bar overflow menu with a confirmation dialog.
 - Cards always use a two-colour gradient; 7 presets in a 4×2 grid plus a custom colour picked on a
