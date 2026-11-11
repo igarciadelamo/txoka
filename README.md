@@ -75,9 +75,9 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
 - Sharing switches, the received library and an About screen with the version, a privacy summary
   (local storage plus the Android backup caveat), the author, the licence summary and the Manrope
   attribution.
-- In debug builds, Settings offers *Simulate an incoming card*, which runs a demo card through the
-  real NDEF and vCard round trip. This is how the receive flow is exercised on emulators, which
-  have no NFC.
+- In debug builds, Settings offers *Simulate an incoming card* and *Simulate two incoming cards*.
+  Both run demo cards through the real NDEF and vCard round trip; the second one queues two
+  different senders, which is how the confirmation queue is exercised on emulators with no NFC.
 
 ### Languages and accessibility
 

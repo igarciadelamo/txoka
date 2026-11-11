@@ -21,8 +21,13 @@ class FakeTransport @Inject constructor(private val incomingCards: IncomingCards
 
     override val received: Flow<VCardPayload> = emptyFlow()
 
-    fun emitDemoCard() {
-        val ndef = NdefMessage.encode(VCardSerializer.encode(DEMO_CARD))
+    fun emitDemoCard() = offer(DEMO_CARD)
+
+    /** Two senders at once, so the confirmation queue can be exercised without real hardware. */
+    fun emitDemoCards() = QUEUE_DEMO_CARDS.forEach(::offer)
+
+    private fun offer(card: VCardPayload) {
+        val ndef = NdefMessage.encode(VCardSerializer.encode(card))
         val decoded = NdefMessage.decode(ndef) ?: return
         val parsed = VCardSerializer.decode(decoded)
         if (parsed is VCardParseResult.Success) {
@@ -38,6 +43,24 @@ class FakeTransport @Inject constructor(private val incomingCards: IncomingCards
             linkedin = "marta-ruiz",
             instagram = "marta.ruiz",
             palette = CardPalette.Presets[2],
+        )
+
+        val QUEUE_DEMO_CARDS = listOf(
+            VCardPayload(
+                name = "Ana Ruiz",
+                phone = "+34600333444",
+                email = "ana@example.com",
+                linkedin = "ana-ruiz",
+                instagram = "ana.ruiz",
+                palette = CardPalette.Presets[4],
+            ),
+            VCardPayload(
+                name = "Luis Ortega",
+                phone = "+34600555666",
+                email = "luis@example.com",
+                instagram = "luis.ortega",
+                palette = CardPalette.Presets[1],
+            ),
         )
     }
 }

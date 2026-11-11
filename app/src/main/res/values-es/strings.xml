@@ -54,6 +54,7 @@
     <string name="received_title">Recibidos</string>
 
     <string name="settings_demo_card">Simular una tarjeta recibida</string>
+    <string name="settings_demo_queue">Simular dos tarjetas seguidas</string>
     <string name="settings_title">Ajustes</string>
 
     <string name="hce_aid_group_description">Tarjeta de contacto de Txoka</string>

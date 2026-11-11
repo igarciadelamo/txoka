@@ -24,4 +24,17 @@ class FakeTransportTest {
 
         assertNull(incomingCards.pending)
     }
+
+    @Test
+    fun `queues two cards from different senders`() {
+        val incomingCards = IncomingCards()
+        val transport = FakeTransport(incomingCards)
+
+        transport.emitDemoCards()
+
+        val queued = incomingCards.queue.value
+        assertEquals(2, queued.size)
+        assertEquals(queued.map { it.name }.distinct(), queued.map { it.name })
+        assertEquals(listOf("+34600333444", "+34600555666"), queued.map { it.phone })
+    }
 }

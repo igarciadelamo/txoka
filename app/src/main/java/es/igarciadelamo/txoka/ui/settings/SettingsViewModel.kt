@@ -66,4 +66,9 @@ class SettingsViewModel @Inject constructor(
     fun onSimulateIncomingCard() {
         fakeTransport.emitDemoCard()
     }
+
+    /** Debug only: queues two cards from different senders to exercise the confirmation queue. */
+    fun onSimulateIncomingCards() {
+        fakeTransport.emitDemoCards()
+    }
 }
