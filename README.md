@@ -306,10 +306,11 @@ mkdir -p "$HOME/keys"
   -dname "CN=Isidro Garcia, O=Txoka, C=ES"
 ```
 
-Then `keystore.properties` in the project root (absolute paths are accepted):
+Then `keystore.properties` in the project root. The value is a literal path: `.properties` files do
+not expand `~` or `$HOME`, so write the absolute path, or a path relative to the project root:
 
 ```properties
-storeFile=/Users/you/keys/txoka-release.p12
+storeFile=/absolute/path/to/txoka-release.p12
 storePassword=…
 keyAlias=txoka
 keyPassword=…
