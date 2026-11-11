@@ -86,7 +86,7 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - `nfc/` — `HceCardPublisher`, `HceResponder`, `NdefHceService`, `NfcReader`, `IncomingCards`,
   `FakeTransport`.
 - `data/profile/` — DataStore profile and share-settings repositories.
-- `data/received/` — Room entity, DAO, database and repository.
+- `data/received/` — Room entity, DAO, database, migrations and repository.
 - `di/` — Hilt modules.
 
 ## Data model and protocol

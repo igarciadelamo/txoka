@@ -317,7 +317,9 @@ adapters are covered by manual checks instead. The HTML report is written to
 ### Instrumented tests
 
 `ReceivedContactDaoTest` covers ordering, match lookup and note/delete queries against an
-in-memory Room database. Run them with the emulator or device attached:
+in-memory Room database. `TxokaMigrationTest` writes a version 1 database by hand, opens it with
+version 2 and checks that the stored cards survive the migration. Run them with the emulator or
+device attached:
 
 ```sh
 ./gradlew :app:connectedDebugAndroidTest
