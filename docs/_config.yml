@@ -1,8 +1,3 @@
 title: Txoka
 description: Privacy policy for the Txoka Android app
 theme: jekyll-theme-cayman
-
-# Only the legal pages are published. The design references stay in the repository.
-exclude:
-  - design
-  - design-proposal.md
