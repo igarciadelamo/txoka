@@ -125,7 +125,7 @@ gambling, location sharing or user-generated public content. Expected outcome: r
 | --- | --- | --- |
 | App icon | 512×512 PNG 32-bit | `store/txoka_icon_app-playstore.png` |
 | Feature graphic | 1024×500 PNG/JPEG, no alpha | `store/txoka_feature_graphic.jpg` (1024×500, JPEG) |
-| Phone screenshots | 2-8 per language, 16:9 or 9:16 | pending: hub, editor, received list, About in light/dark and EN/ES |
+| Phone screenshots | 2-8 per language, 16:9 or 9:16, 1080-3840 px | `store/screenshots/en/` (6 × 1080×1920 JPEG): hub, share back, incoming queue, received list, editor, about. Spanish set pending; the app follows the system language, so it needs a phone in Spanish. |
 
 ## Upload
 
