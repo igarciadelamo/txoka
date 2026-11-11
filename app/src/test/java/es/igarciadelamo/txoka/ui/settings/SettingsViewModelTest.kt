@@ -6,6 +6,7 @@ import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.nfc.FakeTransport
 import es.igarciadelamo.txoka.nfc.IncomingCards
 import es.igarciadelamo.txoka.nfc.NfcStatus
+import es.igarciadelamo.txoka.nfc.ShareRoleController
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeReceivedContactRepository
@@ -30,7 +31,7 @@ class SettingsViewModelTest {
             settingsRepository = FakeShareSettingsRepository(),
             receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
-            fakeTransport = FakeTransport(IncomingCards()),
+            fakeTransport = FakeTransport(IncomingCards(), ShareRoleController(backgroundScope)),
         )
         advanceUntilIdle()
 
@@ -46,7 +47,7 @@ class SettingsViewModelTest {
             ),
             receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
-            fakeTransport = FakeTransport(IncomingCards()),
+            fakeTransport = FakeTransport(IncomingCards(), ShareRoleController(backgroundScope)),
         )
         advanceUntilIdle()
 
@@ -62,7 +63,7 @@ class SettingsViewModelTest {
             settingsRepository = FakeShareSettingsRepository(),
             receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = FakeNfcAvailability(),
-            fakeTransport = FakeTransport(IncomingCards()),
+            fakeTransport = FakeTransport(IncomingCards(), ShareRoleController(backgroundScope)),
         )
         advanceUntilIdle()
 
@@ -80,7 +81,7 @@ class SettingsViewModelTest {
             settingsRepository = FakeShareSettingsRepository(),
             receivedRepository = FakeReceivedContactRepository(),
             nfcAvailability = availability,
-            fakeTransport = FakeTransport(IncomingCards()),
+            fakeTransport = FakeTransport(IncomingCards(), ShareRoleController(backgroundScope)),
         )
         advanceUntilIdle()
 
@@ -99,7 +100,7 @@ class SettingsViewModelTest {
                 listOf(ReceivedContact(id = 1, name = "Marta"), ReceivedContact(id = 2, name = "Luis")),
             ),
             nfcAvailability = FakeNfcAvailability(),
-            fakeTransport = FakeTransport(IncomingCards()),
+            fakeTransport = FakeTransport(IncomingCards(), ShareRoleController(backgroundScope)),
         )
         advanceUntilIdle()
 

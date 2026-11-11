@@ -76,6 +76,7 @@
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
     <string name="share_module_receive_hint">Hold near a phone to receive a card</string>
     <string name="share_module_return_hint">Hold again to share yours back</string>
+    <string name="share_module_return_hint_countdown">Hold again to share yours back · %1$d s</string>
     <string name="share_role_send">Send</string>
     <string name="share_role_receive">Receive</string>
     <string name="nfc_unavailable_title">NFC unavailable</string>

@@ -13,18 +13,28 @@ import javax.inject.Singleton
 
 /**
  * Stand in for real hardware, which emulators do not have. The demo card travels through the same
- * vCard and NDEF round trip as a real tag, so the emulator exercises the real decoding path.
+ * vCard and NDEF round trip as a real tag, so the emulator exercises the real decoding path, and it
+ * arms the return offer the same way a real read does.
  */
 @Singleton
-class FakeTransport @Inject constructor(private val incomingCards: IncomingCards) : ContactTransport {
+class FakeTransport @Inject constructor(
+    private val incomingCards: IncomingCards,
+    private val roles: ShareRoleController,
+) : ContactTransport {
     override suspend fun publish(payload: VCardPayload?) = Unit
 
     override val received: Flow<VCardPayload> = emptyFlow()
 
-    fun emitDemoCard() = offer(DEMO_CARD)
+    fun emitDemoCard() {
+        offer(DEMO_CARD)
+        roles.onCardReceived()
+    }
 
     /** Two senders at once, so the confirmation queue can be exercised without real hardware. */
-    fun emitDemoCards() = QUEUE_DEMO_CARDS.forEach(::offer)
+    fun emitDemoCards() {
+        QUEUE_DEMO_CARDS.forEach(::offer)
+        roles.onCardReceived()
+    }
 
     private fun offer(card: VCardPayload) {
         val ndef = NdefMessage.encode(VCardSerializer.encode(card))
