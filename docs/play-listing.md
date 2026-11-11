@@ -125,7 +125,15 @@ gambling, location sharing or user-generated public content. Expected outcome: r
 | --- | --- | --- |
 | App icon | 512×512 PNG 32-bit | `store/txoka_icon_app-playstore.png` |
 | Feature graphic | 1024×500 PNG/JPEG, no alpha | `store/txoka_feature_graphic.jpg` (1024×500, JPEG) |
-| Phone screenshots | 2-8 per language, 16:9 or 9:16, 1080-3840 px | `store/screenshots/en/` (6 × 1080×1920 JPEG): hub, share back, incoming queue, received list, editor, about. Spanish set pending; the app follows the system language, so it needs a phone in Spanish. |
+| Phone screenshots (English) | 2-8, 16:9 or 9:16, 1080-3840 px | `store/screenshots/en/`: hub, share back, incoming queue, received list, editor, about (light, 1080×1920 JPEG) |
+| Phone screenshots (Spanish) | same | `store/screenshots/es/`: the same six in light mode |
+| Phone screenshots (Spanish, dark) | same | `store/screenshots/es-dark/`: the same six in dark mode |
+
+The captures use a fictional sample card (`Lucía Ferrer`, `example.com`) and the debug demo senders.
+The emulator has no NFC, so they were taken with a temporary local patch that reports the adapter as
+enabled and seeds the sample card; neither is committed. The device language came from
+`cmd locale set-app-localeconfig <pkg> --locales es` plus `set-app-locales`, and the 9:16 frame from
+`wm size 1080x1920`.
 
 ## Upload
 
