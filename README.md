@@ -356,6 +356,7 @@ adb shell am instrument -w \
 - Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
 - **Pending device test.** The NFC paths are unit-tested and the debug demo exercises the same
   codec, but sharing and receiving have not been validated end to end with two physical phones.
+  [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TEST_PLAN.md) is the checklist for that validation.
 
 ## Licence
 
