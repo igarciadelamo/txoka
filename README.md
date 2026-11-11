@@ -339,6 +339,11 @@ adb shell am instrument -w \
   es.igarciadelamo.txoka.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
+### NFC device checks
+
+Sharing and receiving need two physical phones. [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TEST_PLAN.md)
+is the checklist for them, with setup, the 32 cases and the results table to fill in.
+
 ## Known limitations
 
 - Phone numbers typed without a country prefix use the country picked in the editor. It defaults
@@ -354,8 +359,6 @@ adb shell am instrument -w \
   one wins as the card is up to the controllers, so the hub role makes the exchange predictable.
 - Notes are plain text, one per contact, and there is no sync or export.
 - Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
-- **Pending device test.** The NFC paths are unit-tested and the debug demo exercises the same
-  codec, but sharing and receiving have not been validated end to end with two physical phones.
 
 ## Licence
 
