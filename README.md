@@ -39,6 +39,9 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
 - Tap a Txoka phone, or any NDEF tag that carries a `text/vcard` record, and the card opens for
   confirmation before it is stored.
 - Nothing is saved until the card is accepted.
+- Cards that arrive while the confirmation is open wait in a queue instead of replacing each other:
+  the sheet shows the first one, says how many are behind it, and moves on as you accept or
+  discard. An identical card already waiting is ignored, so a repeated tap does not stack it.
 - The `NDEF_DISCOVERED` intent filter also handles a tag while Txoka is not in the foreground.
 
 ### Received contacts
@@ -72,9 +75,9 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
 - Sharing switches, the received library and an About screen with the version, a privacy summary
   (local storage plus the Android backup caveat), the author, the licence summary and the Manrope
   attribution.
-- In debug builds, Settings offers *Simulate an incoming card*, which runs a demo card through the
-  real NDEF and vCard round trip. This is how the receive flow is exercised on emulators, which
-  have no NFC.
+- In debug builds, Settings offers *Simulate an incoming card* and *Simulate two incoming cards*.
+  Both run demo cards through the real NDEF and vCard round trip; the second one queues two
+  different senders, which is how the confirmation queue is exercised on emulators with no NFC.
 
 ### Languages and accessibility
 
@@ -162,7 +165,8 @@ state when the reader goes away.
 2. The activity's `NDEF_DISCOVERED` filter covers the case where the system launches Txoka with a
    tag intent while the app is not in the foreground.
 
-Both push a `VCardPayload` into `IncomingCards`, which the UI collects.
+Both push a `VCardPayload` into `IncomingCards`, which keeps them in arrival order. The UI collects
+the queue, shows the first card and offers the next once it is accepted or discarded.
 
 **Storing.** `RoomReceivedContactRepository` maps entities to domain objects, finds the contact a
 card belongs to by its keys and persists the sender's colours with the contact.

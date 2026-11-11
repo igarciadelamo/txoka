@@ -29,6 +29,7 @@ fun SettingsRoute(
         onOpenAbout = onOpenAbout,
         onRequireUnlockChanged = viewModel::onRequireUnlockChanged,
         onSimulateIncomingCard = viewModel::onSimulateIncomingCard,
+        onSimulateIncomingCards = viewModel::onSimulateIncomingCards,
         modifier = modifier,
     )
 }

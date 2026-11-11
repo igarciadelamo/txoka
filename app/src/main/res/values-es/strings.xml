@@ -54,6 +54,7 @@
     <string name="received_title">Recibidos</string>
 
     <string name="settings_demo_card">Simular una tarjeta recibida</string>
+    <string name="settings_demo_queue">Simular dos tarjetas seguidas</string>
     <string name="settings_title">Ajustes</string>
 
     <string name="hce_aid_group_description">Tarjeta de contacto de Txoka</string>
@@ -109,6 +110,10 @@
     <string name="sheet_incoming_title">%1$s quiere compartir su tarjeta</string>
     <string name="sheet_incoming_title_existing">Ya tienes a %1$s</string>
     <string name="sheet_shared_via_nfc">Compartida por NFC</string>
+    <plurals name="sheet_waiting_cards">
+        <item quantity="one">%d tarjeta más esperando</item>
+        <item quantity="other">%d tarjetas más esperando</item>
+    </plurals>
     <string name="settings_received">Contactos recibidos</string>
     <string name="received_note_hint">Añade una nota sobre esta persona</string>
     <string name="about_privacy">Privacidad</string>

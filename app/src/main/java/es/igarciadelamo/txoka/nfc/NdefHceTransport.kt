@@ -3,6 +3,7 @@ package es.igarciadelamo.txoka.nfc
 import es.igarciadelamo.txoka.domain.protocol.ContactTransport
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +20,6 @@ class NdefHceTransport @Inject constructor(
         publisher.publish(payload)
     }
 
-    override val received: Flow<VCardPayload> = kotlinx.coroutines.flow.flow {
-        incomingCards.pending.collect { payload -> if (payload != null) emit(payload) }
-    }
+    override val received: Flow<VCardPayload> = incomingCards.queue
+        .mapNotNull { queue -> queue.firstOrNull() }
 }

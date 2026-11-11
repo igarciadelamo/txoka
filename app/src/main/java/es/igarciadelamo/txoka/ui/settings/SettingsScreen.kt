@@ -62,6 +62,7 @@ fun SettingsScreen(
     onRequireUnlockChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onSimulateIncomingCard: () -> Unit = {},
+    onSimulateIncomingCards: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -102,6 +103,7 @@ fun SettingsScreen(
                 receivedCount = state.receivedCount,
                 onOpenReceived = onOpenReceived,
                 onSimulateIncomingCard = onSimulateIncomingCard,
+                onSimulateIncomingCards = onSimulateIncomingCards,
             )
 
             AboutGroup(version = BuildConfig.VERSION_NAME, onOpenAbout = onOpenAbout)
@@ -130,7 +132,12 @@ private fun SharingGroup(state: SettingsUiState, onRequireUnlockChanged: (Boolea
 }
 
 @Composable
-private fun LibraryGroup(receivedCount: Int, onOpenReceived: () -> Unit, onSimulateIncomingCard: () -> Unit) {
+private fun LibraryGroup(
+    receivedCount: Int,
+    onOpenReceived: () -> Unit,
+    onSimulateIncomingCard: () -> Unit,
+    onSimulateIncomingCards: () -> Unit,
+) {
     SettingsGroup(title = stringResource(R.string.settings_library)) {
         SettingsRow(
             title = stringResource(R.string.settings_received),
@@ -143,6 +150,14 @@ private fun LibraryGroup(receivedCount: Int, onOpenReceived: () -> Unit, onSimul
                 title = stringResource(R.string.settings_demo_card),
                 subtitle = stringResource(R.string.settings_debug_only),
                 onClick = onSimulateIncomingCard,
+                fallbackIcon = Icons.Filled.Add,
+                tint = MaterialTheme.txoka.warning,
+                background = MaterialTheme.txoka.warningSoft,
+            )
+            SettingsRow(
+                title = stringResource(R.string.settings_demo_queue),
+                subtitle = stringResource(R.string.settings_debug_only),
+                onClick = onSimulateIncomingCards,
                 fallbackIcon = Icons.Filled.Add,
                 tint = MaterialTheme.txoka.warning,
                 background = MaterialTheme.txoka.warningSoft,

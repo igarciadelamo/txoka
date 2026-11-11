@@ -44,9 +44,7 @@ class NdefHceTransportTest {
             transport.received.collect { payload -> received += payload.name }
         }
 
-        incoming.consume()
-        val payload = Profile(name = "Marta").toVCardPayload()
-        incoming.offer(payload)
+        incoming.offer(Profile(name = "Marta").toVCardPayload())
 
         assertEquals(listOf("Marta"), received)
         assertEquals("Marta", transport.received.first().name)

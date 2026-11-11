@@ -23,7 +23,6 @@ import es.igarciadelamo.txoka.ui.receive.SaveOutcome
 @Composable
 fun TxokaApp(modifier: Modifier = Modifier, viewModel: ReceiveViewModel = hiltViewModel()) {
     val pending by viewModel.pending.collectAsStateWithLifecycle()
-    val alreadyStored by viewModel.alreadyStored.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val savedMessage = stringResource(R.string.received_saved)
@@ -44,12 +43,13 @@ fun TxokaApp(modifier: Modifier = Modifier, viewModel: ReceiveViewModel = hiltVi
         TxokaNavHost()
 
         // A received card covers the current screen so the user decides before anything else.
-        pending?.let { payload ->
+        pending?.let { card ->
             ReceiveConfirmScreen(
-                payload = payload,
-                alreadyStored = alreadyStored,
-                onSave = viewModel::save,
-                onDiscard = viewModel::discard,
+                payload = card.payload,
+                alreadyStored = card.alreadyStored,
+                waiting = card.waiting,
+                onSave = { viewModel.save(card.payload) },
+                onDiscard = { viewModel.discard(card.payload) },
             )
         }
 

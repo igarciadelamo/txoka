@@ -24,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +49,7 @@ import es.igarciadelamo.txoka.ui.theme.TxokaTheme
 fun ReceiveConfirmScreen(
     payload: VCardPayload,
     alreadyStored: Boolean,
+    waiting: Int,
     onSave: () -> Unit,
     onDiscard: () -> Unit,
     modifier: Modifier = Modifier,
@@ -99,6 +102,15 @@ fun ReceiveConfirmScreen(
                 modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
+                if (waiting > 0) {
+                    Text(
+                        text = pluralStringResource(R.plurals.sheet_waiting_cards, waiting, waiting),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 PrimaryButton(
                     text = if (alreadyStored) {
                         stringResource(R.string.action_update_contact)
