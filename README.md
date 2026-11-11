@@ -66,8 +66,9 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
   in a local Room database.
 - Both stay in the user's own Google backup, so a reinstall or a new phone restores the library.
   That copy belongs to the device's account, not to Txoka.
-- The full wording, including the backup caveat, is in `docs/privacy-policy.md`. It is a draft for
-  the public URL that Play Console requires and is mirrored in the About screen.
+- The full wording, including the backup caveat, is in `docs/privacy-policy.md`. It is published
+  with GitHub Pages at <https://igarciadelamo.github.io/txoka/privacy/>, the public URL that Play
+  Console declares, and it is mirrored in the About screen.
 - Deleting the card clears only the profile. Share settings and received contacts stay.
 
 ### Settings and About
