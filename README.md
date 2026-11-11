@@ -291,21 +291,49 @@ to `main` and on every pull request, including the release build so R8 stays ver
 
 ### Release signing
 
-The release build reads `keystore.properties` from the project root. The file is not committed:
+The release build reads `keystore.properties` from the project root. Neither that file nor the
+keystore is committed, and neither should live inside the repository: keep both elsewhere and backed
+up twice offline, because every future upload to Play has to be signed with the same upload key.
+
+Create the upload key once (PKCS12, RSA 4096, valid well past the 2033 Play requirement):
+
+```sh
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+mkdir -p "$HOME/keys"
+"$JAVA_HOME/bin/keytool" -genkeypair -v -storetype PKCS12 \
+  -keystore "$HOME/keys/txoka-release.p12" -alias txoka \
+  -keyalg RSA -keysize 4096 -validity 10000 \
+  -dname "CN=Isidro Garcia, O=Txoka, C=ES"
+```
+
+Then `keystore.properties` in the project root (absolute paths are accepted):
 
 ```properties
-storeFile=txoka-release.jks
+storeFile=/Users/you/keys/txoka-release.p12
 storePassword=…
 keyAlias=txoka
 keyPassword=…
 ```
 
-`storeFile` is relative to the project root. Without the file, `:app:assembleRelease` still runs
-and writes an unsigned APK, which is what CI checks. Publish the bundle instead of the APK:
+Record the fingerprints once, in case a future integration needs the certificate:
+
+```sh
+"$JAVA_HOME/bin/keytool" -list -v -keystore "$HOME/keys/txoka-release.p12" -alias txoka
+```
+
+With Play App Signing this key is only the *upload* key: Google keeps the app signing key, so a lost
+upload key costs a reset request, not the listing.
+
+Publish the bundle instead of the APK:
 
 ```sh
 ./gradlew :app:bundleRelease
+"$JAVA_HOME/bin/jarsigner" -verify app/build/outputs/bundle/release/app-release.aab
 ```
+
+The signed bundle is `app/build/outputs/bundle/release/app-release.aab`. Without
+`keystore.properties` the release build still runs and writes an unsigned bundle, which is what CI
+checks.
 
 
 ### Unit tests and coverage
