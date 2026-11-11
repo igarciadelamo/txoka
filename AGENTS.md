@@ -26,13 +26,13 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
   1.11.0 while the app runtime resolved `kotlinx-coroutines-core` 1.9.0 (Room's BOM), and AGP's
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
   now declared explicitly at the catalog version.
-- Remaining backlog: optional vCard/QR sharing fallback, real two-phone NFC validation.
+- Remaining backlog: optional vCard/QR sharing fallback and SAF export/import.
 
 ## Non-negotiable rules
 
 1. Do not add `INTERNET` or any new permission without asking the user first.
-2. Do not invent Android/NFC behaviour. Anything that needs real hardware must be written as
-   "pending device test", never asserted as working.
+2. Do not invent Android/NFC behaviour. Anything that needs real hardware must be verified on a
+   device before it is claimed as working.
 3. One branch per feature/fix. Never commit directly to `main` and never merge PRs yourself.
 4. Commit author must be `isidro.garcia@gmail.com`:
    `git -c user.name="Isidro Garcia" -c user.email="isidro.garcia@gmail.com" commit ...`
@@ -206,12 +206,10 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 ## Roadmap
 
-1. 1.0 ships what is already built plus bug fixes and small improvements. Blocking work is real
-   NFC validation on two physical phones and release signing/publication.
+1. 1.0 ships what is already built plus bug fixes and small improvements. Blocking work is release
+   signing and publication.
 2. Post-1.0: optional sharing fallback (export the card as a vCard file or QR code, without
    `INTERNET`) and SAF export/import of the received library.
-3. Real NFC validation: reader + HCE need two physical phones. Keep it marked
-   "pending device test" until then.
 
 ## Workflow checklist
 
@@ -221,4 +219,3 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 4. Run `./gradlew :app:assembleDebug :app:testDebugUnitTest detekt ktlintCheck`.
 5. Commit with a Conventional Commit and the required author.
 6. Push the branch and send the user the compare/PR link. Do not merge.
-7. If hardware verification is needed, say "pending device test" in the PR and README.

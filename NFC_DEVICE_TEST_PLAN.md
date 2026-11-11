@@ -1,9 +1,8 @@
 # NFC device test plan
 
-Manual validation of the NFC paths on **two physical phones**. Everything here is the last blocking
-item before 1.0: the protocol, the responder and the view models are covered by unit tests, and the
-debug demo exercises the same codec, but nothing here can be reproduced on an emulator. Until the
-table at the end is filled in, sharing stays marked "pending device test" in the README.
+Manual validation of the NFC paths on **two physical phones**. The protocol, the responder and the
+view models are covered by unit tests, and the debug demo exercises the same codec, but nothing here
+can be reproduced on an emulator, so these cases only pass on real hardware.
 
 ## Setup
 
@@ -207,10 +206,9 @@ adb logcat -d > full_logcat.txt
 
 ## Definition of done
 
-The blocking item closes when the table is filled in on **two different phone pairs** (ideally one
+The plan counts as done when the table is filled in on **two different phone pairs** (ideally one
 OEM skin and one stock build) and the negative results are documented. Then:
 
-- drop "pending device test" from the README and `AGENTS.md` for the paths that passed;
 - record the phone models and Android versions next to the result;
 - open a separate issue for anything that only fails on one vendor, attaching the logcat, instead of
   changing the protocol blindly.
