@@ -1,7 +1,13 @@
+---
+layout: default
+title: Txoka privacy policy
+permalink: /privacy/
+---
+
 # Txoka privacy policy
 
-Draft for publication. Play Console needs a public URL; this file is plain Markdown so it can be
-hosted as a static page (GitHub Pages, a repository blob view, or any static host) without changes.
+Applies to Txoka for Android, distributed on Google Play. This page is the policy URL declared in
+Play Console and must stay publicly reachable without a login.
 
 Last updated: 11 November 2026
 

@@ -151,6 +151,10 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   `app/src/main/res/raw/manrope_ofl.txt` (kept intentionally, ignored by `app/lint.xml`).
 - About shows the author section, the licence summary and the Manrope attribution. There is no
   licences screen; do not reintroduce one.
+- `docs/privacy-policy.md` is the policy Play Console declares, published with GitHub Pages at
+  <https://igarciadelamo.github.io/txoka/privacy/> (source: `main`, folder `/docs`). Moving, renaming
+  or deleting that file breaks a URL outside this repository: keep the path and the `permalink`
+  front matter, and bump "Last updated" when the wording changes.
 - `app_name` and `about_author` are `translatable="false"`.
 
 ## Strings
