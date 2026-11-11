@@ -24,16 +24,18 @@ class ReceiveViewModelTest {
     private val incomingCards = IncomingCards()
     private val repository = FakeReceivedContactRepository()
     private val payload = VCardPayload(name = "Marta Ruiz", phone = "+34600111222")
+    private val secondPayload = VCardPayload(name = "Ana Ruiz", phone = "+34600333444")
 
     private val stored = ReceivedContact(id = 1, name = "Marta Ruiz", phone = "+34600111222")
 
     @Test
-    fun `exposes the pending card`() {
+    fun `exposes the pending card`() = runTest {
         val viewModel = viewModel()
 
         incomingCards.offer(payload)
+        advanceUntilIdle()
 
-        assertEquals(payload, viewModel.pending.value)
+        assertEquals(PendingCard(payload, alreadyStored = false, waiting = 0), viewModel.pending.value)
     }
 
     @Test
@@ -45,11 +47,11 @@ class ReceiveViewModelTest {
             viewModel.outcome.collect { outcomes += it }
         }
         incomingCards.offer(payload)
-        viewModel.save()
+        viewModel.save(payload)
         advanceUntilIdle()
 
         assertEquals(payload, repository.saved)
-        assertNull(incomingCards.pending.value)
+        assertNull(incomingCards.pending)
         assertEquals(listOf(SaveOutcome.Saved), outcomes)
     }
 
@@ -60,7 +62,7 @@ class ReceiveViewModelTest {
         incomingCards.offer(payload)
         advanceUntilIdle()
 
-        assertTrue(viewModel.alreadyStored.value)
+        assertTrue(viewModel.pending.value?.alreadyStored == true)
     }
 
     @Test
@@ -70,7 +72,7 @@ class ReceiveViewModelTest {
         incomingCards.offer(payload)
         advanceUntilIdle()
 
-        assertFalse(viewModel.alreadyStored.value)
+        assertFalse(viewModel.pending.value?.alreadyStored == true)
     }
 
     @Test
@@ -83,7 +85,7 @@ class ReceiveViewModelTest {
             viewModel.outcome.collect { outcomes += it }
         }
         incomingCards.offer(payload)
-        viewModel.save()
+        viewModel.save(payload)
         advanceUntilIdle()
 
         assertEquals(listOf(SaveOutcome.Updated), outcomes)
@@ -95,18 +97,48 @@ class ReceiveViewModelTest {
         val viewModel = viewModel()
 
         incomingCards.offer(payload)
-        viewModel.discard()
+        viewModel.discard(payload)
         advanceUntilIdle()
 
         assertNull(repository.saved)
-        assertNull(incomingCards.pending.value)
+        assertNull(incomingCards.pending)
     }
 
     @Test
-    fun `ignores save when nothing is pending`() = runTest {
+    fun `shows the next card once the first one is handled`() = runTest {
         val viewModel = viewModel()
 
-        viewModel.save()
+        incomingCards.offer(payload)
+        incomingCards.offer(secondPayload)
+        advanceUntilIdle()
+        assertEquals(payload, viewModel.pending.value?.payload)
+        assertEquals(1, viewModel.pending.value?.waiting)
+
+        viewModel.save(payload)
+        advanceUntilIdle()
+
+        assertEquals(secondPayload, viewModel.pending.value?.payload)
+        assertEquals(0, viewModel.pending.value?.waiting)
+    }
+
+    @Test
+    fun `keeps both cards when the user discards the first one`() = runTest {
+        val viewModel = viewModel()
+
+        incomingCards.offer(payload)
+        incomingCards.offer(secondPayload)
+        viewModel.discard(payload)
+        advanceUntilIdle()
+
+        assertNull(repository.saved)
+        assertEquals(secondPayload, viewModel.pending.value?.payload)
+    }
+
+    @Test
+    fun `ignores saving a card that is no longer waiting`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.save(payload)
         advanceUntilIdle()
 
         assertNull(repository.saved)

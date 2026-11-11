@@ -110,6 +110,10 @@
     <string name="sheet_incoming_title">%1$s wants to share their card</string>
     <string name="sheet_incoming_title_existing">You already have %1$s</string>
     <string name="sheet_shared_via_nfc">Shared via NFC</string>
+    <plurals name="sheet_waiting_cards">
+        <item quantity="one">%d more card is waiting</item>
+        <item quantity="other">%d more cards are waiting</item>
+    </plurals>
     <string name="settings_received">Received contacts</string>
     <string name="received_note_hint">Add a note about this person</string>
     <string name="about_privacy">Privacy</string>

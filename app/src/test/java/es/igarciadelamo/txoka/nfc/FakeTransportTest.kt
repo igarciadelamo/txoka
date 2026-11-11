@@ -12,7 +12,7 @@ class FakeTransportTest {
 
         transport.emitDemoCard()
 
-        val payload = incomingCards.pending.value
+        val payload = incomingCards.pending
         assertEquals("Marta Ruiz", payload?.name)
         assertEquals("+34600111222", payload?.phone)
         assertEquals("marta@example.com", payload?.email)
@@ -22,6 +22,6 @@ class FakeTransportTest {
     fun `does nothing before the demo card is emitted`() {
         val incomingCards = IncomingCards()
 
-        assertNull(incomingCards.pending.value)
+        assertNull(incomingCards.pending)
     }
 }

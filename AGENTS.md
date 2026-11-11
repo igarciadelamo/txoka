@@ -109,6 +109,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - Payload: vCard 3.0 plus `X-TXOKA-PROTOCOL`, `X-TXOKA-CARD-ACCENT`, `X-TXOKA-CARD-ACCENT2`.
   A missing protocol means version 0. NDEF payload cap: 768 bytes.
 - HCE AIDs: NDEF Forum `D2760000850101` and Txoka `F054584F4B4101`.
+- `IncomingCards` is a queue, oldest first: the confirmation sheet shows the head, adds how many
+  cards wait behind it, and ignores an identical card already queued. `save()`/`discard()` remove
+  exactly the card the user acted on, so a stale tap cannot swallow the next one.
 - Phone region fallback: SIM → network → locale → ES.
 
 ## UI and design system
