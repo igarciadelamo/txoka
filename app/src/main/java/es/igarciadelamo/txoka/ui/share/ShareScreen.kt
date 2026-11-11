@@ -254,6 +254,8 @@ private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Bool
         nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
         nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
         cardTooLarge -> stringResource(R.string.share_module_too_long_hint)
+        role.returning && role.remainingSeconds > 0 ->
+            stringResource(R.string.share_module_return_hint_countdown, role.remainingSeconds)
         role.returning -> stringResource(R.string.share_module_return_hint)
         role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
         requireUnlock -> stringResource(R.string.share_module_unlock_hint)
@@ -492,7 +494,7 @@ private fun ShareScreenReturningPreview() {
     TxokaTheme {
         ShareScreen(
             profile = Profile(name = "Isidro García", phone = "+34 600 123 456", card = CardPalette.Default),
-            role = ShareRoleState(role = ShareRole.Send, returning = true),
+            role = ShareRoleState(role = ShareRole.Send, returning = true, remainingSeconds = 42),
             requireUnlock = false,
             nfc = NfcStatus.Enabled,
             onOpenReceived = {},

@@ -12,7 +12,9 @@ import es.igarciadelamo.txoka.domain.protocol.VCardSerializer
 import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,8 +36,9 @@ class HceCardPublisher @Inject constructor(
             combine(
                 profileRepository.profile,
                 settingsRepository.settings,
-                roles.state,
-            ) { profile, settings, role -> cardFor(profile, settings, role.role) }
+                // The return offer ticks every second; only the role decides what gets published.
+                roles.state.map { it.role }.distinctUntilChanged(),
+            ) { profile, settings, role -> cardFor(profile, settings, role) }
                 .collect { card -> responder.update(card) }
         }
     }

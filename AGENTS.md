@@ -21,7 +21,7 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 `main` is green. Milestones 0–6 and the polish phase are merged.
 
 - Unified app bar, hub/card actions, accessibility pass, string audit and licensing are done.
-- 167 JVM unit tests + 6 instrumented DAO tests, all green on the emulator. The old
+- 181 JVM unit tests + 7 instrumented tests (DAO + migration), all green on the emulator. The old
   `NoSuchMethodError runBlockingK` was a version split: `kotlinx-coroutines-test` came in at
   1.11.0 while the app runtime resolved `kotlinx-coroutines-core` 1.9.0 (Room's BOM), and AGP's
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
@@ -127,7 +127,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   (no numeric badge) sits in the app bar left of Settings.
 - The hub sharing module is a two-state control (Send / Receive), not an on/off switch, because
   "stop sending" means "start receiving". The role is session only, in memory, and resets to Send.
-  After a card arrives while receiving, the phone offers its own for 60 s with a Cancel action.
+  After a card arrives while receiving, the phone offers its own for 60 s with a Cancel action and a
+  live countdown. The window runs on the real clock, so it keeps counting while the app is in the
+  background and the countdown only shows the time that is actually left.
 - Editor: back discards (there is no Discard button), the footer is a single full-width Save, and
   "Delete card" lives in the app-bar overflow menu with a confirmation dialog.
 - Cards always use a two-colour gradient; 7 presets in a 4×2 grid plus a custom colour picked on a
@@ -204,8 +206,11 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 ## Roadmap
 
-1. Optional sharing fallback: export the card as a vCard file or QR code, without `INTERNET`.
-2. Real NFC validation: reader + HCE need two physical phones. Keep it marked
+1. 1.0 ships what is already built plus bug fixes and small improvements. Blocking work is real
+   NFC validation on two physical phones and release signing/publication.
+2. Post-1.0: optional sharing fallback (export the card as a vCard file or QR code, without
+   `INTERNET`) and SAF export/import of the received library.
+3. Real NFC validation: reader + HCE need two physical phones. Keep it marked
    "pending device test" until then.
 
 ## Workflow checklist
