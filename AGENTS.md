@@ -34,14 +34,13 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 2. Do not invent Android/NFC behaviour. Anything that needs real hardware must be verified on a
    device before it is claimed as working.
 3. One branch per feature/fix. Never commit directly to `main` and never merge PRs yourself.
-4. Commit author must be `isidro.garcia@gmail.com`:
-   `git -c user.name="Isidro Garcia" -c user.email="isidro.garcia@gmail.com" commit ...`
+4. Commit author must be the project owner. Use the identity already in the history:
+   `git -c user.name="Isidro Garcia" -c user.email="$(git log -1 --format=%ae)" commit ...`
 5. Code, comments, commit messages, README and this file are in English. UI strings are Spanish
    and English (`values/` + `values-es/`).
 6. Minimise comments; prefer clear identifiers. Use Conventional Commits (`feat:`, `fix:`,
    `chore:`, `refactor:`, `test:`, `docs:`), scoped when useful (`feat(profile): ...`).
-7. Ask one crisp question when a design decision is ambiguous, then implement end to end. The user
-   is cost-sensitive: do not explore for long without a deliverable.
+7. Ask one crisp question when a design decision is ambiguous, then implement end to end.
 
 ## Commands
 

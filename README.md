@@ -26,7 +26,8 @@ receive. Txoka never uploads anything: no backend, no account and no `INTERNET` 
 
 - The phone emulates an NFC Forum Type 4 Tag that carries the card as a vCard 3.0 NDEF record.
 - Which phone acts as the card is a controller race, so the hub picks the role: **Send** advertises
-  the card, **Receive** only polls. The role lives in memory and starts on Send at every launch.
+  the card with host card emulation, **Receive** only listens through reader mode. The role lives in
+  memory and starts on Send at every launch.
 - After receiving a card while in Receive, the phone offers its own card for 60 seconds so the
   other phone can read it back on a second tap. The offer is one shot, which is what stops two
   phones from bouncing cards forever.
@@ -162,7 +163,8 @@ state when the reader goes away.
 
 **Receiving.** Two paths feed the same confirmation overlay:
 
-1. `NfcReader` polls tags while the activity is resumed and decodes NDEF tags itself.
+1. While the hub is on screen, `NfcReader` reads the tag itself: reader mode on **Receive** and
+   foreground dispatch on **Send**. Both decode the NDEF message and hand the card over.
 2. The activity's `NDEF_DISCOVERED` filter covers the case where the system launches Txoka with a
    tag intent while the app is not in the foreground.
 
