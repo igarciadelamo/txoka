@@ -40,10 +40,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.igarciadelamo.txoka.BuildConfig
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
@@ -78,6 +80,8 @@ fun ShareScreen(
     onCancelReturn: () -> Unit,
     modifier: Modifier = Modifier,
     cardTooLarge: Boolean = false,
+    tagIntentsAllowed: Boolean = true,
+    nfcEvents: List<String> = emptyList(),
 ) {
     val context = LocalContext.current
 
@@ -120,45 +124,77 @@ fun ShareScreen(
                 if (profile == null) {
                     EmptyHub(onCreateCard = onCreateCard)
                 } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
-                        Column {
-                            Eyebrow(text = stringResource(R.string.hub_your_card))
-                            Box(modifier = Modifier.padding(top = Spacing.sm)) {
-                                ContactCard(
-                                    profile = profile,
-                                    layout = CardLayout.Hero,
-                                )
-                                IconButton(
-                                    onClick = onEditProfile,
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(Spacing.lg)
-                                        .clip(CircleShape)
-                                        .background(profile.cardOverlayTint().copy(alpha = 0.18f)),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Edit,
-                                        contentDescription = stringResource(R.string.action_edit_card),
-                                        tint = profile.cardContentColor(),
-                                    )
-                                }
-                            }
-                        }
-                        SharingModule(
-                            role = role,
-                            requireUnlock = requireUnlock,
-                            cardTooLarge = cardTooLarge,
-                            nfc = nfc,
-                            onRoleSelected = onRoleSelected,
-                            onCancelReturn = onCancelReturn,
-                            onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
-                        )
-                    }
+                    HubContent(
+                        profile = profile,
+                        role = role,
+                        requireUnlock = requireUnlock,
+                        cardTooLarge = cardTooLarge,
+                        nfc = nfc,
+                        tagIntentsAllowed = tagIntentsAllowed,
+                        nfcEvents = nfcEvents,
+                        onEditProfile = onEditProfile,
+                        onRoleSelected = onRoleSelected,
+                        onCancelReturn = onCancelReturn,
+                        onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
+                    )
                 }
             }
         }
 
         PrivacyFooter()
+    }
+}
+
+@Composable
+private fun HubContent(
+    profile: Profile,
+    role: ShareRoleState,
+    requireUnlock: Boolean,
+    cardTooLarge: Boolean,
+    nfc: NfcStatus,
+    tagIntentsAllowed: Boolean,
+    nfcEvents: List<String>,
+    onEditProfile: () -> Unit,
+    onRoleSelected: (ShareRole) -> Unit,
+    onCancelReturn: () -> Unit,
+    onOpenNfcSettings: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
+        Column {
+            Eyebrow(text = stringResource(R.string.hub_your_card))
+            Box(modifier = Modifier.padding(top = Spacing.sm)) {
+                ContactCard(
+                    profile = profile,
+                    layout = CardLayout.Hero,
+                )
+                IconButton(
+                    onClick = onEditProfile,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(Spacing.lg)
+                        .clip(CircleShape)
+                        .background(profile.cardOverlayTint().copy(alpha = 0.18f)),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = stringResource(R.string.action_edit_card),
+                        tint = profile.cardContentColor(),
+                    )
+                }
+            }
+        }
+        SharingModule(
+            role = role,
+            requireUnlock = requireUnlock,
+            cardTooLarge = cardTooLarge,
+            nfc = nfc,
+            onRoleSelected = onRoleSelected,
+            onCancelReturn = onCancelReturn,
+            onOpenNfcSettings = onOpenNfcSettings,
+        )
+        if (BuildConfig.DEBUG) {
+            NfcDiagnosticsBlock(nfc = nfc, tagIntentsAllowed = tagIntentsAllowed, events = nfcEvents)
+        }
     }
 }
 
@@ -317,6 +353,32 @@ private fun RoleOption(
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
         )
+    }
+}
+
+/** Debug-only readout of what Android hands to the app, to diagnose a phone that never receives. */
+@Composable
+private fun NfcDiagnosticsBlock(nfc: NfcStatus, tagIntentsAllowed: Boolean, events: List<String>) {
+    val lines = buildList {
+        add("status=$nfc tags=${if (tagIntentsAllowed) "allowed" else "BLOCKED"}")
+        if (events.isEmpty()) add("events: none") else addAll(events)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(Corners.field))
+            .background(MaterialTheme.txoka.surfaceMuted)
+            .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        lines.forEach { line ->
+            Text(
+                text = line,
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

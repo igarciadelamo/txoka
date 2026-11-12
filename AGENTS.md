@@ -126,7 +126,10 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - Hub: no bottom quick actions. A pencil overlay on the card opens the editor; a contacts icon
   (no numeric badge) sits in the app bar left of Settings.
 - The hub sharing module is a two-state control (Send / Receive), not an on/off switch, because
-  "stop sending" means "start receiving". The role is session only, in memory, and resets to Send.
+  "stop sending" means "start receiving". The role also picks the NFC mechanism: Receive reads with
+  `enableReaderMode` (needed on vendor builds that never dispatch NDEF intents to third-party apps),
+  Send emulates with foreground dispatch and the preferred HCE service. The role is session only, in
+  memory, and resets to Send.
   After a card arrives while receiving, the phone offers its own for 60 s with a Cancel action and a
   live countdown. The window runs on the real clock, so it keeps counting while the app is in the
   background and the countdown only shows the time that is actually left.
@@ -203,6 +206,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   `https://github.com/igarciadelamo/txoka/compare/main...<branch>?expand=1`
 - Detekt limits functions to 80 lines and flags magic numbers outside `@Composable`/`@Preview`.
   Ktlint wants single-expression bodies on one line when they fit (120 columns max).
+- Disabling an HCE service component survives reinstalls, so `TxokaApplication` re-enables
+  `NdefHceService` on every start. A disabled service makes `setPreferredService` fail with
+  "unknown component" and the phone silently stops sending.
 - `docs/` is documentation only; only files under `app/src/main/res/` and `app/src/main/assets/`
   are packaged in the APK. Everything in `docs/` is also published by GitHub Pages, so internal
   notes, store assets and anything not meant to be public belong in `store/` or the repository
