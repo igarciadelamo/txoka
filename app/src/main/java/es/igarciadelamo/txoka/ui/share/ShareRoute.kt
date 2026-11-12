@@ -37,6 +37,8 @@ fun ShareRoute(
         onCancelReturn = viewModel::onCancelReturn,
         requireUnlock = state.requireUnlock,
         cardTooLarge = state.cardTooLarge,
+        tagIntentsAllowed = state.tagIntentsAllowed,
+        nfcEvents = state.nfcEvents,
         modifier = modifier,
     )
 }

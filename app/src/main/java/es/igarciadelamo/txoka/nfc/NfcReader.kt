@@ -33,6 +33,7 @@ class NfcReader @Inject constructor(
     @ApplicationContext private val context: Context,
     private val incomingCards: IncomingCards,
     private val roles: ShareRoleController,
+    private val diagnostics: NfcDiagnostics,
 ) {
     private val adapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(context)
 
@@ -55,6 +56,7 @@ class NfcReader @Inject constructor(
 
     /** Opens the confirmation screen when a `text/vcard` tag arrives. */
     fun handle(intent: Intent?) {
+        diagnostics.record("${intent?.action ?: "none"} · ${intent?.type ?: "-"}")
         if (intent?.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
         val messages = IntentCompat.getParcelableArrayExtra(
             intent,
@@ -65,8 +67,11 @@ class NfcReader @Inject constructor(
         val vCard = TxokaNdefMessage.decode(raw) ?: return
         val parsed = VCardSerializer.decode(vCard)
         if (parsed is VCardParseResult.Success) {
+            diagnostics.record("card: ${parsed.payload.name}")
             incomingCards.offer(parsed.payload)
             roles.onCardReceived()
+        } else {
+            diagnostics.record("decode failed")
         }
     }
 
