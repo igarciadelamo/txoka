@@ -3,7 +3,6 @@ package es.igarciadelamo.txoka.ui.share
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
-import es.igarciadelamo.txoka.nfc.NfcDiagnostics
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleController
 import es.igarciadelamo.txoka.testing.FakeNfcAvailability
@@ -31,7 +30,6 @@ class ShareViewModelTest {
             repository,
             ShareRoleController(backgroundScope),
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 
@@ -45,7 +43,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             ShareRoleController(backgroundScope),
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 
@@ -61,7 +58,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             roles,
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 
@@ -79,7 +75,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             roles,
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 
@@ -103,7 +98,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             ShareRoleController(backgroundScope),
             availability,
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
         assertEquals(NfcStatus.Enabled, viewModel.state.value.nfc)
@@ -130,7 +124,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             ShareRoleController(backgroundScope),
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 
@@ -147,7 +140,6 @@ class ShareViewModelTest {
             FakeShareSettingsRepository(),
             ShareRoleController(backgroundScope),
             FakeNfcAvailability(),
-            NfcDiagnostics(),
         )
         advanceUntilIdle()
 

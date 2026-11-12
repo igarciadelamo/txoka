@@ -39,23 +39,17 @@ class NfcReader @Inject constructor(
     @ApplicationContext private val context: Context,
     private val incomingCards: IncomingCards,
     private val roles: ShareRoleController,
-    private val diagnostics: NfcDiagnostics,
     @ApplicationScope private val scope: CoroutineScope,
 ) {
     private val adapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(context)
     private var resumed: Activity? = null
 
     private val readerCallback = NfcAdapter.ReaderCallback { tag ->
-        diagnostics.record("tag: ${tag.techList.joinToString("/") { it.substringAfterLast('.') }}")
-        val ndef = Ndef.get(tag)
-        if (ndef == null) {
-            diagnostics.record("not ndef")
-            return@ReaderCallback
-        }
+        val ndef = Ndef.get(tag) ?: return@ReaderCallback
         runCatching {
             ndef.connect()
             ndef.ndefMessage?.let { message -> offer(message.toByteArray()) }
-        }.onFailure { error -> diagnostics.record("read failed: ${error.javaClass.simpleName}") }
+        }
         runCatching { ndef.close() }
     }
 
@@ -84,7 +78,6 @@ class NfcReader @Inject constructor(
 
     /** Opens the confirmation screen when a `text/vcard` tag arrives as an intent. */
     fun handle(intent: Intent?) {
-        diagnostics.record("${intent?.action ?: "none"} · ${intent?.type ?: "-"}")
         if (intent?.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
         val messages = IntentCompat.getParcelableArrayExtra(
             intent,
@@ -117,11 +110,8 @@ class NfcReader @Inject constructor(
         val vCard = TxokaNdefMessage.decode(raw) ?: return
         val parsed = VCardSerializer.decode(vCard)
         if (parsed is VCardParseResult.Success) {
-            diagnostics.record("card: ${parsed.payload.name}")
             incomingCards.offer(parsed.payload)
             roles.onCardReceived()
-        } else {
-            diagnostics.record("decode failed")
         }
     }
 

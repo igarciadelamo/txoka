@@ -10,7 +10,6 @@ import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
 import es.igarciadelamo.txoka.domain.protocol.fitsInTag
 import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import es.igarciadelamo.txoka.nfc.NfcAvailability
-import es.igarciadelamo.txoka.nfc.NfcDiagnostics
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleController
 import es.igarciadelamo.txoka.nfc.ShareRoleState
@@ -27,8 +26,6 @@ data class ShareUiState(
     val role: ShareRoleState = ShareRoleState(),
     val requireUnlock: Boolean = false,
     val nfc: NfcStatus = NfcStatus.Enabled,
-    val tagIntentsAllowed: Boolean = true,
-    val nfcEvents: List<String> = emptyList(),
 ) {
     /**
      * A stored card above the tag limit is published as nothing, so the module explains it instead
@@ -44,20 +41,11 @@ class ShareViewModel @Inject constructor(
     private val settingsRepository: ShareSettingsRepository,
     private val roles: ShareRoleController,
     private val nfcAvailability: NfcAvailability,
-    diagnostics: NfcDiagnostics,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(
-        ShareUiState(
-            nfc = nfcAvailability.status(),
-            tagIntentsAllowed = nfcAvailability.tagIntentsAllowed(),
-        ),
-    )
+    private val _state = MutableStateFlow(ShareUiState(nfc = nfcAvailability.status()))
     val state: StateFlow<ShareUiState> = _state.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            diagnostics.events.collect { events -> _state.update { it.copy(nfcEvents = events) } }
-        }
         viewModelScope.launch {
             combine(
                 profileRepository.profile,
@@ -74,12 +62,7 @@ class ShareViewModel @Inject constructor(
     }
 
     fun refreshNfcStatus() {
-        _state.update {
-            it.copy(
-                nfc = nfcAvailability.status(),
-                tagIntentsAllowed = nfcAvailability.tagIntentsAllowed(),
-            )
-        }
+        _state.update { it.copy(nfc = nfcAvailability.status()) }
     }
 
     fun onRoleSelected(role: ShareRole) {
