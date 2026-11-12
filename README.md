@@ -374,6 +374,13 @@ adb shell am instrument -w \
 Sharing and receiving need two physical phones. [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TEST_PLAN.md)
 is the checklist for them, with setup, the 32 cases and the results table to fill in.
 
+### Store kit
+
+`store/` holds what Play Console asks for: the 512 px icon, the feature graphic, the phone
+screenshots per language and [`store/play-listing.md`](store/play-listing.md), with the listing
+copy, the release notes and the App content answers. `docs/` is published by GitHub Pages and is
+for the privacy policy only.
+
 ## Known limitations
 
 - Phone numbers typed without a country prefix use the country picked in the editor. It defaults

@@ -204,7 +204,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 - Detekt limits functions to 80 lines and flags magic numbers outside `@Composable`/`@Preview`.
   Ktlint wants single-expression bodies on one line when they fit (120 columns max).
 - `docs/` is documentation only; only files under `app/src/main/res/` and `app/src/main/assets/`
-  are packaged in the APK.
+  are packaged in the APK. Everything in `docs/` is also published by GitHub Pages, so internal
+  notes, store assets and anything not meant to be public belong in `store/` or the repository
+  root.
 - Do not commit `local.properties`, `keystore.properties`, keystores or build outputs. Release
   signing reads `keystore.properties` from the project root; without it the APK stays unsigned.
 
