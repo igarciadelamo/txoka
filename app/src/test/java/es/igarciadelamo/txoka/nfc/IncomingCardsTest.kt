@@ -44,8 +44,8 @@ class IncomingCardsTest {
     fun `ignores an identical card already waiting`() {
         val cards = IncomingCards()
 
-        cards.offer(first)
-        cards.offer(first.copy())
+        assertEquals(true, cards.offer(first))
+        assertEquals(false, cards.offer(first.copy()))
 
         assertEquals(listOf(first), cards.queue.value)
     }

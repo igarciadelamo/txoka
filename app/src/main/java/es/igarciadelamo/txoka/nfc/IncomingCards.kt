@@ -25,8 +25,13 @@ class IncomingCards @Inject constructor() {
 
     val pending: VCardPayload? get() = queue.value.firstOrNull()
 
-    fun offer(payload: VCardPayload) {
-        _queue.update { queue -> if (payload in queue) queue else queue + payload }
+    /** Queues the card and returns false when an identical one is already waiting. */
+    fun offer(payload: VCardPayload): Boolean {
+        while (true) {
+            val current = _queue.value
+            if (payload in current) return false
+            if (_queue.compareAndSet(current, current + payload)) return true
+        }
     }
 
     /** Removes the card the user just handled, so the next one can be shown. */
