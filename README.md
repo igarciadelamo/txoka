@@ -404,3 +404,5 @@ Txoka is free software under the GNU General Public License v3.0 only (`GPL-3.0-
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); the bundled Manrope font uses the SIL Open
 Font License 1.1 (`licenses/Manrope-OFL.txt`). The licence texts also ship inside the APK under
 `assets/`.
+
+Release history: [`CHANGELOG.md`](CHANGELOG.md).
