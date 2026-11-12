@@ -1,3 +1,6 @@
 title: Txoka
 description: Privacy policy for the Txoka Android app
 theme: jekyll-theme-cayman
+
+# GitHub Pages publishes every file in this folder. Internal notes and store assets live in
+# `store/` at the repository root instead of here.
