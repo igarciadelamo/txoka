@@ -109,8 +109,7 @@ class NfcReader @Inject constructor(
     private fun offer(raw: ByteArray) {
         val vCard = TxokaNdefMessage.decode(raw) ?: return
         val parsed = VCardSerializer.decode(vCard)
-        if (parsed is VCardParseResult.Success) {
-            incomingCards.offer(parsed.payload)
+        if (parsed is VCardParseResult.Success && incomingCards.offer(parsed.payload)) {
             roles.onCardReceived()
         }
     }

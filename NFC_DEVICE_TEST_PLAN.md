@@ -4,6 +4,11 @@ Manual validation of the NFC paths on **two physical phones**. The protocol, the
 view models are covered by unit tests, and the debug demo exercises the same codec, but nothing here
 can be reproduced on an emulator, so these cases only pass on real hardware.
 
+The hub role also picks the NFC mechanism: **Receive** reads with `enableReaderMode` and does not
+emulate, **Send** emulates with foreground dispatch and the preferred HCE service. The reader-mode
+callback bypasses NDEF intent dispatch on purpose, because some vendor builds never deliver those
+intents to third-party apps.
+
 ## Setup
 
 | Item | How it must be |
