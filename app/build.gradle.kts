@@ -54,7 +54,9 @@ android {
             signingConfig = signingConfigs.findByName("release")
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                // Repackaging kotlin/kotlinx breaks package-private access in R8 (IllegalAccessError
+                // on kotlin.sequences internals), so only androidx classes may move.
+                packageScope = setOf("androidx.**")
             }
         }
     }
