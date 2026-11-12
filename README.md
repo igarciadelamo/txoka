@@ -213,13 +213,13 @@ The reader sequence is:
 2. `SELECT CC` (`E103`) and `READ BINARY` of the 15-byte capability container.
 3. `SELECT NDEF` (`E104`), `READ BINARY` of the two-byte NLEN and then of the message.
 
-The reading side deliberately uses `NfcAdapter.enableForegroundDispatch` instead of reader mode.
-Reader mode limits the controller to polling, and AOSP only enables host card emulation routing
-while no reader-mode request is active (`NfcService.computeDiscoveryParameters`), so a phone in
-reader mode stops emulating. Foreground dispatch keeps polling and emulation on at the same time,
-which is what two phones that both want to send and receive need. While the activity is visible it
-also calls `CardEmulation.setPreferredService`, so Txoka answers its own AIDs before any other
-installed NDEF card emulator.
+The reading side switches mechanism with the hub role. On **Receive** it uses
+`NfcAdapter.enableReaderMode`, which hands the tag straight to the app: several vendor builds never
+deliver `NDEF_DISCOVERED` intents to third-party apps, and the reader-mode callback bypasses that
+dispatch, the activity chooser and the tag-scan allowlist. On **Send** it keeps
+`enableForegroundDispatch` plus `CardEmulation.setPreferredService`, because reader mode turns host
+card emulation off (`NfcService.computeDiscoveryParameters`) and the phone has to keep answering
+tags. The two modes are exclusive, which is exactly what the role means.
 
 Status words: `9000` success, `6A82` file or AID not found, `6A86` wrong P1/P2, `6700` wrong
 length, `6986` no file selected, `6D00` unsupported instruction, `6E00` unsupported class,
@@ -391,9 +391,9 @@ for the privacy policy only.
   Android should show a chooser.
 - Reading an emulated card needs an app that handles `NDEF_DISCOVERED` for `text/vcard`. Without
   Txoka installed the phone will not offer to save the contact on its own.
-- Reader mode is never used: it disables host card emulation, so Txoka reads tags with foreground
-  dispatch while it keeps emulating. Two phones find each other without a mode switch, but which
-  one wins as the card is up to the controllers, so the hub role makes the exchange predictable.
+- The hub role decides the NFC mode: **Receive** reads with reader mode (no card emulation, so the
+  phone cannot be read while it listens) and **Send** emulates with foreground dispatch. Which phone
+  ends up as the card is still up to the controllers.
 - Notes are plain text, one per contact, and there is no sync or export.
 - Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
 

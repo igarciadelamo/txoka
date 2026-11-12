@@ -28,6 +28,7 @@ class AndroidNfcAvailability @Inject constructor(@ApplicationContext private val
     override fun tagIntentsAllowed(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return true
         val adapter = NfcAdapter.getDefaultAdapter(context) ?: return true
-        return adapter.isTagIntentAllowed
+        // Some vendor builds throw from isTagIntentAllowed (vivo asks for WRITE_SECURE_SETTINGS).
+        return runCatching { adapter.isTagIntentAllowed }.getOrDefault(true)
     }
 }
