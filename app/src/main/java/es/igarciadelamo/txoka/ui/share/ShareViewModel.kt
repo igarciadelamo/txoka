@@ -47,6 +47,9 @@ class ShareViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            nfcAvailability.stateChanges().collect { status -> _state.update { it.copy(nfc = status) } }
+        }
+        viewModelScope.launch {
             combine(
                 profileRepository.profile,
                 settingsRepository.settings,

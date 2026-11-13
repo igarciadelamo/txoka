@@ -91,6 +91,23 @@ class ShareViewModelTest {
     }
 
     @Test
+    fun `follows the adapter while the hub is open`() = runTest {
+        val availability = FakeNfcAvailability(NfcStatus.Enabled)
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            availability,
+        )
+        advanceUntilIdle()
+
+        availability.status = NfcStatus.Disabled
+        advanceUntilIdle()
+
+        assertEquals(NfcStatus.Disabled, viewModel.state.value.nfc)
+    }
+
+    @Test
     fun `refreshes the nfc status on demand`() = runTest {
         val availability = FakeNfcAvailability(NfcStatus.Enabled)
         val viewModel = ShareViewModel(
