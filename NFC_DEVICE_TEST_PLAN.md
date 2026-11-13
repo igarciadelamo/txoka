@@ -178,29 +178,64 @@ on except in the lock tests.
 
 ## I. Robustness
 
-**29. Pulling the phones apart mid-read**: no crash, no half card, and a normal retry works.
-
-**30. Misalignment**: tap offset by one or two centimetres. The expected outcome is simply nothing,
-  without visible errors.
-
-**31. Rotation and back with the sheet open**: rotate to landscape (the actions stay pinned and
+**29. Rotation and back with the sheet open**: rotate to landscape (the actions stay pinned and
   visible) and press back (the card is discarded, not saved).
 
-**32. Screen stays awake**: the hub keeps the display on while NFC is enabled (leave it untouched
+**30. Screen stays awake**: the hub keeps the display on while NFC is enabled (leave it untouched
   for two minutes). Turning NFC off stops it. Informational.
+
+## Vendor findings
+
+Measured on the pair below while running these cases. They are platform behaviour, not app bugs, and
+they shape the design:
+
+- **A phone cannot poll and emulate at the same time.** `enableReaderMode` disables card emulation
+  for the whole adapter, which is why one tap can only carry one card and the hub needs a role.
+  Documented in `NfcAdapter.enableReaderMode`.
+- **Two Android phones talk peer to peer by default**, so a tap does not expose the emulated card
+  until one side enters reader mode with an Activity in the foreground. Receiving in the background
+  is therefore impossible on the receiving phone; sending is not.
+- **The vivo (OriginOS) does not deliver `NDEF_DISCOVERED` intents to third party apps** and
+  restarts the Activity when one reaches it, tearing the RF session down. That is why the app reads
+  with reader mode instead of intent dispatch, and why exchanging automatically in a single contact
+  was abandoned.
+- **The Samsung ships its own "share your card over NFC" service.** Without an Android Application
+  Record it wins the tag or forces an app chooser, so the card never reaches Txoka. The AAR in the
+  NDEF message fixes it: the tag now opens Txoka directly, in the foreground and from the
+  background.
+- **The vivo filters application `Log` output** (only warnings reach logcat), which is why the
+  diagnostics of the receiver side are the ones worth collecting.
 
 ## Results
 
-| # | Case | A model / Android | B model / Android | Result | Evidence |
-|---|---|---|---|---|---|
-| 1 | Send A→B | | | | |
-| 5 | Send back B→A | | | | |
-| 6-9 | Return window, background | | | | |
-| 11-13 | Lock screen, require unlock | | | | |
-| 18 | Foreign tag | | | | |
-| 21-22 | Queue | | | | |
-| 24-26 | Background, dead process | | | | |
-| 27-28 | Role combinations | | | | |
+Pair under test: **A** vivo V40 SE 5G (V2337), Android 16 / OriginOS 6 · **B** Samsung Galaxy A36
+5G (SM-A366B), Android 16 / One UI.
+
+| # | Case | Result | Evidence |
+|---|---|---|---|
+| 1 | Send A→B | Pass | Sheet with the NFC chip, `Save contact`, no queue line, no chooser; library gains one row with phone, email, LinkedIn and Instagram |
+| 2 | Nothing stored without a tap | Pass | 30 s with the sheet open, then discard: library unchanged |
+| 3 | Discard | Pass | Sheet closes, library unchanged |
+| 4 | Same contact twice | Pass | "You already have …" and `Update contact` |
+| 5 | Send back B→A | Pass with precondition | A must be on **Receive**; on the vivo a phone on Send cannot read. A shows the sheet with B's card |
+| 6 | Cancel | Pass | ✕ returns the module to Receive and clears the countdown |
+| 7 | Expiry after 60 s | Pass | Counter reaches 0 and the module returns to Receive |
+| 8 | Countdown on the real clock | Pass | 48 s, 33 s in the background, back at 12 s |
+| 9 | Return with the app in the background | Not executed after the AAR fix | Needs a rerun; before the AAR the system chooser stole the tag |
+| 10 | No offer unless receiving | Pass | Both on Send: no sheet, no offer |
+| 14 | The unlock switch follows NFC | Pass | Disabled with NFC off, enabled with its value kept when it comes back |
+| 15 | NFC off when the app opens | Pass | Off warning, role selector hidden, `Open NFC settings` opens the system screen |
+| 16 | Turning NFC on with the app open | Pass | Module recovers without restarting |
+| 17 | Turning NFC off mid-flow | Pass | Off warning, tap does nothing, no crash, works again once NFC is back |
+| 20 | Phone formatting and intents | Pass | Number kept as sent; `Call` opens the dialer, `Email` opens Gmail compose |
+| 24 | Receiving in the background | Not executed after the AAR fix | Before it, the Samsung chooser won the tag; after it the app opens on its own |
+| 25 | Receiving while locked | Pass | Nothing accepted silently, no crash; the system chooser appeared while locked |
+| 26 | Sender process gone | Pass | Removing Txoka from recents on A still sends, the HCE service restarts the process |
+| 27 | Both on Receive | Pass | Nothing happens, no crash |
+| 28 | Both on Send | Pass | No sheet and no offer on either side |
+| 29 | Rotation and back with the sheet open | Pass | Landscape keeps both actions pinned; back discards and the library keeps one row |
+| 30 | Screen stays awake | Pass | Still awake and focused 95 s after a 60 s screen timeout |
+| 11-13, 18, 19, 21-23 | Not executed | Pending | Lock tests need a manual lock; 18 needs a physical tag; 19 and 22 need editing the profile; 21 is not reachable because receiving switches the phone to Send |
 
 Diagnostics when something fails:
 
