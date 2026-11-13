@@ -105,8 +105,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
   overwriting either, and `match()` reports no owner.
 - `ProfileRepository.delete()` clears only the `profile.*` DataStore keys; it keeps share settings
   and received contacts. The hub falls back to its empty state and HCE stops publishing.
-- Payload: vCard 3.0 plus `X-TXOKA-PROTOCOL`, `X-TXOKA-CARD-ACCENT`, `X-TXOKA-CARD-ACCENT2`.
-  A missing protocol means version 0. NDEF payload cap: 768 bytes.
+- Payload: vCard 3.0 plus `X-TXOKA-PROTOCOL`, `X-TXOKA-CARD-ACCENT`, `X-TXOKA-CARD-ACCENT2`, and a
+  trailing Android Application Record naming the package so the reader opens Txoka instead of a
+  chooser. A missing protocol means version 0. NDEF payload cap: 768 bytes, AAR included.
 - HCE AIDs: NDEF Forum `D2760000850101` and Txoka `F054584F4B4101`.
 - `IncomingCards` is a queue, oldest first: the confirmation sheet shows the head, adds how many
   cards wait behind it, and ignores an identical card already queued. `save()`/`discard()` remove

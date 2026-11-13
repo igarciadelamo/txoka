@@ -176,8 +176,11 @@ card belongs to by its keys and persists the sender's colours with the contact.
 
 ## Protocol
 
-The card is a vCard 3.0 document carried in a single NDEF record with MIME type `text/vcard`.
-Txoka adds three properties that other readers simply ignore:
+The card is a vCard 3.0 document carried in a single NDEF record with MIME type `text/vcard`,
+followed by an Android Application Record for `es.igarciadelamo.txoka`. The AAR is what makes the
+receiving phone open Txoka instead of showing an app chooser or letting another NFC app claim the
+tag; it adds 40 bytes to the message and readers ignore it. Txoka adds three properties to the
+vCard that other readers simply ignore:
 
 | Property | Meaning |
 | --- | --- |

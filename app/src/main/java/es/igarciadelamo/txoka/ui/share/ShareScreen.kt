@@ -198,7 +198,6 @@ private fun SharingModule(
     onOpenNfcSettings: () -> Unit,
 ) {
     val extras = MaterialTheme.txoka
-    val unavailable = nfc == NfcStatus.Unavailable
     val tint = if (nfc == NfcStatus.Enabled) MaterialTheme.colorScheme.primary else extras.warning
     val background = if (nfc == NfcStatus.Enabled) extras.accentSoft else extras.warningSoft
 
@@ -251,12 +250,8 @@ private fun SharingModule(
                 }
             }
         }
-        if (!unavailable) {
-            RoleSelector(
-                role = role.role,
-                enabled = nfc == NfcStatus.Enabled,
-                onSelect = onRoleSelected,
-            )
+        if (nfc == NfcStatus.Enabled) {
+            RoleSelector(role = role.role, onSelect = onRoleSelected)
         }
         if (nfc == NfcStatus.Disabled) {
             TextButton(onClick = onOpenNfcSettings) {
@@ -289,7 +284,7 @@ private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Bool
 
 /** Two states instead of a switch: the label says what happens on the next tap. */
 @Composable
-private fun RoleSelector(role: ShareRole, enabled: Boolean, onSelect: (ShareRole) -> Unit) {
+private fun RoleSelector(role: ShareRole, onSelect: (ShareRole) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -302,14 +297,12 @@ private fun RoleSelector(role: ShareRole, enabled: Boolean, onSelect: (ShareRole
         RoleOption(
             label = stringResource(R.string.share_role_send),
             selected = role == ShareRole.Send,
-            enabled = enabled,
             onClick = { onSelect(ShareRole.Send) },
             modifier = Modifier.weight(1f),
         )
         RoleOption(
             label = stringResource(R.string.share_role_receive),
             selected = role == ShareRole.Receive,
-            enabled = enabled,
             onClick = { onSelect(ShareRole.Receive) },
             modifier = Modifier.weight(1f),
         )
@@ -317,19 +310,13 @@ private fun RoleSelector(role: ShareRole, enabled: Boolean, onSelect: (ShareRole
 }
 
 @Composable
-private fun RoleOption(
-    label: String,
-    selected: Boolean,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun RoleOption(label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .heightIn(min = 48.dp)
             .clip(RoundedCornerShape(Corners.chip))
             .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
-            .selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = onClick)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
             .padding(vertical = Spacing.md),
         contentAlignment = Alignment.Center,
     ) {
