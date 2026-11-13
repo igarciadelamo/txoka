@@ -11,40 +11,40 @@ by GitHub Pages, which serves `docs/` only.
 | Field | Language | Limit | Value |
 | --- | --- | --- | --- |
 | App name | all | 30 | `Txoka` |
-| Short description | en-US | 80 | `Share your contact card with one tap. No account, no tracking, no internet.` |
-| Short description | es-ES | 80 | `Comparte tu tarjeta de contacto con un toque. Sin cuenta ni internet.` |
-| Full description | en-US | 4000 | below |
+| Short description | en-GB | 80 | `Share your card phone to phone. No account, no tracking, no internet.` |
+| Short description | es-ES | 80 | `Comparte tu tarjeta de móvil a móvil. Sin cuenta ni internet.` |
+| Full description | en-GB | 4000 | below |
 | Full description | es-ES | 4000 | below |
-| Release notes 1.0 | en-US | 500 | `First release. Create your card once and share it by holding two phones together.` |
-| Release notes 1.0 | es-ES | 500 | `Primera versión. Crea tu tarjeta una vez y compártela acercando dos teléfonos.` |
+| Release notes 1.0 | en-GB | 500 | `First release. Create your card once and share it by holding two phones together. No account, no tracking, no internet permission.` |
+| Release notes 1.0 | es-ES | 500 | `Primera versión. Crea tu tarjeta una vez y compártela acercando dos móviles. Sin cuenta, sin rastreo y sin permiso de internet.` |
 
-Category: **Tools**. Tags: `contact sharing`, `nfc`, `productivity`.
+Category: **Tools**. Tags: `Tools`, `Productivity`.
 Contact email: `isidro.garcia@gmail.com`. Website: `https://github.com/igarciadelamo/txoka`.
 Privacy policy: `https://igarciadelamo.github.io/txoka/privacy/`.
 
-### Full description (en-US)
+### Full description (en-GB)
 
 ```
-Your contact card, one tap away.
+Your contact card, phone to phone.
 
-Create your card once — name, phone, email, LinkedIn, Instagram and a colour you pick — and share it by holding two phones close together. The other person sees the card, decides whether to keep it, and can send theirs back in the same gesture.
+Create your card once (name, phone, email, LinkedIn, Instagram and a colour you pick) and share it by holding two phones together. The other person sees the card and decides whether to keep it. To send theirs back, they set Txoka to Receive and you touch the phones again.
 
 WHAT MAKES IT DIFFERENT
 
-• No account and no sign-up.
-• No ads, no analytics, no tracking and no crash reporting.
-• No internet permission at all. The app cannot send anything anywhere, and the card travels phone to phone over NFC.
-• Everything stays on your phone: your card, your shared preferences and the cards you receive.
+- No account and no sign-up.
+- No ads, no analytics, no tracking and no crash reporting.
+- No internet permission at all. The app cannot send anything anywhere, and the card travels phone to phone over NFC.
+- Everything stays on your phone: your card, your sharing settings and the cards you receive.
 
 YOUR CARDS
 
-• Choose one of seven colour presets or pick any colour on a custom wheel; the text always keeps a readable contrast.
-• Received cards live in a local library with their date and a note you can add, and can be added to your system contacts, called or emailed in one tap.
-• Cards you already have are recognised and updated instead of duplicated.
+- Choose one of seven colour presets or pick any colour on a custom wheel; the text always keeps a readable contrast.
+- Received cards live in a local library with their date and a note you can add, and can be added to your system contacts, called or emailed in one tap.
+- Cards you already have are recognised and updated instead of duplicated.
 
 WHAT YOU NEED
 
-Two Android phones with NFC, both with Txoka installed, screens on. Sharing is one to one and nothing is uploaded: there is no server behind this app.
+Two Android phones with NFC to exchange a card; with one phone you can still create your card and keep the ones you receive. Sharing is one to one and nothing is uploaded: there is no server behind this app.
 
 Txoka is free software, open source under GPL-3.0: https://github.com/igarciadelamo/txoka
 ```
@@ -52,26 +52,26 @@ Txoka is free software, open source under GPL-3.0: https://github.com/igarciadel
 ### Full description (es-ES)
 
 ```
-Tu tarjeta de contacto, a un toque.
+Tu tarjeta de visita, de móvil a móvil.
 
-Crea tu tarjeta una vez —nombre, teléfono, email, LinkedIn, Instagram y el color que elijas— y compártela acercando dos teléfonos. La otra persona ve la tarjeta, decide si la guarda y puede devolverte la suya con el mismo gesto.
+Crea tu tarjeta una vez (nombre, teléfono, email, LinkedIn, Instagram y el color que elijas) y compártela acercando dos móviles. La otra persona ve la tarjeta y decide si la guarda. Para devolverte la suya, pone Txoka en Recibir y volvéis a acercar los móviles.
 
 QUÉ LA HACE DISTINTA
 
-• Sin cuenta y sin registro.
-• Sin anuncios, sin analítica, sin rastreo y sin informes de fallos.
-• Sin permiso de internet. La app no puede enviar nada a ningún sitio y la tarjeta viaja de teléfono a teléfono por NFC.
-• Todo se queda en tu teléfono: tu tarjeta, tus preferencias y las tarjetas que recibes.
+- Sin cuenta y sin registro.
+- Sin anuncios, sin estadísticas, sin rastreo y sin informes de fallos.
+- Sin permiso de internet: la app no puede enviar nada a ningún sitio y la tarjeta viaja de móvil a móvil por NFC.
+- Todo se queda en tu teléfono: tu tarjeta, tus preferencias y las tarjetas que recibes.
 
 TUS TARJETAS
 
-• Elige uno de los siete colores predefinidos o cualquiera en una rueda de color; el texto mantiene siempre un contraste legible.
-• Las tarjetas recibidas se guardan en una biblioteca local con su fecha y una nota que puedes añadir, y se pueden añadir a los contactos del sistema, llamar o enviar un correo en un toque.
-• Las tarjetas que ya tienes se reconocen y se actualizan en lugar de duplicarse.
+- Elige uno de los siete colores predefinidos o cualquiera en una rueda de color; el texto siempre mantiene un contraste legible.
+- Las tarjetas que recibes se guardan en tu biblioteca con su fecha y una nota que puedes añadir, y puedes pasarlas a los contactos del teléfono, llamar o escribir un correo en un toque.
+- Las tarjetas que ya tienes se reconocen y se actualizan en lugar de duplicarse.
 
 QUÉ NECESITAS
 
-Dos teléfonos Android con NFC, ambos con Txoka instalada y la pantalla encendida. La compartición es de uno a uno y no se sube nada: detrás de esta app no hay ningún servidor.
+Dos móviles Android con NFC para intercambiar una tarjeta; con uno solo puedes crear la tuya y guardar las que recibas. Compartir es de uno a uno y no se sube nada: detrás de esta app no hay ningún servidor.
 
 Txoka es software libre, con licencia GPL-3.0: https://github.com/igarciadelamo/txoka
 ```
@@ -105,9 +105,11 @@ controlled by Android, not by Txoka, and it is disclosed in the privacy policy. 
 
 ## Content rating
 
-Category: **Utility, Productivity, Communication**. No violence, sexuality, language, drugs,
-gambling, location sharing or user-generated public content. Expected outcome: rated for everyone
-(PEGI 3 / ESRB Everyone). Target audience: **13+**, not designed for children.
+Category: **Other app types** (not a game, not social or communication). No violence, sexuality,
+language, drugs, gambling, location sharing or public user content; no user-to-user communication
+channels, so no blocking, reporting or chat moderation. Expected outcome: rated for everyone
+(PEGI 3 / ESRB Everyone, USK 0). Target audience: **18+ only**, which keeps the app out of the
+Families policies.
 
 ## Other app content declarations
 
@@ -126,7 +128,7 @@ gambling, location sharing or user-generated public content. Expected outcome: r
 
 | Asset | Spec | Status |
 | --- | --- | --- |
-| App icon | 512×512 PNG 32-bit | `txoka_icon_app-playstore.png` |
+| App icon | 512×512 PNG 32-bit, no alpha | `txoka_icon_app-playstore.png` (alpha channel removed) |
 | Feature graphic | 1024×500 PNG/JPEG, no alpha | `txoka_feature_graphic.jpg` (1024×500, JPEG) |
 | Phone screenshots (English) | 2-8, 16:9 or 9:16, 1080-3840 px | `screenshots/en/`: hub, share back, incoming queue, received list, editor, about (light, 1080×1920 JPEG) |
 | Phone screenshots (Spanish) | same | `screenshots/es/`: the same six in light mode |
