@@ -3,14 +3,24 @@ package es.igarciadelamo.txoka.domain.protocol
 import java.io.ByteArrayOutputStream
 
 /**
- * Encodes a single MIME record NDEF message. This is the byte blob stored in the Type 4 Tag file,
- * so it stays free of Android dependencies and can be asserted in unit tests.
+ * Encodes the NDEF message stored in the Type 4 Tag file: the card as a `text/vcard` record and, on
+ * top of it, an Android Application Record naming this app.
+ *
+ * The AAR is what makes the receiving phone hand the tag to Txoka instead of showing a chooser or
+ * letting another app claim it. It travels inside the same message, so the tag stays a single NDEF
+ * message and the card budget only loses the record overhead.
+ *
+ * It stays free of Android dependencies so every byte can be asserted in unit tests.
  */
 object NdefMessage {
     const val MIME_TYPE = "text/vcard"
     const val MAX_MESSAGE_BYTES = 768
 
+    /** Package named by the Android Application Record. `NdefMessageTest` keeps it in sync. */
+    const val APP_PACKAGE = "es.igarciadelamo.txoka"
+
     private const val TNF_MIME = 0x02
+    private const val TNF_EXTERNAL_TYPE = 0x04
     private const val TNF_MASK = 0x07
     private const val FLAG_MB = 0x80
     private const val FLAG_ME = 0x40
@@ -21,15 +31,20 @@ object NdefMessage {
     private const val BYTE_MASK = 0xFF
     private const val BITS_PER_BYTE = 8
     private const val RECORD_HEADER_BYTES = 2
+    private const val AAR_TYPE = "android.com:pkg"
 
     private val TYPE_BYTES = MIME_TYPE.toByteArray(Charsets.US_ASCII)
+    private val AAR_TYPE_BYTES = AAR_TYPE.toByteArray(Charsets.US_ASCII)
+    private val APP_PACKAGE_BYTES = APP_PACKAGE.toByteArray(Charsets.US_ASCII)
 
     /** Size of the encoded message for [vCard], so callers can check the budget before building it. */
     fun encodedSize(vCard: String): Int {
         val payloadSize = vCard.toByteArray(Charsets.UTF_8).size
         val lengthBytes = if (payloadSize <= MAX_SHORT_PAYLOAD) 1 else LONG_LENGTH_BYTES
-        return RECORD_HEADER_BYTES + lengthBytes + TYPE_BYTES.size + payloadSize
+        return RECORD_HEADER_BYTES + lengthBytes + TYPE_BYTES.size + payloadSize + applicationRecordSize()
     }
+
+    private fun applicationRecordSize(): Int = RECORD_HEADER_BYTES + 1 + AAR_TYPE_BYTES.size + APP_PACKAGE_BYTES.size
 
     /** False when [vCard] cannot travel in a Type 4 Tag file of [MAX_MESSAGE_BYTES] bytes. */
     fun fits(vCard: String): Boolean = encodedSize(vCard) <= MAX_MESSAGE_BYTES
@@ -39,24 +54,31 @@ object NdefMessage {
             "NDEF message of ${encodedSize(vCard)} bytes exceeds the limit of $MAX_MESSAGE_BYTES"
         }
 
-        val payload = vCard.toByteArray(Charsets.UTF_8)
-        val type = TYPE_BYTES
-        val isShort = payload.size <= MAX_SHORT_PAYLOAD
-
         val message = ByteArrayOutputStream()
-        message.write(FLAG_MB or FLAG_ME or TNF_MIME or if (isShort) FLAG_SR else 0)
-        message.write(type.size)
+        message.writeRecord(TNF_MIME, TYPE_BYTES, vCard.toByteArray(Charsets.UTF_8), last = false)
+        message.writeRecord(TNF_EXTERNAL_TYPE, AAR_TYPE_BYTES, APP_PACKAGE_BYTES, last = true)
+        return message.toByteArray()
+    }
+
+    private fun ByteArrayOutputStream.writeRecord(tnf: Int, type: ByteArray, payload: ByteArray, last: Boolean) {
+        val isShort = payload.size <= MAX_SHORT_PAYLOAD
+        var flags = tnf
+        if (!last) flags = flags or FLAG_MB
+        if (last) flags = flags or FLAG_ME
+        if (isShort) flags = flags or FLAG_SR
+
+        write(flags)
+        write(type.size)
         if (isShort) {
-            message.write(payload.size)
+            write(payload.size)
         } else {
             repeat(LONG_LENGTH_BYTES) { index ->
-                message.write(payload.size ushr (BITS_PER_BYTE * (LONG_LENGTH_BYTES - 1 - index)))
+                write(payload.size ushr (BITS_PER_BYTE * (LONG_LENGTH_BYTES - 1 - index)))
             }
         }
         // write(ByteArray) works on every API level; writeBytes(ByteArray) needs API 33.
-        message.write(type)
-        message.write(payload)
-        return message.toByteArray()
+        write(type)
+        write(payload)
     }
 
     /** Returns the vCard text, or null when the message is not a single `text/vcard` record. */

@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.domain.protocol
 
+import es.igarciadelamo.txoka.BuildConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -14,10 +15,31 @@ class NdefMessageTest {
     fun `encodes a short mime record`() {
         val message = NdefMessage.encode(vCard)
 
-        assertEquals(0xD2, message[0].toInt() and 0xFF)
+        assertEquals(0x92, message[0].toInt() and 0xFF)
         assertEquals(NdefMessage.MIME_TYPE.length, message[1].toInt() and 0xFF)
         assertEquals(vCard.toByteArray().size, message[2].toInt() and 0xFF)
         assertEquals(NdefMessage.MIME_TYPE, String(message, 3, NdefMessage.MIME_TYPE.length))
+    }
+
+    @Test
+    fun `adds an android application record for this app`() {
+        val message = NdefMessage.encode(vCard)
+        val aar = recordEnd(message)
+
+        assertEquals(0x54, message[aar].toInt() and 0xFF)
+        assertEquals(AAR_TYPE.length, message[aar + 1].toInt() and 0xFF)
+        assertEquals(NdefMessage.APP_PACKAGE.toByteArray().size, message[aar + 2].toInt() and 0xFF)
+        assertEquals(AAR_TYPE, String(message, aar + 3, AAR_TYPE.length))
+        assertEquals(
+            NdefMessage.APP_PACKAGE,
+            String(message, aar + 3 + AAR_TYPE.length, NdefMessage.APP_PACKAGE.length),
+        )
+        assertEquals(message.size, aar + AAR_RECORD_BYTES)
+    }
+
+    @Test
+    fun `names the package the app is built with`() {
+        assertEquals(BuildConfig.APPLICATION_ID, NdefMessage.APP_PACKAGE)
     }
 
     @Test
@@ -30,7 +52,7 @@ class NdefMessageTest {
         val longCard = "BEGIN:VCARD\r\nFN:${"A".repeat(300)}\r\nEND:VCARD\r\n"
         val message = NdefMessage.encode(longCard)
 
-        assertEquals(0xC2, message[0].toInt() and 0xFF)
+        assertEquals(0x82, message[0].toInt() and 0xFF)
         assertEquals(longCard.toByteArray().size, longPayloadLength(message))
         assertEquals(longCard, NdefMessage.decode(message))
     }
@@ -51,7 +73,7 @@ class NdefMessageTest {
     @Test
     fun `fits a card that fills the payload exactly`() {
         // A long record spends four length bytes on the header: flags, type length, length and type.
-        val card = "A".repeat(NdefMessage.MAX_MESSAGE_BYTES - LONG_RECORD_OVERHEAD)
+        val card = "A".repeat(NdefMessage.MAX_MESSAGE_BYTES - LONG_RECORD_OVERHEAD - AAR_RECORD_BYTES)
         val message = NdefMessage.encode(card)
 
         assertEquals(NdefMessage.MAX_MESSAGE_BYTES, message.size)
@@ -87,6 +109,21 @@ class NdefMessageTest {
         assertNull(NdefMessage.decode(ByteArray(0)))
     }
 
+    /** Index where the record after the vCard starts. */
+    private fun recordEnd(message: ByteArray): Int {
+        val isShort = message[0].toInt() and 0x10 != 0
+        val typeLength = message[1].toInt() and 0xFF
+        val headerBytes = if (isShort) 3 else 6
+        val payloadLength = if (isShort) {
+            message[2].toInt() and 0xFF
+        } else {
+            var length = 0
+            repeat(4) { index -> length = (length shl 8) or (message[2 + index].toInt() and 0xFF) }
+            length
+        }
+        return headerBytes + typeLength + payloadLength
+    }
+
     private fun longPayloadLength(message: ByteArray): Int {
         var length = 0
         repeat(4) { index -> length = (length shl 8) or (message[2 + index].toInt() and 0xFF) }
@@ -96,5 +133,9 @@ class NdefMessageTest {
     private companion object {
         /** Flags, type length, the four length bytes and the `text/vcard` type. */
         const val LONG_RECORD_OVERHEAD = 2 + 4 + 10
+
+        /** Flags, type length, payload length, the `android.com:pkg` type and the package name. */
+        val AAR_RECORD_BYTES = 3 + AAR_TYPE.length + NdefMessage.APP_PACKAGE.length
+        const val AAR_TYPE = "android.com:pkg"
     }
 }
