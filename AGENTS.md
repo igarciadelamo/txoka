@@ -21,7 +21,7 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
 `main` is green. Milestones 0–6 and the polish phase are merged.
 
 - Unified app bar, hub/card actions, accessibility pass, string audit and licensing are done.
-- 181 JVM unit tests + 7 instrumented tests (DAO + migration), all green on the emulator. The old
+- JVM unit tests + instrumented tests (DAO + migration), all green on the emulator. The old
   `NoSuchMethodError runBlockingK` was a version split: `kotlinx-coroutines-test` came in at
   1.11.0 while the app runtime resolved `kotlinx-coroutines-core` 1.9.0 (Room's BOM), and AGP's
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
