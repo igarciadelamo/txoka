@@ -402,6 +402,17 @@ for the privacy policy only.
 - Notes are plain text, one per contact, and there is no sync or export.
 - Sharing as a vCard file or a QR code is not implemented; sharing works over NFC only.
 
+## How it was built
+
+Txoka was built with an AI coding agent (DeepSeek V4.1 Flash 1017,
+`deepseek/deepseek-v4.1-flash-1017` on OpenRouter) following the rules in `AGENTS.md`: one branch
+per change, no self-merged pull requests, and build, tests, detekt and ktlint before every commit.
+The first working version took 43 pull requests; fixing what the phone tests found brought it to
+51.
+
+The emulator has no NFC, so the card exchange was debugged by hand on two phones. The results are
+in [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TEST_PLAN.md).
+
 ## Licence
 
 Txoka is free software under the GNU General Public License v3.0 only (`GPL-3.0-only`). See
