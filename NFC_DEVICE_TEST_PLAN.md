@@ -1,13 +1,11 @@
 # NFC device test plan
 
 Manual validation of the NFC paths on **two physical phones**. The protocol, the responder and the
-view models are covered by unit tests, and the debug demo exercises the same codec, but nothing here
-can be reproduced on an emulator, so these cases only pass on real hardware.
+view models are covered by unit tests, but nothing here can be reproduced on an emulator.
 
-The hub role also picks the NFC mechanism: **Receive** reads with `enableReaderMode` and does not
-emulate, **Send** emulates with foreground dispatch and the preferred HCE service. The reader-mode
-callback bypasses NDEF intent dispatch on purpose, because some vendor builds never deliver those
-intents to third-party apps.
+The hub role picks the mechanism: **Receive** reads with `enableReaderMode`, **Send** emulates with
+foreground dispatch. Reader mode bypasses NDEF intent dispatch on purpose, because some vendor
+builds never deliver those intents to third-party apps.
 
 ## Setup
 
@@ -190,26 +188,26 @@ Measured on the pair below while running these cases. They are platform behaviou
 they shape the design:
 
 - **A phone cannot poll and emulate at the same time.** `enableReaderMode` disables card emulation
-  for the whole adapter, which is why one tap can only carry one card and the hub needs a role.
-  Documented in `NfcAdapter.enableReaderMode`.
-- **Two Android phones talk peer to peer by default**, so a tap does not expose the emulated card
-  until one side enters reader mode with an Activity in the foreground. Receiving in the background
-  is therefore impossible on the receiving phone; sending is not.
-- **The vivo (OriginOS) does not deliver `NDEF_DISCOVERED` intents to third party apps** and
-  restarts the Activity when one reaches it, tearing the RF session down. That is why the app reads
-  with reader mode instead of intent dispatch, and why exchanging automatically in a single contact
-  was abandoned.
-- **The Samsung ships its own "share your card over NFC" service.** Without an Android Application
-  Record it wins the tag or forces an app chooser, so the card never reaches Txoka. The AAR in the
-  NDEF message fixes it: the tag now opens Txoka directly, in the foreground and from the
-  background.
-- **The vivo filters application `Log` output** (only warnings reach logcat), which is why the
-  diagnostics of the receiver side are the ones worth collecting.
+  for the whole adapter, so one tap carries one card and the hub needs a role.
+- **Two phones talk peer to peer by default.** A tap does not expose the emulated card until one
+  side enters reader mode, which needs an Activity in the foreground: receiving used to require the
+  app on screen, sending does not.
+- **The Samsung ships its own "share your card over NFC" service** and wins the tag, or forces a
+  chooser, when the NDEF message names no app. The AAR fixes that: the tag opens Txoka, in the
+  foreground and from the background. Case 24 is the pending check, and on a phone that drops the
+  intent it cannot work at all.
+- **The vivo (OriginOS) does not deliver `NDEF_DISCOVERED` to third party apps**, restarts the
+  Activity when one arrives and filters app `Log` output (only warnings reach logcat). That is why
+  the app reads with reader mode, why the automatic exchange was abandoned, and why the background
+  receive can only be verified on the other phone.
 
 ## Results
 
 Pair under test: **A** vivo V40 SE 5G (V2337), Android 16 / OriginOS 6 · **B** Samsung Galaxy A36
 5G (SM-A366B), Android 16 / One UI.
+
+**20 pass · 8 pending · 2 hardware cannot measure · 0 fail**, out of the 30 cases above. A row is
+a result, not a promise.
 
 | # | Case | Result | Evidence |
 |---|---|---|---|
@@ -217,25 +215,36 @@ Pair under test: **A** vivo V40 SE 5G (V2337), Android 16 / OriginOS 6 · **B** 
 | 2 | Nothing stored without a tap | Pass | 30 s with the sheet open, then discard: library unchanged |
 | 3 | Discard | Pass | Sheet closes, library unchanged |
 | 4 | Same contact twice | Pass | "You already have …" and `Update contact` |
-| 5 | Send back B→A | Pass with precondition | A must be on **Receive**; on the vivo a phone on Send cannot read. A shows the sheet with B's card |
+| 5 | Send back B→A | Pass | A has to be on **Receive** first: on the vivo a phone on Send cannot read. A shows the sheet with B's card |
 | 6 | Cancel | Pass | ✕ returns the module to Receive and clears the countdown |
 | 7 | Expiry after 60 s | Pass | Counter reaches 0 and the module returns to Receive |
 | 8 | Countdown on the real clock | Pass | 48 s, 33 s in the background, back at 12 s |
-| 9 | Return with the app in the background | Not executed after the AAR fix | Needs a rerun; before the AAR the system chooser stole the tag |
+| 9 | Return with the app in the background | Pending | A must get B's card while B sits in the background, inside the 60 s window. Not rerun since the AAR |
 | 10 | No offer unless receiving | Pass | Both on Send: no sheet, no offer |
+| 11 | Locked sender, unlock setting off | Pending | Screen on and locked on A; some skins stop emulation behind the lock screen |
+| 12 | Unlock required, sender locked | Pending | Switch on and A locked: no card, no error, and the retry works after unlocking |
+| 13 | Unlock required, sender unlocked | Pending | Same, with A unlocked |
 | 14 | The unlock switch follows NFC | Pass | Disabled with NFC off, enabled with its value kept when it comes back |
 | 15 | NFC off when the app opens | Pass | Off warning, role selector hidden, `Open NFC settings` opens the system screen |
 | 16 | Turning NFC on with the app open | Pass | Module recovers without restarting |
 | 17 | Turning NFC off mid-flow | Pass | Off warning, tap does nothing, no crash, works again once NFC is back |
+| 18 | Foreign NDEF tag | Pending | A `text/vcard` record written by another app, foreground and background: no sheet, no crash |
+| 19 | Largest card the editor allows | Unit tests only | The editor caps keep a card inside the 768-byte budget, so the over-long path cannot be built over NFC |
 | 20 | Phone formatting and intents | Pass | Number kept as sent; `Call` opens the dialer, `Email` opens Gmail compose |
-| 24 | Receiving in the background | Not executed after the AAR fix | Before it, the Samsung chooser won the tag; after it the app opens on its own |
+| 21 | Repeated taps with the same card | Not applicable | After receiving, the phone hands itself to the return window, so five identical taps are not reproducible |
+| 22 | Two senders with the sheet open | Pending | Expect "1 more card is waiting" without losing the first card |
+| 23 | Acting on a queued card | Pending | Saving or discarding removes exactly the card on screen and reveals the next |
+| 24 | Receiving in the background | Pending | Before the AAR the Samsung chooser won the tag. Not rerun since |
 | 25 | Receiving while locked | Pass | Nothing accepted silently, no crash; the system chooser appeared while locked |
 | 26 | Sender process gone | Pass | Removing Txoka from recents on A still sends, the HCE service restarts the process |
 | 27 | Both on Receive | Pass | Nothing happens, no crash |
 | 28 | Both on Send | Pass | No sheet and no offer on either side |
 | 29 | Rotation and back with the sheet open | Pass | Landscape keeps both actions pinned; back discards and the library keeps one row |
 | 30 | Screen stays awake | Pass | Still awake and focused 95 s after a 60 s screen timeout |
-| 11-13, 18, 19, 21-23 | Not executed | Pending | Lock tests need a manual lock; 18 needs a physical tag; 19 and 22 need editing the profile; 21 is not reachable because receiving switches the phone to Send |
+
+What is left needs the phones in hand: 9 and 24 (rerun with the current build), 11 to 13 (a locked
+phone and the unlock switch), 18 (one foreign tag) and 22 and 23 (two senders).
+
 
 Diagnostics when something fails:
 
@@ -246,9 +255,6 @@ adb logcat -d > full_logcat.txt
 
 ## Definition of done
 
-The plan counts as done when the table is filled in on **two different phone pairs** (ideally one
-OEM skin and one stock build) and the negative results are documented. Then:
-
-- record the phone models and Android versions next to the result;
-- open a separate issue for anything that only fails on one vendor, attaching the logcat, instead of
-  changing the protocol blindly.
+Done means every row reads **Pass**, except 19 and 21, which hardware cannot reach. And it means two
+**different phone pairs**, with their models and Android versions recorded. A failure that only one
+vendor shows gets its own issue with the logcat, instead of a change to the protocol.
