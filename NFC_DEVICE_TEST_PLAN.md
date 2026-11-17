@@ -193,12 +193,17 @@ they shape the design:
   for the whole adapter, which is why one tap can only carry one card and the hub needs a role.
   Documented in `NfcAdapter.enableReaderMode`.
 - **Two Android phones talk peer to peer by default**, so a tap does not expose the emulated card
-  until one side enters reader mode with an Activity in the foreground. Receiving in the background
-  is therefore impossible on the receiving phone; sending is not.
+  until one side enters reader mode. Reader mode needs an Activity in the foreground, so receiving
+  used to require the app on screen; sending does not, because the HCE service answers on its own.
+- **The AAR changes the receiving side of that**, and the change is not fully measured. With a
+  record for this package in the NDEF message the tag opens Txoka from the background instead of
+  the chooser, so a phone with the app closed may now receive. Case 24 is the check and is still
+  pending; until it runs, treat receiving in the background as unproven rather than impossible.
 - **The vivo (OriginOS) does not deliver `NDEF_DISCOVERED` intents to third party apps** and
   restarts the Activity when one reaches it, tearing the RF session down. That is why the app reads
   with reader mode instead of intent dispatch, and why exchanging automatically in a single contact
-  was abandoned.
+  was abandoned. It also means the AAR cannot open Txoka here, so a background receipt can only
+  work on a phone that delivers the intent: so far only the Samsung.
 - **The Samsung ships its own "share your card over NFC" service.** Without an Android Application
   Record it wins the tag or forces an app chooser, so the card never reaches Txoka. The AAR in the
   NDEF message fixes it: the tag now opens Txoka directly, in the foreground and from the
@@ -210,6 +215,10 @@ they shape the design:
 
 Pair under test: **A** vivo V40 SE 5G (V2337), Android 16 / OriginOS 6 · **B** Samsung Galaxy A36
 5G (SM-A366B), Android 16 / One UI.
+
+Only the rows below were measured, so the table is not the whole plan. Eight cases have no
+recorded result yet (11 to 13, 18, 19 and 21 to 23), and 9 and 24 were not rerun after the AAR fix.
+Treat all ten as unproven rather than passing.
 
 | # | Case | Result | Evidence |
 |---|---|---|---|
