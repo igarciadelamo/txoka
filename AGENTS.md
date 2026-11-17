@@ -64,6 +64,9 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 
 ## Architecture
 
+Context lives in three documents: `README.md` is the summary, `ARCHITECTURE.md` the design, the
+protocol and the accessibility rules, and `TESTING.md` the build, signing and test commands.
+
 - `ui/share/ShareScreen.kt` + ViewModel — hub: app bar actions, hero card with edit overlay, NFC
   module, privacy footer.
 - `ui/profile/ProfileEditorScreen.kt` + ViewModel — create/edit the card: name, phone with country
