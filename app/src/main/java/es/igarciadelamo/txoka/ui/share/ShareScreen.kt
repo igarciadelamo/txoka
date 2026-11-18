@@ -56,6 +56,7 @@ import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleState
 import es.igarciadelamo.txoka.ui.components.CardLayout
+import es.igarciadelamo.txoka.ui.components.CardMotion
 import es.igarciadelamo.txoka.ui.components.CardViewer
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
@@ -174,6 +175,8 @@ private fun HubContent(
                 ContactCard(
                     profile = profile,
                     layout = CardLayout.Hero,
+                    motion = if (viewerOpen) CardMotion() else null,
+                    paused = viewerOpen,
                 )
                 IconButton(
                     onClick = onEditProfile,

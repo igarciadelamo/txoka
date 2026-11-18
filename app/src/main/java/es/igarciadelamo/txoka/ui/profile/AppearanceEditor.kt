@@ -109,6 +109,7 @@ internal fun AppearanceEditor(
             profile = preview,
             controller = controller,
             paused = paused,
+            suspended = expanded,
             onPausedChange = { paused = it },
             onExpand = { expanded = true },
             maxCardHeight = maxCardHeight,
@@ -148,6 +149,7 @@ private fun AppearancePreviewPane(
     profile: Profile,
     controller: CardMotionController,
     paused: Boolean,
+    suspended: Boolean,
     onPausedChange: (Boolean) -> Unit,
     onExpand: () -> Unit,
     maxCardHeight: Dp,
@@ -158,7 +160,12 @@ private fun AppearancePreviewPane(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        ScaledCardPreview(profile, controller.motion, paused, maxCardHeight)
+        ScaledCardPreview(
+            profile,
+            if (suspended) CardMotion() else controller.motion,
+            paused || suspended,
+            maxCardHeight,
+        )
         AppearanceMotionControls(controller, paused, onPausedChange, onExpand)
     }
 }

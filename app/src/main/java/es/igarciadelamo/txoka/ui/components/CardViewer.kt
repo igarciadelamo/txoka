@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
@@ -40,30 +42,56 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
-        BoxWithConstraints(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .safeDrawingPadding()
                 .padding(Spacing.lg),
-            contentAlignment = Alignment.Center,
         ) {
-            val cardWidth = minOf(maxWidth, ((maxHeight - 140.dp) * PHYSICAL_CARD_RATIO).coerceAtLeast(240.dp))
+            IconButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
+                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
+            }
+            CardViewerContent(profile, motion, paused, onPausedChange = { paused = it }, modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun CardViewerContent(
+    profile: Profile,
+    motion: CardMotionController,
+    paused: Boolean,
+    onPausedChange: (Boolean) -> Unit,
+    modifier: Modifier,
+) {
+    BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val landscape = maxWidth > maxHeight
+        val availableWidth = if (landscape) (maxWidth - 144.dp).coerceAtLeast(120.dp) else maxWidth
+        val availableHeight = if (landscape) maxHeight else (maxHeight - 112.dp).coerceAtLeast(80.dp)
+        val cardWidth = minOf(availableWidth, availableHeight * PHYSICAL_CARD_RATIO)
+        val card: @Composable () -> Unit = {
             Column(
-                modifier = Modifier
-                    .width(cardWidth)
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
+            ) {
+                ContactCard(profile = profile, motion = motion.motion, paused = paused)
+            }
+        }
+        if (landscape) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                card()
+                AppearanceMotionControls(motion, paused, onPausedChange, modifier = Modifier.width(132.dp))
+            }
+        } else {
+            Column(
+                modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(Spacing.md),
             ) {
                 ContactCard(profile = profile, motion = motion.motion, paused = paused)
-                AppearanceMotionControls(
-                    controller = motion,
-                    paused = paused,
-                    onPausedChange = { paused = it },
-                )
-            }
-            IconButton(onClick = onDismiss, modifier = Modifier.align(Alignment.TopEnd)) {
-                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
+                AppearanceMotionControls(motion, paused, onPausedChange)
             }
         }
     }
