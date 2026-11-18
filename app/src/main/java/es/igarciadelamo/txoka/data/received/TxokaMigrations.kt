@@ -13,3 +13,10 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("ALTER TABLE received_contacts ADD COLUMN instagram TEXT")
     }
 }
+
+/** Existing cards keep their legacy palette until their sender shares a new appearance. */
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE received_contacts ADD COLUMN appearance TEXT")
+    }
+}

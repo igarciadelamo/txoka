@@ -1,0 +1,1255 @@
+{
+  "schema_version": 1,
+  "collection_label": "Mosaicos vectoriales aportados",
+  "publication": {
+    "approved": true,
+    "scope": "The twenty SVG files explicitly supplied by the user for inclusion. No preview PNG is deployed.",
+    "approved_preset_ids": [
+      "geo-truchet-labyrinth",
+      "geo-truchet-double-tracks",
+      "geo-orthogonal-labyrinth",
+      "geo-bauhaus-quarter-rounds",
+      "geo-sine-wave-moire",
+      "geo-sawtooth-waves",
+      "geo-herringbone-chevrons",
+      "geo-diamond-vibrations",
+      "geo-concentric-orbitals",
+      "geo-vesica-piscis-lattice",
+      "geo-honeycomb-cartography",
+      "geo-isometric-cube-fields",
+      "geo-hexagon-pinwheels",
+      "geo-equilateral-fractals",
+      "geo-triangular-turbines",
+      "geo-rhombus-mirrors",
+      "geo-eightfold-starwork",
+      "geo-twelvefold-zellige",
+      "geo-interlocking-greek-crosses",
+      "geo-optical-woven-grid"
+    ]
+  },
+  "rendering": {
+    "source_files_modified": false,
+    "format": "SVG",
+    "roi_format": "[x, y, width, height] in SVG viewBox units",
+    "fit": "cover",
+    "repetition": "Each supplied SVG contains its own periodic pattern in userSpaceOnUse. Preserve the original geometry and viewBox.",
+    "nfc": "Only stable preset selectors and appearance parameters are proposed for NFC; no SVG source, geometry, colours of the source, hash or archive metadata is sent.",
+    "appearance": "Mosaic colour and material follow the selected background. Elemental effects are a separate local overlay; no independent mosaic finish or ink colours."
+  },
+  "source": {
+    "kind": "user_provided",
+    "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+    "archive_sha256": "6ccda7bae4b4ae3cc1fe0f3991fe276c3c9a0ce97aaed425d5a389fd93fa055f",
+    "readme": "20 mosaicos vectoriales bicolor.\nColores exactos: #111111 (negro), #FAF9F6 (marfil).\nCada SVG usa un patron periodico SVG (patternUnits=userSpaceOnUse).\nArchivos vectoriales editables y ampliables sin perdida de calidad.\n"
+  },
+  "validation": {
+    "svg_files": 20,
+    "source_bytes": 1134657,
+    "source_colours": [
+      "#111111",
+      "#FAF9F6"
+    ],
+    "external_references": 0,
+    "scripts_or_event_handlers": 0,
+    "embedded_images": 0,
+    "doctype_or_entity_declarations": 0,
+    "geometry_modified": false,
+    "nfc_selectors_status": "proposed; Android/NFC implementation remains pending"
+  },
+  "presets": {
+    "geo-truchet-labyrinth": {
+      "file": "assets/geometric/01_truchet_labyrinth.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 7064,
+      "sha256": "76a6779fa77d7f0ddc89912e57d56661360c94697dc8ff4e50bfdbb77a583e89",
+      "label": "Laberinto Truchet",
+      "title": "Laberinto Truchet — mosaico vectorial",
+      "title_es": "Laberinto Truchet — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "labyrinth"
+      ],
+      "tags": [
+        "laberinto",
+        "curvas",
+        "truchet",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "laberinto",
+        "curvas",
+        "truchet",
+        "truchet labyrinth"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 192,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/01_truchet_labyrinth.svg",
+        "description": "Arcos de Truchet que atraviesan todas las juntas por sus puntos medios. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-truchet-double-tracks": {
+      "file": "assets/geometric/02_truchet_double_tracks.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 23884,
+      "sha256": "9b828f15e72685b7fa09d85a97a19e09fa4d5b9c9c4ec172675399d97009afa3",
+      "label": "Truchet doble",
+      "title": "Truchet doble — mosaico vectorial",
+      "title_es": "Truchet doble — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "labyrinth"
+      ],
+      "tags": [
+        "laberinto",
+        "curvas",
+        "truchet",
+        "doble",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "laberinto",
+        "curvas",
+        "truchet",
+        "doble",
+        "truchet double tracks"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 193,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/02_truchet_double_tracks.svg",
+        "description": "Arcos de Truchet que atraviesan todas las juntas por sus puntos medios. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-orthogonal-labyrinth": {
+      "file": "assets/geometric/03_orthogonal_labyrinth.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 12297,
+      "sha256": "24a213dd90bf1451b1d36f571a8aee03c1496a5d2090d5c8a8943b29347f48ce",
+      "label": "Laberinto ortogonal",
+      "title": "Laberinto ortogonal — mosaico vectorial",
+      "title_es": "Laberinto ortogonal — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "labyrinth"
+      ],
+      "tags": [
+        "laberinto",
+        "rectas",
+        "ortogonal",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "laberinto",
+        "rectas",
+        "ortogonal",
+        "orthogonal labyrinth"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 194,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/03_orthogonal_labyrinth.svg",
+        "description": "Teselado de codos ortogonales que enlazan puntos medios de cada lado. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-bauhaus-quarter-rounds": {
+      "file": "assets/geometric/04_bauhaus_quarter_rounds.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 9661,
+      "sha256": "3c1970adc22568c05de1a8c607a6bb79867e1bd5f329c919e4de73d6233db85d",
+      "label": "Bauhaus",
+      "title": "Bauhaus — mosaico vectorial",
+      "title_es": "Bauhaus — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "bauhaus",
+        "curvas",
+        "cuartos de círculo",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "bauhaus",
+        "curvas",
+        "cuartos de círculo",
+        "bauhaus quarter rounds"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 195,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/04_bauhaus_quarter_rounds.svg",
+        "description": "Cuadrantes y arcos concéntricos rotados en una retícula cuadrada. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-sine-wave-moire": {
+      "file": "assets/geometric/05_sine_wave_moire.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 24324,
+      "sha256": "5c29dee4c3b4b069d62249a06f6de58db402f69faf28427a2f44479d31659ee7",
+      "label": "Ondas muaré",
+      "title": "Ondas muaré — mosaico vectorial",
+      "title_es": "Ondas muaré — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "ondas",
+        "muaré",
+        "moire",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "ondas",
+        "muaré",
+        "moire",
+        "sine wave moire"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 196,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/05_sine_wave_moire.svg",
+        "description": "Bandas paralelas con fase y espesor periódicos, continuidad exacta entre bordes. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-sawtooth-waves": {
+      "file": "assets/geometric/06_sawtooth_waves.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 21719,
+      "sha256": "4983b0f52ca822c8ec67628200950855407607932471962addc1ed60119edfc0",
+      "label": "Ondas dentadas",
+      "title": "Ondas dentadas — mosaico vectorial",
+      "title_es": "Ondas dentadas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "ondas",
+        "dientes de sierra",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "ondas",
+        "dientes de sierra",
+        "sawtooth waves"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 197,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/06_sawtooth_waves.svg",
+        "description": "Bandas paralelas con fase y espesor periódicos, continuidad exacta entre bordes. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-herringbone-chevrons": {
+      "file": "assets/geometric/07_herringbone_chevrons.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 12842,
+      "sha256": "151743faf656eb7f7350bddfdb2af2e6cf42358796b3e5b0e086795624a43b4a",
+      "label": "Espiga",
+      "title": "Espiga — mosaico vectorial",
+      "title_es": "Espiga — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "woven"
+      ],
+      "tags": [
+        "espiga",
+        "chevrones",
+        "herringbone",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "espiga",
+        "chevrones",
+        "herringbone",
+        "herringbone chevrons"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 198,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/07_herringbone_chevrons.svg",
+        "description": "Filas de chevrones geométricos alternos. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-diamond-vibrations": {
+      "file": "assets/geometric/08_diamond_vibrations.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 7176,
+      "sha256": "8f9c9a2a3f42afb1961e29c68dddaf3e76a37075e72f021b9b90d73c278eb7b3",
+      "label": "Rombos vibrantes",
+      "title": "Rombos vibrantes — mosaico vectorial",
+      "title_es": "Rombos vibrantes — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "rombos",
+        "óptico",
+        "vibraciones",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "rombos",
+        "óptico",
+        "vibraciones",
+        "diamond vibrations"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 199,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/08_diamond_vibrations.svg",
+        "description": "Rombos concéntricos alternados con rotación de cuarto de vuelta. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-concentric-orbitals": {
+      "file": "assets/geometric/09_concentric_orbitals.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 12640,
+      "sha256": "7d67abdbde5db93dc66b54dad401049806817de98449055bc59d59b345ff14c4",
+      "label": "Órbitas concéntricas",
+      "title": "Órbitas concéntricas — mosaico vectorial",
+      "title_es": "Órbitas concéntricas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "círculos",
+        "órbitas",
+        "concéntrico",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "círculos",
+        "órbitas",
+        "concéntrico",
+        "concentric orbitals"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 200,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/09_concentric_orbitals.svg",
+        "description": "Órbitas y anillos geométricos solapados por una red escalonada. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-vesica-piscis-lattice": {
+      "file": "assets/geometric/10_vesica_piscis_lattice.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 4222,
+      "sha256": "436288fbee155e4e3e34ec0d21d8932ecbe5b4776fbe817375afbea4907b9d78",
+      "label": "Lentes entrelazadas",
+      "title": "Lentes entrelazadas — mosaico vectorial",
+      "title_es": "Lentes entrelazadas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "lentes",
+        "vesica piscis",
+        "curvas",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "lentes",
+        "vesica piscis",
+        "curvas",
+        "vesica piscis lattice"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 201,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/10_vesica_piscis_lattice.svg",
+        "description": "Lentes geométricas de intersección circular en red alterna. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-honeycomb-cartography": {
+      "file": "assets/geometric/11_honeycomb_cartography.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 9949,
+      "sha256": "0bc53a8ebd7b1c1aa6cf445c8e915d1bab5cf22b092bda83d38d58f7b1a6401d",
+      "label": "Cartografía hexagonal",
+      "title": "Cartografía hexagonal — mosaico vectorial",
+      "title_es": "Cartografía hexagonal — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric"
+      ],
+      "tags": [
+        "hexágonos",
+        "panal",
+        "cartografía",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "hexágonos",
+        "panal",
+        "cartografía",
+        "honeycomb cartography"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 202,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/11_honeycomb_cartography.svg",
+        "description": "Hexágonos regulares de lados compartidos y marcos interiores. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-isometric-cube-fields": {
+      "file": "assets/geometric/12_isometric_cube_fields.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 11600,
+      "sha256": "f50283eab0970e64feacdc698cb1e3f6555129026ac3307bcb394e9a14c1d03c",
+      "label": "Cubos isométricos",
+      "title": "Cubos isométricos — mosaico vectorial",
+      "title_es": "Cubos isométricos — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric"
+      ],
+      "tags": [
+        "cubos",
+        "isométrico",
+        "rombos",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "cubos",
+        "isométrico",
+        "rombos",
+        "isometric cube fields"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 203,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/12_isometric_cube_fields.svg",
+        "description": "Trillizos de rombos exactos que forman cubos isométricos sin sombreado. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-hexagon-pinwheels": {
+      "file": "assets/geometric/13_hexagon_pinwheels.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 16404,
+      "sha256": "2ec02bd8c2141d76a8bc4b905db148188cdf40bb02bae275b6dc7b1d38e86336",
+      "label": "Molinos hexagonales",
+      "title": "Molinos hexagonales — mosaico vectorial",
+      "title_es": "Molinos hexagonales — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "rosettes"
+      ],
+      "tags": [
+        "hexágonos",
+        "molinos",
+        "rotación",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "hexágonos",
+        "molinos",
+        "rotación",
+        "hexagon pinwheels"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 204,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/13_hexagon_pinwheels.svg",
+        "description": "Seis triángulos isósceles por hexágono; simetría rotacional 3 y 6. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-equilateral-fractals": {
+      "file": "assets/geometric/14_equilateral_fractals.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 204998,
+      "sha256": "96d733d3f259e1573e2f186679a21f4497e85a1a549e23f58dd6601316dd43f4",
+      "label": "Fractales triangulares",
+      "title": "Fractales triangulares — mosaico vectorial",
+      "title_es": "Fractales triangulares — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric"
+      ],
+      "tags": [
+        "triángulos",
+        "fractales",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "triángulos",
+        "fractales",
+        "equilateral fractals"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 205,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/14_equilateral_fractals.svg",
+        "description": "Triángulos equiláteros con motivo anidado, repetidos por vectores de red. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-triangular-turbines": {
+      "file": "assets/geometric/15_triangular_turbines.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 233214,
+      "sha256": "707baf8f6c1669590aa7512184b60269f7bdcac15c810db7dc254ef638973696",
+      "label": "Turbinas triangulares",
+      "title": "Turbinas triangulares — mosaico vectorial",
+      "title_es": "Turbinas triangulares — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "rosettes"
+      ],
+      "tags": [
+        "triángulos",
+        "turbinas",
+        "rotación",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "triángulos",
+        "turbinas",
+        "rotación",
+        "triangular turbines"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 206,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/15_triangular_turbines.svg",
+        "description": "Molinetes de triángulos sobre red hexagonal. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-rhombus-mirrors": {
+      "file": "assets/geometric/16_rhombus_mirrors.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 3639,
+      "sha256": "d78704acc77cc3926ad60d1b1042faff8e3027c6da8c76669f0530c419c039d8",
+      "label": "Rombos espejo",
+      "title": "Rombos espejo — mosaico vectorial",
+      "title_es": "Rombos espejo — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical"
+      ],
+      "tags": [
+        "rombos",
+        "espejos",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "rombos",
+        "espejos",
+        "rhombus mirrors"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 207,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/16_rhombus_mirrors.svg",
+        "description": "Campos de rombos rotados y reflejados con contornos periódicos. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-eightfold-starwork": {
+      "file": "assets/geometric/17_eightfold_starwork.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 16763,
+      "sha256": "35382984f2eeee7d7320fb72c0398127b3c37db34cbfae48e5db01ce392bab1b",
+      "label": "Estrellas de ocho puntas",
+      "title": "Estrellas de ocho puntas — mosaico vectorial",
+      "title_es": "Estrellas de ocho puntas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "rosettes"
+      ],
+      "tags": [
+        "estrellas",
+        "ocho puntas",
+        "octogonal",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "estrellas",
+        "ocho puntas",
+        "octogonal",
+        "eightfold starwork"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 208,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/17_eightfold_starwork.svg",
+        "description": "Estrellas octogonales con centros vaciados y diamantes secundarios. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-twelvefold-zellige": {
+      "file": "assets/geometric/18_twelvefold_zellige.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 456153,
+      "sha256": "2f14e1c773973b1177e28b9624b42e91634adc9a5d78809fbe2aefca1c47284e",
+      "label": "Zellige de doce puntas",
+      "title": "Zellige de doce puntas — mosaico vectorial",
+      "title_es": "Zellige de doce puntas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "rosettes"
+      ],
+      "tags": [
+        "zellige",
+        "estrellas",
+        "doce puntas",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "zellige",
+        "estrellas",
+        "doce puntas",
+        "twelvefold zellige"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 209,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/18_twelvefold_zellige.svg",
+        "description": "Rosetones estrellados de doce puntas sobre red triangular. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-interlocking-greek-crosses": {
+      "file": "assets/geometric/19_interlocking_greek_crosses.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 3548,
+      "sha256": "62e59dc012c6ecf38b7d6cfab33c76161c4f976d464a8385e2618c374cba527c",
+      "label": "Cruces griegas",
+      "title": "Cruces griegas — mosaico vectorial",
+      "title_es": "Cruces griegas — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "woven"
+      ],
+      "tags": [
+        "cruces",
+        "cruz griega",
+        "entrelazado",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "cruces",
+        "cruz griega",
+        "entrelazado",
+        "interlocking greek crosses"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 210,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/19_interlocking_greek_crosses.svg",
+        "description": "Cruces griegas y ventanas romboidales periódicas. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "geo-optical-woven-grid": {
+      "file": "assets/geometric/20_optical_woven_grid.svg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 42560,
+      "sha256": "917befe1edcded165647f0341022224b6eced1abda247f9736e47f10da72270f",
+      "label": "Tejido óptico",
+      "title": "Tejido óptico — mosaico vectorial",
+      "title_es": "Tejido óptico — mosaico vectorial",
+      "author_label": "Aportado por el usuario",
+      "categories": [
+        "geometric",
+        "optical",
+        "woven"
+      ],
+      "tags": [
+        "tejido",
+        "cuadrícula",
+        "óptico",
+        "vectorial",
+        "bicolor"
+      ],
+      "search_keywords": [
+        "tejido",
+        "cuadrícula",
+        "óptico",
+        "optical woven grid"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1200,
+        1200
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 211,
+      "publication_approved": true,
+      "license_status": "user_supplied",
+      "provenance": {
+        "kind": "user_provided",
+        "archive": "20_mosaicos_geometricos_bicolor_svg.zip",
+        "archive_entry": "SVG/20_optical_woven_grid.svg",
+        "description": "Trenzado óptico de cintas rectangulares sobre cuadrícula periódica. Patrón vectorial periódico; solo dos colores planos: #111111 y #FAF9F6."
+      },
+      "source_file_modified": false,
+      "source_colors": [
+        "#111111",
+        "#FAF9F6"
+      ],
+      "rights_note": "User-supplied asset requested for inclusion. The accompanying README describes its vector format and colours without stating a separate licence.",
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    }
+  }
+}

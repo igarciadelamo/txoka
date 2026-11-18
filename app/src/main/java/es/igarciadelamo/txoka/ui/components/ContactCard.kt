@@ -72,7 +72,8 @@ private val CardBorderDash = 8.dp
 /**
  * Content colour that reads on top of the card gradient, mirrored by the hub overlay actions.
  */
-fun Profile.cardContentColor(): Color = CardContrast.contentColor(card).toComposeColor()
+fun Profile.cardContentColor(): Color =
+    (card.appearance?.name?.effectiveColor ?: CardContrast.contentColor(card)).toComposeColor()
 
 /** Translucent decoration that never lowers the contrast of [cardContentColor]. */
 fun Profile.cardOverlayTint(): Color = if (cardContentColor() == Color.White) Color.Black else Color.White
@@ -87,7 +88,13 @@ fun ContactCard(
     modifier: Modifier = Modifier,
     placeholder: Boolean = false,
     layout: CardLayout = CardLayout.Hero,
+    motion: CardMotion? = null,
+    paused: Boolean = false,
 ) {
+    if (profile.card.appearance != null && !placeholder) {
+        AppearanceContactCard(profile = profile, modifier = modifier, motion = motion, paused = paused)
+        return
+    }
     val contentColor = if (placeholder) {
         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = GHOST_CONTENT_ALPHA)
     } else {

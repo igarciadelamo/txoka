@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import es.igarciadelamo.txoka.data.received.MIGRATION_1_2
+import es.igarciadelamo.txoka.data.received.MIGRATION_2_3
 import es.igarciadelamo.txoka.data.received.ReceivedContactDao
 import es.igarciadelamo.txoka.data.received.RoomReceivedContactRepository
 import es.igarciadelamo.txoka.data.received.TxokaDatabase
@@ -24,7 +25,7 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context): TxokaDatabase =
         Room.databaseBuilder(context, TxokaDatabase::class.java, DATABASE_NAME)
             // Ship a migration for every version bump: a released database must never be rebuilt.
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

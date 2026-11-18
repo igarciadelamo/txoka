@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,7 @@ import es.igarciadelamo.txoka.domain.profile.SocialHandle
 import es.igarciadelamo.txoka.domain.profile.SocialNetwork
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.CardLayout
+import es.igarciadelamo.txoka.ui.components.CardViewer
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.SocialIcon
@@ -81,6 +83,9 @@ fun ReceivedDetailScreen(
 ) {
     var confirmDelete by remember { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
+    var viewerOpen by remember { mutableStateOf(false) }
+
+    if (viewerOpen) CardViewer(profile = contact.toProfile(), onDismiss = { viewerOpen = false })
 
     Column(
         modifier = modifier
@@ -92,6 +97,12 @@ fun ReceivedDetailScreen(
             title = contact.name,
             onBack = onBack,
             actions = {
+                IconButton(onClick = { viewerOpen = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_expand),
+                        contentDescription = stringResource(R.string.card_viewer_open),
+                    )
+                }
                 IconButton(onClick = { menuOpen = true }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,

@@ -31,6 +31,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +56,7 @@ import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleState
 import es.igarciadelamo.txoka.ui.components.CardLayout
+import es.igarciadelamo.txoka.ui.components.CardViewer
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
@@ -151,9 +157,19 @@ private fun HubContent(
     onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
 ) {
+    var viewerOpen by remember { mutableStateOf(false) }
+    if (viewerOpen) CardViewer(profile = profile, onDismiss = { viewerOpen = false })
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
         Column {
-            Eyebrow(text = stringResource(R.string.hub_your_card))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Eyebrow(text = stringResource(R.string.hub_your_card), modifier = Modifier.weight(1f))
+                IconButton(onClick = { viewerOpen = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_expand),
+                        contentDescription = stringResource(R.string.card_viewer_open),
+                    )
+                }
+            }
             Box(modifier = Modifier.padding(top = Spacing.sm)) {
                 ContactCard(
                     profile = profile,

@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "collection_label": "Diseños para Txoka",
+  "publication": {
+    "approved": true,
+    "scope": "Only the faithful vectorized versions of these previously approved project designs; unlicensed Escher reproductions are excluded.",
+    "approved_preset_ids": [
+      "nature-fish",
+      "nature-birds",
+      "nature-reptiles"
+    ]
+  },
+  "rendering": {
+    "source_files_modified": false,
+    "roi_format": "[x, y, width, height] in source-image pixels",
+    "fit": "cover",
+    "repetition": "The original full compositions and cover crop are preserved. No claim that the raster source edges or its animal silhouettes tessellate the plane.",
+    "nfc": "Only stable preset selectors and appearance parameters are shared; no image pixels, source crop, hash or generation prompt are sent.",
+    "representation": "Self-contained SVG Bézier paths faithfully traced from the approved PNG sources; no embedded raster images.",
+    "appearance": "Mosaic colour and material follow the selected background. Elemental effects are a separate local overlay; no independent mosaic finish or ink colours."
+  },
+  "presets": {
+    "nature-fish": {
+      "file": "assets/original/nature-fish.svg",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 952931,
+      "sha256": "fc6e527b639fd3c342742ba12a425f7bf6ec33b253ecde24984045473dd03854",
+      "label": "Peces",
+      "title": "Peces — diseño para Txoka",
+      "title_es": "Peces — diseño para Txoka",
+      "author_label": "Diseño para Txoka",
+      "categories": [
+        "fish"
+      ],
+      "tags": [
+        "peces",
+        "fish",
+        "koi"
+      ],
+      "search_keywords": [
+        "peces",
+        "fish",
+        "koi"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 160,
+      "publication_approved": true,
+      "license_status": "generated_for_this_project",
+      "generation": {
+        "tool": "image_gen",
+        "date": "2026-11-17",
+        "reference_images_used": false,
+        "description": "New all-over composition of koi-like fish with long flowing fins in a fine black-and-ivory engraving treatment. Generated for Txoka without naming an existing artist or using reference artwork."
+      },
+      "source_file_modified": false,
+      "rights_note": "Generated for this project. No claim of exclusive copyright, legal clearance guarantee, or attribution to M. C. Escher.",
+      "mime_type": "image/svg+xml",
+      "vector_ink_colors": [
+        "#111111",
+        "#faf9f6"
+      ],
+      "vectorization": {
+        "date": "2026-11-18",
+        "method": "Faithful two-ink Bézier tracing of the approved PNG; no redrawing or replacement of its composition.",
+        "tool": "potracelib 1.16",
+        "tool_license": "GPL-2.0-or-later (Potrace tool; source artwork rights provenance is retained).",
+        "source_file": "assets/original/nature-fish.png",
+        "source_sha256": "5e4d2226ba0da17c68660fe79684af960f7d91d785a948942cc919d43a1f7ccd",
+        "source_width": 1536,
+        "source_height": 1024,
+        "source_modified": false,
+        "luminance_weights": [
+          0.2126,
+          0.7152,
+          0.0722
+        ],
+        "threshold": 128,
+        "parameters": {
+          "turdsize": 2,
+          "alphamax": 1.0,
+          "opttolerance": 0.2
+        },
+        "path_contours": 2035,
+        "curve_segments": 19210,
+        "validation": {
+          "method": "Rendered SVG at source resolution using system librsvg; compared thresholded pixels against approved source.",
+          "threshold_pixel_mismatch": 0.03661,
+          "dark_shape_iou": 0.913031,
+          "lossless": false,
+          "note": "Bézier smoothing and removal of tiny components change some fine edge samples; these metrics do not claim pixel identity."
+        }
+      },
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "nature-birds": {
+      "file": "assets/original/nature-birds.svg",
+      "width": 1122,
+      "height": 1402,
+      "bytes": 1127219,
+      "sha256": "ab0526ccb29b5213a658f1013970a12c85a5f82f6587bb0cbe5d359e6174dcae",
+      "label": "Aves",
+      "title": "Aves — diseño para Txoka",
+      "title_es": "Aves — diseño para Txoka",
+      "author_label": "Diseño para Txoka",
+      "categories": [
+        "birds"
+      ],
+      "tags": [
+        "aves",
+        "pajaros",
+        "pájaros",
+        "birds"
+      ],
+      "search_keywords": [
+        "aves",
+        "pajaros",
+        "pájaros",
+        "birds"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 161,
+      "publication_approved": true,
+      "license_status": "generated_for_this_project",
+      "generation": {
+        "tool": "image_gen",
+        "date": "2026-11-17",
+        "reference_images_used": false,
+        "description": "New all-over animal pattern in a detailed ink illustration treatment, generated for Txoka without using Escher reproductions as reference images."
+      },
+      "source_file_modified": false,
+      "rights_note": "Generated for this project. No claim of exclusive copyright, legal clearance guarantee, or attribution to M. C. Escher.",
+      "mime_type": "image/svg+xml",
+      "vector_ink_colors": [
+        "#111111",
+        "#faf9f6"
+      ],
+      "vectorization": {
+        "date": "2026-11-18",
+        "method": "Faithful two-ink Bézier tracing of the approved PNG; no redrawing or replacement of its composition.",
+        "tool": "potracelib 1.16",
+        "tool_license": "GPL-2.0-or-later (Potrace tool; source artwork rights provenance is retained).",
+        "source_file": "assets/original/nature-birds.png",
+        "source_sha256": "a61d5371d241d163669e153f0a56e6b046516b367a186d48486a7d8a16f9d803",
+        "source_width": 1122,
+        "source_height": 1402,
+        "source_modified": false,
+        "luminance_weights": [
+          0.2126,
+          0.7152,
+          0.0722
+        ],
+        "threshold": 128,
+        "parameters": {
+          "turdsize": 2,
+          "alphamax": 1.0,
+          "opttolerance": 0.2
+        },
+        "path_contours": 2598,
+        "curve_segments": 22614,
+        "validation": {
+          "method": "Rendered SVG at source resolution using system librsvg; compared thresholded pixels against approved source.",
+          "threshold_pixel_mismatch": 0.026205,
+          "dark_shape_iou": 0.955031,
+          "lossless": false,
+          "note": "Bézier smoothing and removal of tiny components change some fine edge samples; these metrics do not claim pixel identity."
+        }
+      },
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    },
+    "nature-reptiles": {
+      "file": "assets/original/nature-reptiles.svg",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2634226,
+      "sha256": "85eb824bc2cd802c116ec7b8a21def0ce5d2171c788637746e65aea0937b7ccf",
+      "label": "Reptiles",
+      "title": "Reptiles — diseño para Txoka",
+      "title_es": "Reptiles — diseño para Txoka",
+      "author_label": "Diseño para Txoka",
+      "categories": [
+        "reptiles"
+      ],
+      "tags": [
+        "reptiles",
+        "lagartos",
+        "salamandras",
+        "lizards"
+      ],
+      "search_keywords": [
+        "reptiles",
+        "lagartos",
+        "salamandras",
+        "lizards"
+      ],
+      "source_roi_px": [
+        0,
+        0,
+        1448,
+        1086
+      ],
+      "fit": "cover",
+      "source_page_url": "docs/plan.html",
+      "nfc_extended_selector": 162,
+      "publication_approved": true,
+      "license_status": "generated_for_this_project",
+      "generation": {
+        "tool": "image_gen",
+        "date": "2026-11-17",
+        "reference_images_used": false,
+        "description": "New all-over animal pattern in a detailed ink illustration treatment, generated for Txoka without using Escher reproductions as reference images."
+      },
+      "source_file_modified": false,
+      "rights_note": "Generated for this project. No claim of exclusive copyright, legal clearance guarantee, or attribution to M. C. Escher.",
+      "mime_type": "image/svg+xml",
+      "vector_ink_colors": [
+        "#111111",
+        "#faf9f6"
+      ],
+      "vectorization": {
+        "date": "2026-11-18",
+        "method": "Faithful two-ink Bézier tracing of the approved PNG; no redrawing or replacement of its composition.",
+        "tool": "potracelib 1.16",
+        "tool_license": "GPL-2.0-or-later (Potrace tool; source artwork rights provenance is retained).",
+        "source_file": "assets/original/nature-reptiles.png",
+        "source_sha256": "ecc1ce82bc457a678767301197dba3d9710196a350c3deb9e36c567d5b39c889",
+        "source_width": 1448,
+        "source_height": 1086,
+        "source_modified": false,
+        "luminance_weights": [
+          0.2126,
+          0.7152,
+          0.0722
+        ],
+        "threshold": 128,
+        "parameters": {
+          "turdsize": 2,
+          "alphamax": 1.0,
+          "opttolerance": 0.2
+        },
+        "path_contours": 8709,
+        "curve_segments": 51304,
+        "validation": {
+          "method": "Rendered SVG at source resolution using system librsvg; compared thresholded pixels against approved source.",
+          "threshold_pixel_mismatch": 0.034039,
+          "dark_shape_iou": 0.934016,
+          "lossless": false,
+          "note": "Bézier smoothing and removal of tiny components change some fine edge samples; these metrics do not claim pixel identity."
+        }
+      },
+      "appearance": {
+        "material": "inherits_background",
+        "palette": "shared_background",
+        "background_modes": [
+          "flat",
+          "gradient",
+          "hologram"
+        ]
+      }
+    }
+  },
+  "nfc_registry": {
+    "valid_extended_selectors": [
+      160,
+      161,
+      162
+    ],
+    "note": "The former Escher selector space through 147 remains reserved or retired; these selector values are not reused for the new project designs."
+  }
+}

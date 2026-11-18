@@ -58,7 +58,7 @@ data class ProfileEditorUiState(
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),
-        phone = phone.trim().ifEmpty { null },
+        phone = phone.trim().ifEmpty { null }?.let { PhoneNumbers.toE164(it, country.iso) ?: it },
         email = email.trim().ifEmpty { null },
         linkedin = SocialHandle.normalize(linkedin, SocialNetwork.LinkedIn),
         instagram = SocialHandle.normalize(instagram, SocialNetwork.Instagram),
@@ -139,10 +139,14 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onPresetSelected(palette: CardPalette) {
-        _uiState.update { it.copy(card = palette) }
+        _uiState.update { it.copy(card = palette.copy(appearance = it.card.appearance)) }
     }
 
     fun onCustomColourSelected(palette: CardPalette) {
+        _uiState.update { it.copy(card = palette.copy(appearance = it.card.appearance)) }
+    }
+
+    fun onCardChange(palette: CardPalette) {
         _uiState.update { it.copy(card = palette) }
     }
 
@@ -189,6 +193,8 @@ class ProfileEditorViewModel @Inject constructor(
             instagram = instagram,
             card = state.card,
         )
+
+        if (!profile.toVCardPayload().fitsInTag()) return
 
         viewModelScope.launch {
             repository.save(profile)

@@ -1,10 +1,19 @@
 package es.igarciadelamo.txoka.ui.profile
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearance
+import es.igarciadelamo.txoka.domain.profile.CardBackground
+import es.igarciadelamo.txoka.domain.profile.CardEffect
+import es.igarciadelamo.txoka.domain.profile.CardMosaic
 import es.igarciadelamo.txoka.domain.profile.CardPalette
+import es.igarciadelamo.txoka.domain.profile.CardTextStyle
 import es.igarciadelamo.txoka.domain.profile.PhoneCountries
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ProfileLimits
 import es.igarciadelamo.txoka.domain.profile.RgbColor
+import es.igarciadelamo.txoka.domain.profile.TextFinish
+import es.igarciadelamo.txoka.domain.profile.TextSize
+import es.igarciadelamo.txoka.domain.protocol.fitsInTag
+import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeSimRegionSource
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
@@ -306,4 +315,76 @@ class ProfileEditorViewModelTest {
         assertNull(repository.savedProfile)
         assertFalse(viewModel.uiState.value.saved)
     }
+
+    @Test
+    fun `changing curated or custom colours preserves the configured appearance`() = runTest {
+        val style = CardAppearance(background = CardBackground.HOLOGRAM, effect = CardEffect.FIRE)
+        val viewModel = ProfileEditorViewModel(FakeProfileRepository(), FakeSimRegionSource())
+        viewModel.onCardChange(CardPalette.Default.copy(appearance = style))
+        viewModel.onPresetSelected(CardPalette.Presets[1])
+        assertEquals(style, viewModel.uiState.value.card.appearance)
+        assertEquals(CardPalette.Presets[1].accent, viewModel.uiState.value.card.accent)
+
+        val custom = CardPalette.fromAccent(RgbColor(210, 130, 75))
+        viewModel.onCustomColourSelected(custom)
+        assertEquals(style, viewModel.uiState.value.card.appearance)
+        assertEquals(custom.accent, viewModel.uiState.value.card.accent)
+    }
+
+    @Test
+    fun `saves the full independent appearance unchanged`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+        val card = richCard()
+        viewModel.onNameChange("Ana")
+        viewModel.onEmailChange("ana@example.com")
+        viewModel.onCardChange(card)
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertEquals(card, repository.savedProfile?.card)
+    }
+
+    @Test
+    fun `budgets the canonical phone before saving a near-cap styled card`() = runTest {
+        val card = richCard()
+        val candidate = (40..64).asSequence().flatMap { length ->
+            (1..115).asSequence().map { local ->
+                Profile(
+                    name = "😀".repeat(length),
+                    phone = "600123456",
+                    email = "a".repeat(local) + "@b.cd",
+                    linkedin = "l".repeat(60),
+                    instagram = "i".repeat(60),
+                    card = card,
+                )
+            }
+        }.first { it.toVCardPayload().fitsInTag() && !it.copy(phone = "+34600123456").toVCardPayload().fitsInTag() }
+        val repository = FakeProfileRepository()
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource(sim = "ES"))
+        viewModel.onNameChange(candidate.name)
+        viewModel.onPhoneChange(requireNotNull(candidate.phone))
+        viewModel.onEmailChange(requireNotNull(candidate.email))
+        viewModel.onLinkedInChange(requireNotNull(candidate.linkedin))
+        viewModel.onInstagramChange(requireNotNull(candidate.instagram))
+        viewModel.onCardChange(card)
+        viewModel.save()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.cardTooLarge)
+        assertFalse(viewModel.uiState.value.canSave)
+        assertNull(repository.savedProfile)
+    }
+
+    private fun richCard(): CardPalette = CardPalette.Default.copy(
+        appearance = CardAppearance(
+            background = CardBackground.HOLOGRAM,
+            mosaic = CardMosaic.NATURE_FISH,
+            effect = CardEffect.WATER,
+            topRight = RgbColor(85, 210, 180),
+            bottomLeft = RgbColor(220, 100, 180),
+            name = CardTextStyle(TextFinish.METAL, TextSize.XL, RgbColor(210, 180, 90)),
+            data = CardTextStyle(TextFinish.RAISED, TextSize.S, RgbColor(245, 245, 250)),
+        ),
+    )
 }
