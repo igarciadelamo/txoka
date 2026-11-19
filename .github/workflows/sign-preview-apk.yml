@@ -69,6 +69,11 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: ""
+          log-accepted-android-sdk-licenses: false
       - name: Install the pinned signing tools
         run: |
           sdkmanager 'cmdline-tools;23.0'
