@@ -50,7 +50,6 @@ jobs:
     name: Sign the isolated preview APK
     needs: policy
     if: needs.policy.outputs.eligible == 'true' && github.ref == 'refs/heads/main'
-    environment: preview-signing
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:

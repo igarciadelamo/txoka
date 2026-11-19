@@ -60,7 +60,7 @@ the way it does are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 For a pull request, the `build-apk` label requests a signed **Txoka PR** APK that installs alongside
 the official app with separate data. The build runs without signing secrets; a trusted workflow
-signs the result after the quality and security checks complete. The one-time owner setup, download
+signs the result after the quality and security checks complete. The one-time repository setup, download
 instructions and NFC testing limits are in [`PREVIEW_APK.md`](PREVIEW_APK.md).
 
 ## Known limitations

@@ -48,9 +48,11 @@ emulator. `connectedDebugAndroidTest` removes app data only on that disposable r
 does not test physical NFC exchange. Retry with **Re-run all jobs** so the candidate and its
 checks share the same run attempt.
 
-The ordinary **Build, test and lint** check remains separate. Preview request, owner environment
+The ordinary **Build, test and lint** check remains separate. Preview request, repository-secret
 setup, certificate persistence, report locations and the download manifest are documented in
-[`PREVIEW_APK.md`](PREVIEW_APK.md). Neither these jobs nor their tests use the official release key.
+[`PREVIEW_APK.md`](PREVIEW_APK.md). The configured build steps do not receive the preview key;
+other workflows, including internal PR workflow changes, can request repository secrets. This
+setup relies on trusted collaborators. Neither these jobs nor their tests use the official release key.
 
 ## Release signing
 

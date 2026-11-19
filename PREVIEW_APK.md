@@ -1,8 +1,9 @@
 # Preview APKs for pull requests
 
 The `build-apk` pull request label requests an installable **Txoka PR** build before merge. The
-unsigned build and the signing job run separately: pull request code never receives the signing
-keystore. This is an additional test app; production release signing is unchanged.
+configured producer does not pass signing secrets to its build steps; a separate job signs the
+unsigned APK. Repository-secret access relies on trusted collaborators, as described below.
+This is an additional test app; production release signing is unchanged.
 
 ## Install identity and updates
 
@@ -32,39 +33,35 @@ Installing a preview does not update, uninstall or migrate the official app. The
 them separate Android storage. Do not supply the official release keystore or its password to the
 preview workflows.
 
-## One-time owner setup
+## One-time repository setup
 
 Complete this in `igarciadelamo/txoka`. The workflows and signing script must be reviewed and merged
 into `main` before they can sign a functional pull request.
 
-GitHub permits a collaborator to add repository secrets to a personal repository, but configuring
-environment secrets requires the owner. The environment is intentional here: repository secrets
-would also be available to workflows changed by an internal PR. See GitHub's
-[secret permissions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
-and [environment setup](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
+A collaborator can add repository secrets to this personal repository without configuring an
+environment. See GitHub's [secret permissions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets).
 
-1. In **Settings → Environments**, create `preview-signing`.
-2. Under **Deployment branches and tags**, choose **Selected branches and tags**. Add the branch
-   `main` only. Do not add tags, `refs/pull/*`, wildcard branches or pull request heads. The signer
-   runs in the default branch context; the source APK may come from a different reviewed PR head.
-3. Prefer a required reviewer for this environment, and prevent self-review where the repository
-   plan supports it. This makes releasing the preview signing secrets an explicit owner decision.
-   Without a required reviewer, an eligible run signs automatically after its validation succeeds.
-4. Generate and retain one dedicated PKCS12 preview keystore, using the alias `txoka-preview`.
-5. Add exactly these **environment secrets**, not repository or organization secrets:
+1. Generate and retain one dedicated PKCS12 preview keystore, using the alias `txoka-preview`.
+2. In **Settings → Secrets and variables → Actions**, choose **New repository secret** for each:
 
-   | Environment secret | Value |
+   | Repository secret | Value |
    | --- | --- |
    | `PREVIEW_KEYSTORE_B64` | Base64 encoding of the complete preview PKCS12 file |
    | `PREVIEW_KEYSTORE_PASSWORD` | Password shared by its store and `txoka-preview` private key |
 
-The preview certificate is for disposable test builds. Back up its keystore and password securely
-so later previews can update previous installations. Store neither in the repository, artifacts,
-issues, pull request descriptions nor chat messages.
+Repository secrets can also be requested by other workflows, including workflows changed in an
+internal PR. Keeping this signer on `main` does not prevent another workflow from requesting them.
+This setup assumes trusted collaborators with write access and uses a key dedicated to previews.
+Never put the official release key or its password in these secrets. Fork PRs normally do not
+receive repository secrets directly; the default-branch signer handles their eligible artifacts.
+
+Back up the preview keystore and password securely so later previews can update previous
+installations. Store neither in the repository, artifacts, issues, pull request descriptions nor
+chat messages.
 
 ### Generate and upload the preview key
 
-Run these commands on the owner's trusted computer with JDK 21 and an authenticated `gh` CLI. The
+Run these commands on your trusted computer with JDK 21 and an authenticated `gh` CLI. The
 commands upload secret values over standard input; they do not print the keystore or password.
 The first `keytool` command asks for a password interactively. Use that same password when asked
 below; PKCS12 uses it for both the store and key.
@@ -86,36 +83,34 @@ keytool -list -v -storetype PKCS12 \
   -keystore "$HOME/keys/txoka-preview.p12" -alias txoka-preview
 ```
 
-After configuring the environment's branch policy:
+Upload both repository secrets:
 
 ```sh
 base64 < "$HOME/keys/txoka-preview.p12" | tr -d '\n' | \
-  gh secret set PREVIEW_KEYSTORE_B64 --repo igarciadelamo/txoka --env preview-signing
+  gh secret set PREVIEW_KEYSTORE_B64 --repo igarciadelamo/txoka
 
 read -r -s -p 'Preview keystore password: ' txoka_preview_password
 printf '\n'
 printf '%s' "$txoka_preview_password" | \
-  gh secret set PREVIEW_KEYSTORE_PASSWORD --repo igarciadelamo/txoka --env preview-signing
+  gh secret set PREVIEW_KEYSTORE_PASSWORD --repo igarciadelamo/txoka
 unset txoka_preview_password
 ```
 
 The password prompt uses Bash's `read -s`; launch Bash first if the local shell does not support it.
-Keep shell tracing (`set -x`) disabled. The commands do not configure environment reviewers or
-branch restrictions: check those in GitHub before the first signing run.
+Keep shell tracing (`set -x`) disabled. No GitHub environment or deployment approval is required.
 
 ## Request and download a build
 
 1. Merge the CI-only pull request into `main` first.
-2. Update the functional pull request, including card appearance PR [#55](https://github.com/igarciadelamo/txoka/pull/55),
+2. Update the functional pull request, including card appearance PR [#57](https://github.com/igarciadelamo/txoka/pull/57),
    from that `main` so its exact head contains the preview build type.
 3. Add the `build-apk` label to that open pull request. Further commits request a new preview while
    the label remains present. The ordinary CI checks continue to run independently.
 4. Open **Actions** and inspect the preview build. It checks out the full pull request head SHA,
    runs the quality and security gates and builds an unsigned APK without signing secrets. This
    run is named **Preview APK**.
-5. After that run succeeds, open the following signing run. If the environment requires approval,
-   a configured reviewer must approve the `preview-signing` deployment. This run is named
-   **Sign preview APK**; its summary links to the signed artifact.
+5. After that run succeeds, open the following **Sign preview APK** run. It signs automatically
+   after validating the current PR and candidate; its summary links to the signed artifact.
 6. Download the signed artifact from that signing run. Check that its manifest names the expected
    pull request, full source SHA, build run and attempt before installing it.
 
@@ -249,30 +244,30 @@ works. Record those device results in [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TES
 which app was open, each direction and the receiving app. No official app data or NFC contract is
 changed to make preview builds coexist.
 
-## Trust boundary and maintenance
+## Signing workflow and repository trust
 
-- `.github/workflows/preview-apk.yml` runs pull request code with read-only permissions and no
-  preview signing secrets. It associates the unsigned candidate with the exact checked-out head
-  and records the source SHA, run ID and attempt.
+- `.github/workflows/preview-apk.yml` runs pull request code with read-only token permissions and
+  does not map preview signing secrets to its build steps. It associates the unsigned candidate
+  with the exact checked-out head and records the source SHA, run ID and attempt.
 - `.github/workflows/sign-preview-apk.yml` is triggered by `workflow_run` from the trusted default
   branch. Its signing code comes from `main`, not the pull request.
 - The signer validates the originating workflow/run/attempt, current open PR/head and label, and
-  the APK's expected preview identity before using the environment secrets. A stale or unrelated
+  the APK's expected preview identity before using the repository secrets. A stale or unrelated
   artifact must fail closed.
 - Fork PRs are supported. The signer resolves the current PR using GitHub's live repository,
   branch and exact-head metadata; the candidate's JSON does not decide which PR is authorized.
 - Removing `build-apk` stops future eligible signing, and the signer checks the live state again
-  after environment approval and before publication. GitHub has no atomic label-check-and-upload
+  before using the key and before publication. GitHub has no atomic label-check-and-upload
   transaction; withdrawing a label also cannot revoke an APK someone has already downloaded.
 - The signing job does not check out pull request source, run Gradle from it, execute artifact
   contents or restore a pull request-controlled build cache. Downloaded APKs and manifests are
   treated as untrusted input.
 - `scripts/ci/preview_apk.py` contains the validation and signing support. Keep changes to this
-  trusted path under the same review discipline as the workflows and environment configuration.
-- Build and signing jobs never use the official release key. Missing environment configuration or
-  secrets must stop signing rather than silently use a different certificate.
+  trusted path under the same review discipline as workflows and repository-secret access.
+- Build and signing jobs never use the official release key. Missing repository secrets must stop
+  signing rather than silently use a different certificate.
 
 The label authorizes preview builds for later commits while it remains attached. Source review
-still matters: isolating the key protects the signing credential, but it cannot prove that arbitrary
-code in a labelled PR produces a benign APK. Passing the automated checks does not replace that
-review or the device plan.
+still matters: a collaborator can change a workflow to request repository secrets, and the
+checks cannot prove that arbitrary code in a labelled PR produces a benign APK. Passing the
+automated checks does not replace that review or the device plan.

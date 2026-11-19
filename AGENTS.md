@@ -27,8 +27,8 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
   now declared explicitly at the catalog version.
 - Opt-in preview APKs use the PR label `build-apk`, the separate application ID
-  `es.igarciadelamo.txoka.preview` and a dedicated stable test certificate. Owner setup and the
-  signing boundary are in `PREVIEW_APK.md`; official release signing and NFC bytes are unchanged.
+  `es.igarciadelamo.txoka.preview` and a dedicated stable test certificate. Repository-secret setup and
+  the signing workflow are in `PREVIEW_APK.md`; official release signing and NFC bytes are unchanged.
 - Remaining backlog: optional vCard/QR sharing fallback and SAF export/import.
 
 ## Non-negotiable rules
@@ -190,13 +190,16 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - `scripts/ci/tests/` tests the signing policy and scanner adapters. Keep these checks meaningful:
   cover untrusted inputs, stale PR/run state and incomplete scans rather than mirroring YAML.
 
-## Preview signing boundary
+## Preview signing workflow and trust
 
-- PR builds never receive signing keys. The `preview` variant must stay non-debuggable and unsigned
-  even when local release signing properties exist.
-- Only the default-branch `workflow_run` signer can use the `preview-signing` environment. The owner
-  must restrict deployments to branch `main` only and put the two preview secrets in that environment,
-  not in repository-wide secrets. Use a stable dedicated preview key, never the official release key.
+- The configured producer must not pass preview signing secrets to its build steps or Gradle. The
+  `preview` variant must stay non-debuggable and unsigned even when local release signing
+  properties exist.
+- Store `PREVIEW_KEYSTORE_B64` and `PREVIEW_KEYSTORE_PASSWORD` as repository secrets, using a stable
+  dedicated preview key, never the official release key. A collaborator can configure these without
+  owner-managed environments. Repository secrets can also be requested by other workflows or internal
+  PR workflow changes; this setup relies on trusted collaborators with write access. The main-only
+  checks in our signer do not impose a platform-wide restriction on repository-secret access.
 - The signing job may run only trusted code from the workflow's main commit. It must not check out
   PR source, run its Gradle/scripts, execute downloaded files or restore its caches.
 - Revalidate the source workflow/run/attempt, current open PR/head/label and APK identity before
