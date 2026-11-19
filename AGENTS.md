@@ -26,6 +26,9 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
   1.11.0 while the app runtime resolved `kotlinx-coroutines-core` 1.9.0 (Room's BOM), and AGP's
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
   now declared explicitly at the catalog version.
+- Opt-in preview APKs use the PR label `build-apk`, the separate application ID
+  `es.igarciadelamo.txoka.preview` and a dedicated stable test certificate. Owner setup and the
+  signing boundary are in `PREVIEW_APK.md`; official release signing and NFC bytes are unchanged.
 - Remaining backlog: optional vCard/QR sharing fallback and SAF export/import.
 
 ## Non-negotiable rules
@@ -51,6 +54,8 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
     ./gradlew :app:lintDebug
     ./gradlew :app:assembleRelease :app:lintRelease   # R8 path; unsigned without keystore
     ./gradlew :app:bundleRelease                     # what gets published, if signed
+    ./gradlew :app:assemblePreview :app:testPreviewUnitTest :app:lintPreview
+    python3 -m unittest discover -s scripts/ci/tests -v
     ./gradlew :app:connectedDebugAndroidTest   # uninstalls the app and wipes its data
 
 Instrumented tests without wiping the installed app:
@@ -179,6 +184,25 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - `FakeProfileRepository`, `FakeReceivedContactRepository`, `FakeShareSettingsRepository`,
   `FakeNfcAvailability` and `FakeSimRegionSource` live in `app/src/test/.../testing/`.
 - Kover enforces 95% coverage for the included logic classes (see `app/build.gradle.kts`).
+- The opt-in preview workflow additionally runs source (Semgrep), dependency (OSV) and APK (MobSF)
+  security checks. Findings are report-only; scanner failures, omitted required files, incomplete
+  inventories/reports and APK identity/hash mismatches fail the job and prevent signing.
+- `scripts/ci/tests/` tests the signing policy and scanner adapters. Keep these checks meaningful:
+  cover untrusted inputs, stale PR/run state and incomplete scans rather than mirroring YAML.
+
+## Preview signing boundary
+
+- PR builds never receive signing keys. The `preview` variant must stay non-debuggable and unsigned
+  even when local release signing properties exist.
+- Only the default-branch `workflow_run` signer can use the `preview-signing` environment. The owner
+  must restrict deployments to branch `main` only and put the two preview secrets in that environment,
+  not in repository-wide secrets. Use a stable dedicated preview key, never the official release key.
+- The signing job may run only trusted code from the workflow's main commit. It must not check out
+  PR source, run its Gradle/scripts, execute downloaded files or restore its caches.
+- Revalidate the source workflow/run/attempt, current open PR/head/label and APK identity before
+  signing and publishing. Treat all downloaded artifacts and metadata as untrusted input.
+- The preview app retains the official NFC AAR and HCE AIDs. Document foreground phone tests rather
+  than changing the NFC payload or claiming background routing works with both apps installed.
 
 ## Emulator and manual verification
 
@@ -204,9 +228,9 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - Room 2.6.1 fails under KSP1 with "unexpected jvm signature V". Room 2.8.5 is pinned.
 - `kotlinx-serialization-json` (1.12.0) and the Kotlin compiler (2.4.21) are bumped together.
 - `connectedDebugAndroidTest` uninstalls the app and clears its data; reinstall afterwards.
-- `gh` is not installed and there are no GitHub API credentials. You can push branches but not
-  open PRs. Push and give the user:
-  `https://github.com/igarciadelamo/txoka/compare/main...<branch>?expand=1`
+- GitHub publication depends on the active connection. A successful metadata read or reported push
+  permission does not prove branch/PR writes work. Check the actual tool result and never claim a PR
+  exists without a successful creation and canonical URL.
 - Detekt limits functions to 80 lines and flags magic numbers outside `@Composable`/`@Preview`.
   Ktlint wants single-expression bodies on one line when they fit (120 columns max).
 - Disabling an HCE service component survives reinstalls, so `TxokaApplication` re-enables

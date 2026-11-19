@@ -17,6 +17,41 @@ The Gradle daemon JVM is pinned to 21 through `gradle/gradle-daemon-jvm.properti
 Detekt 1.23.8 cannot parse the version string of newer JDKs. CI runs the same tasks on every push
 to `main` and on every pull request, including the release build so R8 stays verified.
 
+## Preview builds and CI security checks
+
+The `preview` build type uses release optimisation, stays non-debuggable and always leaves signing
+to a separate trusted job. Its application ID is `es.igarciadelamo.txoka.preview` and its launcher
+name is **Txoka PR**, so it installs alongside the official app with separate local data.
+
+```sh
+./gradlew :app:assemblePreview :app:testPreviewUnitTest :app:lintPreview
+python3 -m unittest discover -s scripts/ci/tests -v
+```
+
+The Python suite exercises the signing policy and scanner failure handling without real signing
+secrets or a running scanner. Its fixtures cover stale heads, missing labels, incorrect artifacts,
+archive and identity validation, incomplete scans and malformed reports. The scanner jobs also
+run the actual engines when an open PR has the `build-apk` label:
+
+| Check | Input | Policy |
+| --- | --- | --- |
+| Semgrep 1.182.0 | Native Kotlin/Java source sets under `app/src`, excluding tests and generated code, with local rules | Findings are reported; engine errors and omitted selected source files fail the job |
+| OSV-Scanner 2.7.0 | CycloneDX inventory of `previewRuntimeClasspath` | Findings are reported; an empty or malformed inventory and scanner errors fail the job |
+| MobSF 4.5.3 | The unsigned preview APK in a local ephemeral container | Findings are reported; upload/report hash mismatches, incomplete reports and engine errors fail the job |
+
+This initially follows the report-only finding policy used in Prebostes Taraos. Scanner completion
+is required before signing; the presence of findings is visible in the reports and does not itself
+block the preview. A completed scan does not establish that an APK is free of vulnerabilities.
+
+The labelled workflow also executes the instrumented DAO and migration suite on a fresh API 35
+emulator. `connectedDebugAndroidTest` removes app data only on that disposable runner. This job
+does not test physical NFC exchange. Retry with **Re-run all jobs** so the candidate and its
+checks share the same run attempt.
+
+The ordinary **Build, test and lint** check remains separate. Preview request, owner environment
+setup, certificate persistence, report locations and the download manifest are documented in
+[`PREVIEW_APK.md`](PREVIEW_APK.md). Neither these jobs nor their tests use the official release key.
+
 ## Release signing
 
 The release build reads `keystore.properties` from the project root. Neither that file nor the
