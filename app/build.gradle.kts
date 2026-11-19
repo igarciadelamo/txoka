@@ -59,6 +59,14 @@ android {
                 packageScope = setOf("androidx.**")
             }
         }
+        create("preview") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".preview"
+            versionNameSuffix = "-preview"
+            // PR builds are signed separately and must never inherit a local release key.
+            signingConfig = null
+            matchingFallbacks += listOf("release")
+        }
     }
 
     compileOptions {
@@ -69,6 +77,12 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("preview")) { variant ->
+        variant.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
     }
 }
 
