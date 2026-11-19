@@ -14,10 +14,11 @@ summary is in the [`README`](README.md) and the checks are in [`TESTING.md`](TES
   browser or the installed app. When a card has no phone or email the handles take the main slot,
   full width and at title size.
 - Every value you fill in is shared. There are no per-field sharing flags.
-- Seven gradient presets in a grid, or a custom colour picked on a hue wheel. Presets keep their
-  curated two-colour gradient; a custom colour derives the second stop automatically. The text
-  colour adapts to the background using WCAG luminance, so the card stays readable on every
-  palette.
+- Appearance is edited in background, mosaic, effect and text layers. Gradients and holograms have
+  two colours or four corners; a flat background uses two mosaic inks. Six procedural geometries
+  and 23 local SVGs require no network access. Name and contact data each support six lettering
+  finishes, four sizes and an optional RGB colour. Null appearance preserves the legacy gradient
+  and WCAG foreground calculation. Explicit text colours remain the user's choice.
 - The editor validates the phone number and the email, keeps the preview in sync and saves the
   whole card at once. Back discards the draft; the overflow menu deletes the card after a
   confirmation.
@@ -57,14 +58,16 @@ summary is in the [`README`](README.md) and the checks are in [`TESTING.md`](TES
   (digits only), a lowercased email or a bare social handle identifies it, the sender's fields win,
   the date moves the contact to the top and the local note is kept. Cards that only share a name are
   kept separately.
-- Received cards keep the sender's gradient colours.
+- Received cards keep the sender's palette and supported appearance. Unknown or malformed style
+  extensions fall back to the palette while preserving the contact.
 
 ### Privacy and storage
 
 - Local-first: no backend, no account and no `INTERNET` permission. The app itself never uploads
   anything.
 - The profile and the sharing preferences live in DataStore; received contacts and their notes live
-  in a local Room database.
+  in a local Room database. Room schema 3 adds a nullable encoded appearance column through a real
+  migration from schema 2. Existing colours, notes and identities are retained.
 - Both stay in the user's own Google backup, so a reinstall or a new phone restores the library.
   That copy belongs to the device's account, not to Txoka.
 - The full wording, including the backup caveat, is in `docs/privacy-policy.md`. It is published
@@ -179,7 +182,7 @@ card belongs to by its keys and persists the sender's colours with the contact.
 The card is a vCard 3.0 document carried in a single NDEF record with MIME type `text/vcard`,
 followed by an Android Application Record for `es.igarciadelamo.txoka`. The AAR is what makes the
 receiving phone open Txoka instead of showing an app chooser or letting another NFC app claim the
-tag; it adds 40 bytes to the message and readers ignore it. Txoka adds three properties to the
+tag; it adds 40 bytes to the message and readers ignore it. Txoka adds properties to the
 vCard that other readers simply ignore:
 
 | Property | Meaning |
@@ -187,6 +190,7 @@ vCard that other readers simply ignore:
 | `X-TXOKA-PROTOCOL` | Payload version, currently `1` |
 | `X-TXOKA-CARD-ACCENT` | First gradient colour, `#RRGGBB` |
 | `X-TXOKA-CARD-ACCENT2` | Second gradient colour |
+| `X-TXOKA-STYLE` | Optional versioned compact appearance; see [the V1 contract](CARD_APPEARANCE.md) |
 
 Social handles travel as standard `URL` properties, one per network, so any contact app can open
 them:
@@ -197,13 +201,18 @@ URL;TYPE=INSTAGRAM:https://www.instagram.com/isidro.png
 ```
 
 Text values are escaped as vCard requires (`\n`, `\,`, `\;`, `\\`) and long lines are folded at
-75 octets. Only `FN`, `TEL`, `EMAIL`, `URL`/`X-SOCIALPROFILE`, `N`, the three `X-TXOKA-*` properties
+75 octets. Only `FN`, `TEL`, `EMAIL`, `URL`/`X-SOCIALPROFILE`, `N`, the supported `X-TXOKA-*` properties
 and `VERSION` are read; everything else, including photos and addresses, is ignored. A handle can
 arrive as `URL` or as `X-SOCIALPROFILE` from another app, and when the type is missing the network
 is recognised from the link itself. Invalid colours fall back to the default palette, so a card
 written by another app still loads. The NDEF message is capped at 768 bytes: the editor limits the
 name, the phone, the email and the handles, and refuses to save a card whose encoded vCard would
 not fit, because HCE publishes nothing above the limit.
+
+The appearance property adds at most 40 bytes, or 43 marginal NDEF bytes if a short-record length
+expands. The 768-byte limit includes the MIME and AAR records; Type 4's two-byte NLEN is additional.
+STYLE has strict version, selector, length and canonical-value checks. A rejected extension never
+partially changes the palette or contact. Neither sensor values nor SVG paths are transmitted.
 
 The emitter emulates a NFC Forum Type 4 Tag. Two AIDs are registered:
 
@@ -274,7 +283,7 @@ while the unlock setting is on).
   small.
 - The contact card is one screen-reader node (`mergeDescendants`); the initials and the TXOKA
   wordmark are decorative. Received rows merge the name and the detail and expose the button role.
-- Card contrast is picked from the worst gradient stop and every preset reaches 4.5:1 for body
-  text, which also covers the 3:1 large-text rule. The glow, avatar and contact pills are tinted
-  against the text colour, so they always add contrast instead of removing it. `CardContrastTest`
-  guards the presets.
+- Legacy card contrast is picked from the worst gradient stop and every legacy preset reaches
+  4.5:1 for body text. `CardContrastTest` guards those presets. Promoting a legacy card into an
+  explicit appearance preserves that foreground; a separately selected text colour, mosaic or
+  effect requires a new visual legibility check and has no automatic contrast guarantee.

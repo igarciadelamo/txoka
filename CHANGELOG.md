@@ -5,6 +5,18 @@ All notable changes to Txoka are recorded here. The format follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The version here matches `versionName` in
 `app/build.gradle.kts`; `versionCode` follows the Play upload order.
 
+## [Unreleased]
+
+### Added
+
+- Layered card appearance: gradient, holographic or flat backgrounds, bundled vector mosaics,
+  elemental effects and independent name/contact lettering, sizes and colours.
+- Compact versioned NFC style extension with palette fallback for older readers and strict
+  malformed-extension handling within the existing 768-byte message limit.
+- Local appearance persistence, Room schema 3 migration, motion controls and a landscape-aware
+  full-screen card viewer.
+- Appearance contract, browser design reference and a separate opt-in APK CI proposal.
+
 ## [1.0.0] - 2026-11-12
 
 First public release. `versionCode` 1, minimum Android 8.0 (API 26), Room schema version 2.

@@ -26,9 +26,10 @@ no backend, no account and no `INTERNET` permission.
 
 ## What it does
 
-- **Your card.** Name, phone, email, LinkedIn and Instagram, with a two-colour gradient picked from
-  seven presets or any colour on a wheel. The text colour adapts so the card stays readable on every
-  palette.
+- **Your card.** Name, phone, email, LinkedIn and Instagram. Choose a gradient, holographic or flat
+  background; a local vector mosaic; and a water, earth, wind or fire effect. Name and contact data
+  have independent lettering finishes, four size presets and colours. Older cards keep their
+  original gradient and automatic text contrast.
 - **Share.** The phone emulates an NFC Forum Type 4 Tag carrying a vCard 3.0 record. **Send**
   advertises the card, **Receive** listens.
 - **Receive.** Nothing is stored until you accept it. Cards that arrive while the sheet is open wait
@@ -58,6 +59,12 @@ Release signing, coverage, instrumented tests and the NFC device plan are in
 [`TESTING.md`](TESTING.md). How the app is put together, what travels over the tag and why it looks
 the way it does are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
+The [interactive appearance demo](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/)
+is a public, unlisted browser design reference, with links to the plan, NFC contract and CI proposal.
+The native implementation and compact wire format are documented in
+[`CARD_APPEARANCE.md`](CARD_APPEARANCE.md). APK publishing is a separate
+[`CI follow-up`](CI_PROPOSAL.md); no signed preview download is configured by this feature.
+
 ## Known limitations
 
 - The hub role decides the NFC mode, so one tap carries one card and the phone that listens cannot
@@ -71,6 +78,9 @@ the way it does are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
   SIM region, then the network, then the device locale and finally Spain.
 - No sync and no export: notes are plain text, one per contact.
 - Sharing as a vCard file or a QR code is not implemented; the card travels over NFC only.
+- Appearance and NFC interoperability need validation on physical phones. A sensorless device can
+  display designs and use manual movement controls. User-selected text colours may need adjustment
+  for contrast.
 
 ## How it was built
 

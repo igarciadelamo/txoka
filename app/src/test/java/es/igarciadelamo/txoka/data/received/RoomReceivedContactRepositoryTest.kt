@@ -1,5 +1,14 @@
 package es.igarciadelamo.txoka.data.received
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearance
+import es.igarciadelamo.txoka.domain.profile.CardAppearanceCodec
+import es.igarciadelamo.txoka.domain.profile.CardBackground
+import es.igarciadelamo.txoka.domain.profile.CardEffect
+import es.igarciadelamo.txoka.domain.profile.CardPalette
+import es.igarciadelamo.txoka.domain.profile.CardTextStyle
+import es.igarciadelamo.txoka.domain.profile.RgbColor
+import es.igarciadelamo.txoka.domain.profile.TextFinish
+import es.igarciadelamo.txoka.domain.profile.TextSize
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
 import es.igarciadelamo.txoka.domain.received.SaveResult
 import es.igarciadelamo.txoka.testing.FakeReceivedContactDao
@@ -21,6 +30,70 @@ class RoomReceivedContactRepositoryTest {
         linkedin = "marta-ruiz",
         instagram = "marta.ruiz",
     )
+
+    private val appearance = CardAppearance(
+        background = CardBackground.HOLOGRAM,
+        effect = CardEffect.FIRE,
+        topRight = RgbColor(45, 67, 89),
+        bottomLeft = RgbColor(180, 140, 100),
+        name = CardTextStyle(finish = TextFinish.METAL, size = TextSize.L, color = RgbColor(80, 90, 100)),
+        data = CardTextStyle(finish = TextFinish.RAISED, size = TextSize.S),
+    )
+
+    @Test
+    fun `persists independent text styles effects and four corner colours`() = runTest {
+        val card = marta.copy(palette = CardPalette.Default.copy(appearance = appearance))
+
+        val saved = repository.save(card) as SaveResult.Saved
+
+        assertEquals(card.palette, repository.contact(saved.id).first()?.card)
+        assertEquals(CardAppearanceCodec.encode(appearance), dao.observe(saved.id).first()?.appearance)
+    }
+
+    @Test
+    fun `refreshing appearance keeps local note and replaces the previous style`() = runTest {
+        val first = repository.save(marta) as SaveResult.Saved
+        repository.updateNote(first.id, "Meetup")
+        val styled = marta.copy(palette = marta.palette.copy(appearance = appearance))
+
+        assertEquals(SaveResult.Updated(first.id), repository.save(styled))
+        assertEquals(appearance, repository.contact(first.id).first()?.card?.appearance)
+        assertEquals("Meetup", repository.contact(first.id).first()?.note)
+
+        repository.save(marta)
+
+        assertNull(repository.contact(first.id).first()?.card?.appearance)
+        assertNull(dao.observe(first.id).first()?.appearance)
+        assertEquals("Meetup", repository.contact(first.id).first()?.note)
+    }
+
+    @Test
+    fun `restoring a deleted library retains its appearance palette note and timestamp`() = runTest {
+        val styled = marta.copy(palette = marta.palette.copy(appearance = appearance))
+        val first = repository.save(styled) as SaveResult.Saved
+        repository.updateNote(first.id, "Meetup")
+
+        val removed = repository.deleteAll()
+        repository.restore(removed)
+
+        val restored = repository.contacts.first().single()
+        assertEquals(removed.single().card, restored.card)
+        assertEquals(removed.single().receivedAt, restored.receivedAt)
+        assertEquals("Meetup", restored.note)
+        assertEquals("marta.ruiz", restored.instagram)
+    }
+
+    @Test
+    fun `malformed stored appearance falls back to the stored legacy palette`() = runTest {
+        val styled = marta.copy(palette = marta.palette.copy(appearance = appearance))
+        val saved = repository.save(styled) as SaveResult.Saved
+        val entity = requireNotNull(dao.observe(saved.id).first())
+        dao.updateCard(entity.copy(appearance = "999:not-a-style"))
+
+        assertEquals(marta.palette, repository.contact(saved.id).first()?.card)
+        assertEquals("Marta Ruiz", repository.contact(saved.id).first()?.name)
+        assertEquals("+34600111222", repository.contact(saved.id).first()?.phone)
+    }
 
     @Test
     fun `saves a card and reads it back`() = runTest {

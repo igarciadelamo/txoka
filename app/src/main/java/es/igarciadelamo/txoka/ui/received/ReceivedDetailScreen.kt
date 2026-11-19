@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,8 @@ import es.igarciadelamo.txoka.domain.profile.SocialHandle
 import es.igarciadelamo.txoka.domain.profile.SocialNetwork
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.CardLayout
+import es.igarciadelamo.txoka.ui.components.CardMotion
+import es.igarciadelamo.txoka.ui.components.CardViewer
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.SocialIcon
@@ -81,6 +84,9 @@ fun ReceivedDetailScreen(
 ) {
     var confirmDelete by remember { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
+    var viewerOpen by remember { mutableStateOf(false) }
+
+    if (viewerOpen) CardViewer(profile = contact.toProfile(), onDismiss = { viewerOpen = false })
 
     Column(
         modifier = modifier
@@ -92,6 +98,12 @@ fun ReceivedDetailScreen(
             title = contact.name,
             onBack = onBack,
             actions = {
+                IconButton(onClick = { viewerOpen = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_expand),
+                        contentDescription = stringResource(R.string.card_viewer_open),
+                    )
+                }
                 IconButton(onClick = { menuOpen = true }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
@@ -114,6 +126,7 @@ fun ReceivedDetailScreen(
             note = note,
             onNoteChange = onNoteChange,
             onSaveNote = onSaveNote,
+            cardVisible = !viewerOpen,
             modifier = Modifier
                 .weight(1f)
                 .navigationBarsPadding()
@@ -151,6 +164,7 @@ private fun DetailContent(
     note: String,
     onNoteChange: (String) -> Unit,
     onSaveNote: () -> Unit,
+    cardVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -167,7 +181,12 @@ private fun DetailContent(
             .padding(horizontal = Spacing.xl, vertical = Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        ContactCard(profile = contact.toProfile(), layout = CardLayout.Hero)
+        ContactCard(
+            profile = contact.toProfile(),
+            layout = CardLayout.Hero,
+            motion = if (cardVisible) null else CardMotion(),
+            paused = !cardVisible,
+        )
 
         Text(
             text = stringResource(R.string.received_meta, received),
