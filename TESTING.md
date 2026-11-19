@@ -124,9 +124,6 @@ addition to the existing device checklist, verify the following before releasing
 Do not infer physical NFC interoperability or visual quality from codec tests. Record device,
 Android version and results rather than treating the browser demo as a native test run.
 
-Preview signing and the `build-apk` label are proposed in [CI_PROPOSAL.md](CI_PROPOSAL.md). This
-feature does not change workflows. The signing identity of the author's APK is still to be resolved.
-
 ## Store kit
 
 `store/` holds what Play Console asks for: the 512 px icon, the feature graphic, the phone

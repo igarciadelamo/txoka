@@ -60,10 +60,9 @@ Release signing, coverage, instrumented tests and the NFC device plan are in
 the way it does are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 The [interactive appearance demo](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/)
-is a public, unlisted browser design reference, with links to the plan, NFC contract and CI proposal.
+is a public, unlisted browser design reference, with links to the plan and NFC contract.
 The native implementation and compact wire format are documented in
-[`CARD_APPEARANCE.md`](CARD_APPEARANCE.md). APK publishing is a separate
-[`CI follow-up`](CI_PROPOSAL.md); no signed preview download is configured by this feature.
+[`CARD_APPEARANCE.md`](CARD_APPEARANCE.md).
 
 ## Known limitations
 

@@ -27,7 +27,7 @@ cards received. It is local-first: no backend, no account and no `INTERNET` perm
   consistent resolution pushed the app version into the test APK. `kotlinx-coroutines-core` is
   now declared explicitly at the catalog version.
 - Card appearance V1 is described in `CARD_APPEARANCE.md`; physical device validation remains
-  required before release. APK publishing/signing is a separate follow-up in `CI_PROPOSAL.md`.
+  required before release.
 - Remaining backlog: optional vCard/QR sharing fallback and SAF export/import.
 
 ## Non-negotiable rules

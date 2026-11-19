@@ -7,9 +7,8 @@ mosaic, elemental effect, then name and contact text.
 The [interactive design reference](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/)
 is a separately hosted browser demo. Its URL is public and unlisted; knowing the link grants access.
 It is not an APK, an authenticated preview or evidence of an NFC exchange. Its linked
-[design plan](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/plan.html),
-[protocol proposal](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/nfc.html)
-and [CI proposal](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/ci.html)
+[design plan](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/plan.html)
+and [NFC contract](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/nfc.html)
 also remain available for review. This document specifies the Android wire format.
 
 ## Local rendering

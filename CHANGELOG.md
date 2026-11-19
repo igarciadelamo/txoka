@@ -15,7 +15,7 @@ All notable changes to Txoka are recorded here. The format follows
   malformed-extension handling within the existing 768-byte message limit.
 - Local appearance persistence, Room schema 3 migration, motion controls and a landscape-aware
   full-screen card viewer.
-- Appearance contract, browser design reference and a separate opt-in APK CI proposal.
+- Appearance contract and browser design reference.
 
 ## [1.0.0] - 2026-11-12
 
