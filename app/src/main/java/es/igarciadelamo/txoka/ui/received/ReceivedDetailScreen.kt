@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,7 +85,7 @@ fun ReceivedDetailScreen(
 ) {
     var confirmDelete by remember { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
-    var viewerOpen by remember { mutableStateOf(false) }
+    var viewerOpen by rememberSaveable { mutableStateOf(false) }
 
     if (viewerOpen) CardViewer(profile = contact.toProfile(), onDismiss = { viewerOpen = false })
 
