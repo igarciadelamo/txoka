@@ -262,6 +262,36 @@ application-label:'Txoka PR'
 
 
 class PreviewApkIdentityTests(unittest.TestCase):
+    def test_camera_is_the_only_optional_permission_and_baseline_remains_accepted(self):
+        baseline = preview.validate_badging(BADGING, 1)
+        required = {"android.permission.NFC", preview.APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
+        self.assertEqual(required, set(baseline["permissions"]))
+        for declaration in ("uses-permission", "uses-permission-sdk-23"):
+            camera = BADGING + f"{declaration}: name='android.permission.CAMERA'\n"
+            with self.subTest(declaration=declaration):
+                identity = preview.validate_badging(camera, 1)
+                self.assertEqual(sorted(required | {"android.permission.CAMERA"}), identity["permissions"])
+
+    def test_camera_cannot_authorize_additional_permissions_or_duplicate_declarations(self):
+        camera = BADGING + "uses-permission: name='android.permission.CAMERA'\n"
+        extra_permissions = (
+            "uses-permission: name='android.permission.INTERNET'\n",
+            "uses-permission: name='android.permission.RECORD_AUDIO'\n",
+            "uses-permission: name='android.permission.UNKNOWN'\n",
+            "uses-permission: name='android.permission.CAMERA'\n",
+            "uses-permission-sdk-23: name='android.permission.CAMERA'\n",
+        )
+        for extra in extra_permissions:
+            with self.subTest(extra=extra), self.assertRaises(preview.PolicyError):
+                preview.validate_badging(camera + extra, 1)
+
+    def test_camera_does_not_replace_either_required_permission(self):
+        camera = BADGING + "uses-permission: name='android.permission.CAMERA'\n"
+        for permission in ("android.permission.NFC", preview.APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"):
+            missing_required = camera.replace(f"uses-permission: name='{permission}'\n", "")
+            with self.subTest(permission=permission), self.assertRaises(preview.PolicyError):
+                preview.validate_badging(missing_required, 1)
+
     def test_actual_apk_manifest_fields_are_required(self):
         identity = preview.validate_badging(BADGING, 1)
         self.assertEqual(preview.APPLICATION_ID, identity["application_id"])

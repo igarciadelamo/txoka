@@ -33,6 +33,54 @@ Installing a preview does not update, uninstall or migrate the official app. The
 them separate Android storage. Do not supply the official release keystore or its password to the
 preview workflows.
 
+## Fictional received library
+
+A fresh preview installation starts with eight fictional **received** cards. Their names identify
+them as previews or examples, their email addresses use the reserved `example.com` domain, and
+their notes say `Fictional preview contact`. They contain no phone numbers. Your own card stays
+empty: the installer never writes the profile or share-settings DataStore and cannot turn a sample
+into an outgoing NFC card.
+
+The sample installer belongs only to the `preview` source set. A nonexported provider runs before
+`Application.onCreate`, without accessing Hilt members, repositories or DataStore. It copies a
+packaged Room database only when the received database, its SQLite sidecars and the one-time marker
+are absent. Existing preview databases and their notes are always preserved, including when the
+installer is first added by an update.
+
+The marker lives outside the database in `noBackupFilesDir`. Deleting individual samples, emptying
+the library or deleting its database does not repopulate it on the next launch. An interrupted or
+failed installation also keeps the marker and skips later attempts. The complete copied file is
+flushed and published with an atomic hard link that refuses an existing destination; an incomplete
+copy never replaces user data. Uninstalling the preview or clearing all its app data resets this
+one-time state.
+
+`generatePreviewSamples` creates the fixture under `app/build/generated/previewSamples/assets`.
+It reads the version declared by the checked-out `TxokaDatabase` and selects that exact exported
+schema and Room identity hash, even when higher numbered schema files exist. The CI branch's Room
+version 2 produces eight legacy palettes without an appearance dependency. Room version 3 adds
+seven styled examples and one legacy card; stained glass, nacre and brushed metal are used only
+when their immutable IDs 2, 3 and 4 exist in the compiled background enum. All geometry and material
+settings remain local. Unknown schema versions fail fixture generation instead of guessing.
+
+Neither the provider nor the fixture is included in official debug or release app APKs. The existing
+device test command compiles the installer and generated fixture into the **instrumented test APK**
+to check Room opening, repeat startup, edited notes, deletion and existing-database preservation in
+isolated directories. Preview JVM tests also exercise interrupted copies, SQLite sidecars and a
+destination appearing during publication:
+
+```sh
+python3 -m unittest discover -s scripts/ci/tests -p test_preview_samples.py -v
+./gradlew :app:testPreviewUnitTest :app:connectedDebugAndroidTest
+```
+
+Local validation of this installer revision passed 187 debug JVM tests and 196 preview JVM tests
+(including the nine installer tests), the required build/style gate, debug/release lint and debug
+coverage verification. All 76 Python policy/generator tests passed with two expected skips for the
+unavailable local Semgrep executable. Inspection of the built APKs confirmed that official debug
+and release contain neither sample assets nor installer code, while preview and the instrumented
+test APK contain the fixture. The three Room device lifecycle tests compile; execution is recorded
+separately from these local results.
+
 ## One-time repository setup
 
 Complete this in `igarciadelamo/txoka`. The workflows and signing script must be reviewed and merged
@@ -195,8 +243,16 @@ instrumented tests in the requested PR run there too. This command removes app d
 disposable CI emulator; it never targets a tester's installed app. Its reports are uploaded as
 `preview-device-tests-<runID>-a<attempt>`. All six producer jobs must succeed before signing.
 The signing adapter independently checks the final package ID, SDK levels, non-debuggable status,
-allowed permissions, version, certificate and APK checksum. Its policy tests and the scanner
-adapter tests run locally without production keys:
+allowed permissions, version, certificate and APK checksum.
+
+The signer's fixed permission policy requires NFC and the preview app's generated
+`DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. It additionally allows `android.permission.CAMERA`
+for pull requests that include the QR scanner; camera is optional, so the CI branch's NFC-only
+preview remains valid. Missing required permissions, duplicate declarations, `INTERNET` and every
+other permission are rejected. This allowlist comes from trusted signing code and cannot be expanded
+by a pull request's manifest.
+
+Its policy tests and the scanner adapter tests run locally without production keys:
 
 ```sh
 python3 -m unittest discover -s scripts/ci/tests -v

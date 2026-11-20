@@ -28,6 +28,8 @@ REQUIRED_JOBS = {
     "Runtime dependency vulnerabilities", "APK analysis with MobSF", "Device persistence tests",
 }
 APPLICATION_ID = "es.igarciadelamo.txoka.preview"
+REQUIRED_PERMISSIONS = {"android.permission.NFC", APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
+OPTIONAL_PERMISSIONS = {"android.permission.CAMERA"}
 LABEL = "build-apk"
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_METADATA_BYTES = 16 * 1024
@@ -308,8 +310,9 @@ def validate_badging(text, version_code):
     require(not re.search(r"^(?:application-(?:debuggable|testOnly)\b|testOnly=)", text, re.MULTILINE),
             "Preview APK must not be debuggable or test-only")
     permissions = re.findall(r"^uses-permission(?:-sdk-\d+)?: name='([^']*)'", text, re.MULTILINE)
-    require(set(permissions) == {"android.permission.NFC", APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
-            and len(permissions) == 2, "APK permissions differ from the preview policy")
+    permission_set = set(permissions)
+    require(REQUIRED_PERMISSIONS <= permission_set <= REQUIRED_PERMISSIONS | OPTIONAL_PERMISSIONS
+            and len(permissions) == len(permission_set), "APK permissions differ from the preview policy")
     return {"application_id": package, "version_code": int(code), "version_name": version,
             "min_sdk": 26, "target_sdk": 37, "debuggable": False, "permissions": sorted(permissions)}
 
