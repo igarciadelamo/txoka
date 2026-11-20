@@ -67,7 +67,8 @@ private fun CardViewerContent(
 ) {
     BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         val landscape = maxWidth > maxHeight
-        val availableWidth = if (landscape) (maxWidth - 144.dp).coerceAtLeast(120.dp) else maxWidth
+        val controlsWidth = 176.dp
+        val availableWidth = if (landscape) (maxWidth - controlsWidth - Spacing.md).coerceAtLeast(120.dp) else maxWidth
         val availableHeight = if (landscape) maxHeight else (maxHeight - 112.dp).coerceAtLeast(80.dp)
         val cardWidth = minOf(availableWidth, availableHeight * PHYSICAL_CARD_RATIO)
         val card: @Composable () -> Unit = {
@@ -83,7 +84,7 @@ private fun CardViewerContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 card()
-                AppearanceMotionControls(motion, paused, onPausedChange, modifier = Modifier.width(132.dp))
+                AppearanceMotionControls(motion, paused, onPausedChange, modifier = Modifier.width(controlsWidth))
             }
         } else {
             Column(
