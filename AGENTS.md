@@ -69,7 +69,7 @@ Run `assembleDebug + testDebugUnitTest + detekt + ktlintCheck` before every comm
 Context lives in three documents: `README.md` is the summary, `ARCHITECTURE.md` the design, the
 protocol and the accessibility rules, and `TESTING.md` the build, signing and test commands.
 
-- `ui/share/ShareScreen.kt` + ViewModel — hub: app bar actions, hero card with edit overlay, NFC
+- `ui/share/ShareScreen.kt` + ViewModel — hub: app bar actions, hero card with edit/expand actions above it, NFC
   module, privacy footer.
 - `ui/profile/ProfileEditorScreen.kt` + ViewModel — create/edit contact fields and layered appearance,
   with a pinned preview, motion controls, mosaic grid and independent text settings.
@@ -130,8 +130,8 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
   - `title != null` → back arrow + screen title (secondary screens).
   - Surface background, 1 dp hairline (`HairlineLight = 0x3D171614`,
     `HairlineDark = 0x33FFFFFF`) and an 8 dp, 7%-black shadow.
-- Hub: no bottom quick actions. A pencil overlay on the card opens the editor; a contacts icon
-  (no numeric badge) sits in the app bar left of Settings.
+- Hub: no bottom quick actions. Edit and expand actions sit in the card section heading, leaving
+  its initials and content unobstructed. A contacts icon (no numeric badge) sits in the app bar left of Settings.
 - The hub sharing module is a two-state control (Send / Receive), not an on/off switch, because
   "stop sending" means "start receiving". The role also picks the NFC mechanism: Receive reads with
   `enableReaderMode` (needed on vendor builds that never dispatch NDEF intents to third-party apps),

@@ -63,8 +63,6 @@ import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
-import es.igarciadelamo.txoka.ui.components.cardContentColor
-import es.igarciadelamo.txoka.ui.components.cardOverlayTint
 import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -164,6 +162,12 @@ private fun HubContent(
         Column {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Eyebrow(text = stringResource(R.string.hub_your_card), modifier = Modifier.weight(1f))
+                IconButton(onClick = onEditProfile) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = stringResource(R.string.action_edit_card),
+                    )
+                }
                 IconButton(onClick = { viewerOpen = true }) {
                     Icon(
                         painter = painterResource(R.drawable.ic_expand),
@@ -171,28 +175,13 @@ private fun HubContent(
                     )
                 }
             }
-            Box(modifier = Modifier.padding(top = Spacing.sm)) {
-                ContactCard(
-                    profile = profile,
-                    layout = CardLayout.Hero,
-                    motion = if (viewerOpen) CardMotion() else null,
-                    paused = viewerOpen,
-                )
-                IconButton(
-                    onClick = onEditProfile,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(Spacing.lg)
-                        .clip(CircleShape)
-                        .background(profile.cardOverlayTint().copy(alpha = 0.18f)),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = stringResource(R.string.action_edit_card),
-                        tint = profile.cardContentColor(),
-                    )
-                }
-            }
+            ContactCard(
+                profile = profile,
+                modifier = Modifier.padding(top = Spacing.sm),
+                layout = CardLayout.Hero,
+                motion = if (viewerOpen) CardMotion() else null,
+                paused = viewerOpen,
+            )
         }
         SharingModule(
             role = role,
