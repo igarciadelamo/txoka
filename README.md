@@ -64,6 +64,18 @@ is a public, unlisted browser design reference, with links to the plan and NFC c
 The native implementation and compact wire format are documented in
 [`CARD_APPEARANCE.md`](CARD_APPEARANCE.md).
 
+## Appearance review
+
+The [native screenshot gallery](store/screenshots/review/README.md) shows the card in the hub,
+its layered editor and the landscape viewer. These are unedited Android emulator captures with
+fictitious contact details.
+
+<p align="center">
+  <a href="store/screenshots/review/01-hub-hologram.png"><img src="store/screenshots/review/01-hub-hologram.png" width="180" alt="Holographic card in the native Txoka hub"></a>
+  <a href="store/screenshots/review/03-editor-mosaics.png"><img src="store/screenshots/review/03-editor-mosaics.png" width="180" alt="Pinned card preview above the native mosaic catalogue"></a>
+  <a href="store/screenshots/review/04-editor-lettering.png"><img src="store/screenshots/review/04-editor-lettering.png" width="180" alt="Independent name and contact lettering finishes in the native editor"></a>
+</p>
+
 ## Known limitations
 
 - The hub role decides the NFC mode, so one tap carries one card and the phone that listens cannot

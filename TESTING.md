@@ -79,8 +79,10 @@ adapters are covered by manual checks instead. The HTML report is written to
 
 `ReceivedContactDaoTest` covers ordering, match lookup and note/delete queries against an
 in-memory Room database. `TxokaMigrationTest` exercises upgrades from versions 1 and 2 to version 3,
-checking that fields, colours and notes survive and that appearance can then be stored. Run them with a disposable emulator or
-device attached:
+checking that fields, colours and notes survive and that appearance can then be stored.
+`CardMosaicRenderingTest` checks that all 29 procedural and bundled SVG mosaics retain both inks
+and that mask resolution stays bounded without changing the card aspect ratio. Run them with a
+disposable emulator or device attached:
 
 ```sh
 ./gradlew :app:connectedDebugAndroidTest
@@ -92,9 +94,16 @@ Gradle uninstalls the app and its data when the run finishes. Reinstall with
 ```sh
 ./gradlew :app:installDebugAndroidTest
 adb shell am instrument -w \
-  -e class es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest \
   es.igarciadelamo.txoka.test/androidx.test.runner.AndroidJUnitRunner
 ```
+
+On 20 November 2026, all ten repository instrumented tests passed on an Android 15 (API 35)
+Pixel 6 emulator using application sources at
+[`3d7ce41`](https://github.com/igarciadelamo/txoka/commit/3d7ce41692e3cc064164e026289ed627ef9178da):
+six DAO tests, two migrations to Room version 3, and two mosaic rendering tests covering all
+29 designs and bounded mask resolution. A separate emulator flow confirmed that the full-screen
+viewer stays open and paused after rotation. Physical NFC and motion response remain separate
+device checks.
 
 ## NFC device checks
 
@@ -111,7 +120,9 @@ addition to the existing device checklist, verify the following before releasing
   maximum-sized style and long Unicode contact data.
 - Save, restart, receive, update, delete/undo and database upgrade without losing appearance or notes.
 - Both motion axes, calibration, portrait/landscape rotation, background/resume, sensor toggle and
-  manual joystick. Compare small tilts on two physical phones; an emulator cannot prove sensitivity.
+  manual joystick. Open the viewer from the hub, received-card detail and editor; rotate while
+  paused and confirm it remains open and paused. Compare small tilts on two physical phones;
+  an emulator cannot prove sensitivity.
 - All backgrounds and mosaics in airplane mode; no missing external assets. Confirm both flat
   inks, gradient visibility, holographic reflection and elemental effects.
 - Both text targets, all finishes and sizes, long names/social-only cards, 200% font scale, TalkBack,
@@ -129,5 +140,6 @@ Android version and results rather than treating the browser demo as a native te
 `store/` holds what Play Console asks for: the 512 px icon, the feature graphic, the phone
 screenshots per language and [`store/play-listing.md`](store/play-listing.md), with the listing
 copy, the release notes and the App content answers. `store/screenshots/readme/` keeps the
-downsized copies the README embeds, so the project page does not load the full-size ones. `docs/`
-is published by GitHub Pages and is for the privacy policy only.
+downsized copies of the original overview images. The [appearance review gallery](store/screenshots/review/README.md)
+keeps unedited full-resolution Android captures of the newer card UI. `docs/` is published by GitHub
+Pages and is for the privacy policy only.
