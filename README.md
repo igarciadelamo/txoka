@@ -42,11 +42,16 @@ there is no backend, no account and no `INTERNET` permission.
 - **Receive.** Nothing is stored until you accept it. Cards that arrive while the sheet is open wait
   in a queue instead of overwriting each other, and a card you already have is updated rather than
   duplicated.
-- **Keep.** A searchable library with the date, a note you can add, call and email actions, and
-  *Add to contacts* without asking for `WRITE_CONTACTS`.
+- **Keep.** Browse received cards in Cover Flow, category shelves or a searchable list. Cover Flow
+  keeps the active card facing forward and angles its neighbours; its background follows the active
+  category and blends while swiping between categories. Open a card full screen, or use its date,
+  private note, call/email actions and *Add to contacts* without asking for `WRITE_CONTACTS`.
+- **Organise.** Create categories with a name, icon and flat or two-colour gradient background;
+  reorder categories and cards, move cards between categories and mark favourites. This organisation
+  is private device metadata, stored separately from the received contacts and never shared by NFC or QR.
 - **Local and private.** No ads, no analytics, no crash reporting and no network access. NFC and QR
-  share the contact fields and appearance you choose; private notes are excluded. Links to a
-  profile open in the browser: the app never fetches them.
+  share the contact fields and appearance you choose; private notes and library organisation are
+  excluded. Links to a profile open in the browser: the app never fetches them.
 
 ## Requirements
 
@@ -72,6 +77,9 @@ The [interactive appearance demo](https://txoka-card-lab.olopopo.chatgpt.site/p/
 is a public, unlisted browser design reference, with links to the plan and NFC contract.
 The native implementation and compact wire format are documented in
 [`CARD_APPEARANCE.md`](CARD_APPEARANCE.md).
+
+The full-screen viewer keeps the card's ISO ID-1 proportions. In landscape it uses the available
+height in an immersive window, with movement, QR and close controls in a side rail.
 
 ## Appearance review
 

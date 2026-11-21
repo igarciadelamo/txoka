@@ -9,8 +9,8 @@ Txoka is a native Android app that shares a contact card over NFC or QR and keep
 received. It is local-first: no backend, no account and no `INTERNET` permission.
 
 - Kotlin + Jetpack Compose + Material 3, single Gradle module.
-- Hilt for DI, coroutines/Flow, Room for received contacts, DataStore for profile/settings,
-  libphonenumber for phone handling, Manrope as the bundled font.
+- Hilt for DI, coroutines/Flow, Room for received contacts, DataStore for profile/settings and
+  private library organization, libphonenumber for phone handling, Manrope as the bundled font.
 - Packages: `ui/`, `domain/`, `data/`, `nfc/`, `di/`.
 - Version 1.0 (`versionCode = 1`). Room database version 3; the schema is exported to
   `app/schemas/` and committed, and every version bump must ship a real `Migration` (release builds
@@ -28,9 +28,9 @@ baseline at `3d7ce41` are recorded in `TESTING.md`.
   now declared explicitly at the catalog version.
 - Card appearance V1 is described in `CARD_APPEARANCE.md`; physical device validation remains
   required before release.
-- This appearance revision adds stained glass, nacre and brushed metal plus offline QR sharing,
-  camera scanning and QR image import. On 21 November 2026, all 280 JVM tests in 43 suites passed,
-  including 21 material tests and real ZXing QR boundary tests. Debug app/test APK compilation,
+- The material/QR baseline at `dd9c3a5` adds stained glass, nacre and brushed metal plus offline QR
+  sharing, camera scanning and QR image import. On 21 November 2026, all 280 JVM tests in 43 suites
+  passed, including 21 material tests and real ZXing QR boundary tests. Debug app/test APK compilation,
   Detekt, ktlint, the 95% Kover gate, debug/release lint and R8 release APK assembly passed.
   On the same date, all 16 repository instrumented tests plus one capture flow passed on an
   Android 15 / API 35 Pixel 6 emulator at app source `dd9c3a5`. Eleven raw screenshots and
@@ -38,6 +38,14 @@ baseline at `3d7ce41` are recorded in `TESTING.md`.
   [native evidence gallery](store/screenshots/materials-qr/README.md). Camera permission/denial
   and SAF image import on real devices, physical NFC and sensors, and wider visual/accessibility
   checks remain pending. Historical results in `TESTING.md` identify the earlier revision they cover.
+- The subsequent library revision adds Cover Flow, category shelves and a list fallback; categories,
+  card order, favorites and view mode live in a separate private DataStore. The viewer maximizes
+  landscape card height with immersive system bars and side controls. The latest local run passed
+  all 334 JVM tests in 49 suites, the 95% Kover gate, debug app/test APK compilation, both lint
+  variants, R8 release assembly, Detekt and ktlint. The new emulator capture run
+  remains pending; the `dd9c3a5` screenshots do not validate these changes. The repository now has
+  18 permanent instrumented cases, including two new Room clear/restore regressions awaiting execution.
+  The separate demo passes 211 source/DOM tests in 19 files; this is not browser visual validation.
 - Remaining backlog: vCard-file sharing and SAF export/import of the received library.
 
 ## Non-negotiable rules
@@ -88,7 +96,10 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - `ui/profile/CardColourPicker.kt` — preset colours commit immediately; custom HSV/HEX previews stay
   local until confirmed. `ColourDraft` preserves hue through grayscale and black.
 - `ui/received/` — list, detail, notes, delete, add to system contacts, and "empty library" with a
-  confirmation dialog and an undo snackbar.
+  confirmation dialog and an undo snackbar; ViewModels combine contacts with private organization
+  and serialize library edits and recoverable clear/undo phases.
+- `ui/library/` — Cover Flow, category shelves, list controls and the category/card organizer;
+  only the centered card animates and uses motion sensors. Neighbor cards and thumbnails are static.
 - `ui/receive/ReceiveConfirmScreen.kt` + ViewModel — confirmation bottom sheet after a tag is read.
 - `ui/settings/` — device unlock setting, library, About, no separate licences screen.
 - `ui/components/Layout.kt` — `Eyebrow`, `TxokaAppBar`, `ScreenColumn`, shared buttons.
@@ -105,10 +116,13 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - `domain/protocol/` — pure vCard 3.0, QR vCard and NDEF encoding, Type 4 Tag APDU state machine.
 - `domain/profile/` — `Profile`, palettes, phone helpers, contrast helpers, repository interfaces.
 - `domain/received/` — received contact model and repository interface.
+- `domain/library/` — private categories, organization, view modes, restore snapshots and repository interface.
 - `nfc/` — `HceCardPublisher`, `HceResponder`, `NdefHceService`, `NfcReader`, `IncomingCards`,
   `FakeTransport`.
 - `data/profile/` — DataStore profile and share-settings repositories.
 - `data/received/` — Room entity, DAO, database, migrations and repository.
+- `data/library/` — bounded versioned organization codec and atomic DataStore updates in the separate
+  `library_organization` preferences file; no Room schema change.
 - `di/` — Hilt modules.
 
 ## Data model and protocol
@@ -120,6 +134,14 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
   standard `URL` properties.
 - Received contacts store the sender's name, phone, email, LinkedIn and Instagram handles, palette,
   note and timestamp.
+- Categories (name, icon, flat/two-colour background), category/card ordering, assignments, favorites
+  and the chosen library view are private local metadata keyed by received-contact ID. They never
+  enter profiles, STYLE, NFC or QR. Existing contacts start uncategorized and `COVER_FLOW` is the
+  default view. Deleting a category unassigns its cards without deleting them. Pruning removes only
+  orphaned contact metadata. Room remains version 3 with no organization migration.
+- Empty-library reads and deletes contacts in one Room transaction; Undo restores original IDs in
+  an atomic batch so metadata remains attached. Serialized ViewModel operations track contact and
+  metadata restoration separately, allowing a metadata retry without inserting the contacts twice.
 - A repeated card matches on normalised phone (digits only), lowercased email or lowercased social
   handle. Saving it refreshes the sender's fields and bumps `receivedAt`, keeps the local note and
   returns `SaveResult.Updated`; the confirm sheet shows "You already have …" and "Update contact".
@@ -185,12 +207,22 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - Double-tap a card to show its QR back or return to its front. Keep the visible **Show QR** button
   and accessibility action so the gesture is optional. NFC and camera hardware are optional;
   library and QR image import must remain usable without them.
+- Library views are Cover Flow, category shelves and list. Cover Flow interpolates the category
+  background between neighboring cards during a swipe; cards in one category keep that background
+  stable. The organizer edits category names/icons/colours, orders categories and cards, moves cards
+  and toggles favorites. Drag handles have button alternatives. Keep the selected viewer card, QR,
+  pause state and category draft across rotation. Pause covered cards and honor reduced motion.
 - Accessibility baseline: 48 dp targets, content descriptions on icon-only buttons, merged
   semantics on cards and list rows, contrast checked by tests.
 - Only `material-icons-core` is available; `material-icons-extended` is not a dependency.
-- Landscape and wide windows: content uses `Modifier.contentWidth()` (`ContentMaxWidth` = 560 dp)
-  inside a horizontally centred column, so nothing stretches edge to edge. Sheets scroll and pin
-  their actions, because a bottom sheet is shorter than its content in landscape. The hub remains
+- Landscape and wide windows: ordinary content uses `Modifier.contentWidth()` (`ContentMaxWidth` = 560 dp)
+  inside a horizontally centred column. The library stage and full-screen viewer are deliberate
+  exceptions: maximize available card height while keeping the physical ID-1 ratio (about 1.586).
+  Landscape Cover Flow places controls in a side rail. The landscape viewer hides system bars,
+  restores their previous state on dismissal and places actions/motion feedback in a 112 dp side
+  rail; nothing may cover the card. Keep 48 dp controls and scrolling access when height is limited.
+  Sheets scroll and pin their actions, because a bottom sheet is shorter than its content in
+  landscape. The hub remains
   a single scrollable column. The appearance editor adapts to two columns in landscape
   and scales its complete preview when height is limited, leaving room for controls and fields.
 
@@ -222,7 +254,10 @@ protocol and the accessibility rules, and `TESTING.md` the build, signing and te
 - Pure protocol, profile, contrast, ViewModel and state logic are unit-tested.
 - Compose screens are verified manually on the emulator; add Compose previews for new components.
 - `FakeProfileRepository`, `FakeReceivedContactRepository`, `FakeShareSettingsRepository`,
-  `FakeNfcAvailability` and `FakeSimRegionSource` live in `app/src/test/.../testing/`.
+  `FakeLibraryOrganizationRepository`, `FakeNfcAvailability` and `FakeSimRegionSource` live in
+  `app/src/test/.../testing/`.
+- Library regressions cover codec bounds/corruption, private metadata persistence and pruning,
+  category/card order, favorites, transactional clear/batch restore and retry-safe Undo.
 - Kover enforces 95% coverage for the included logic classes (see `app/build.gradle.kts`).
 
 ## Emulator and manual verification

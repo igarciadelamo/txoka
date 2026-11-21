@@ -26,6 +26,13 @@ All notable changes to Txoka are recorded here. The format follows
   or storage permission. Contacts still require confirmation and private notes are not shared.
 - QR-only profiles up to 2,048 UTF-8 vCard bytes. Profiles above the unchanged 768-byte NFC message
   cap can be saved with a warning; HCE clears the previous card instead of serving stale data.
+- Received-card Cover Flow with a frontal active card, angled static neighbours, swipe snapping,
+  previous/next actions and a category-colour backdrop that interpolates while dragging.
+- Category shelves and searchable list alternatives, favourites, and private category names,
+  icons, flat/gradient colours, category/card ordering and moves. Organisation uses a separate
+  local DataStore; Room and the NFC/QR formats are unchanged.
+- An immersive landscape viewer that fits the physical card ratio to the available height and
+  keeps movement, QR and close controls beside the card.
 
 ## [1.0.0] - 2026-11-12
 

@@ -78,7 +78,17 @@ added black legibility scrim. The reference, edited PNGs and provenance are kept
 
 ### Received contacts
 
-- Searchable library grouped into Today and Earlier.
+- Cover Flow is the default library view, with category shelves and a searchable list as alternatives.
+  All, favourites and recent filters use the same received contacts and private organisation.
+- Cover Flow keeps the active card frontal, angles its neighbours and snaps after a swipe or
+  explicit previous/next action. Only the active visible card runs motion and effects; neighbouring
+  previews stay static. Tapping the active card opens its full-screen viewer and contact QR.
+- Each private category has a name, icon, first RGB colour and optional second RGB colour. A missing
+  second colour means a flat background. The Cover Flow backdrop interpolates those colours with
+  the pager position, remaining stable while adjacent cards belong to the same category.
+- The organiser edits category appearance with a local preview, reorders categories and card
+  thumbnails, moves cards between categories and manages favourites. Deleting a category leaves
+  its contacts available without that category. These actions never edit the sender's appearance.
 - Detail view with the sender's card, the date, call and email actions, a note and delete.
 - LinkedIn and Instagram handles, when present, open the profile in the browser or the installed
   app. No permission is needed: the link leaves the app and Txoka never fetches anything.
@@ -86,10 +96,12 @@ added black legibility scrim. The reference, edited PNGs and provenance are kept
   so Txoka never asks for `WRITE_CONTACTS`.
 - Sharing a card again refreshes the stored contact instead of adding a copy: a normalised phone
   (digits only), a lowercased email or a bare social handle identifies it, the sender's fields win,
-  the date moves the contact to the top and the local note is kept. Cards that only share a name are
-  kept separately.
+  the received date is refreshed and the local note is kept. The recent filter follows that date;
+  manual library organisation remains separate. Cards that only share a name are kept separately.
 - Received cards keep the sender's palette and supported appearance. Unknown or malformed style
   extensions fall back to the palette while preserving the contact.
+- Rotation must preserve the selected card, open viewer and in-progress category editor rather
+  than dismissing the current task. Persisted organisation is distinct from this transient UI state.
 
 ### Privacy and storage
 
@@ -98,10 +110,17 @@ added black legibility scrim. The reference, edited PNGs and provenance are kept
 - The profile and the sharing preferences live in DataStore; received contacts and their notes live
   in a local Room database. Room schema 3 adds a nullable encoded appearance column through a real
   migration from schema 2. Existing colours, notes and identities are retained.
+- Library organisation has its own `library_organization` preferences DataStore and
+  `LibraryOrganizationRepository`. It stores category definitions and order, contact-ID assignments,
+  per-category card order, favourite IDs and the selected view mode. It does not add a Room column
+  or migration, change `Profile` or `ReceivedContact`, or change any NFC/QR field or byte budget.
+  Deleted contacts have their associated organisation metadata removed; empty-library undo restores
+  the saved assignments, order and favourites alongside the contacts.
 - Camera frames and selected QR images are decoded on device. Txoka does not persist or upload
   their raw images; only a contact the user confirms is stored. Its supported appearance is kept,
-  while a private library note is never exported through NFC or QR.
-- Both stay in the user's own Google backup, so a reinstall or a new phone restores the library.
+  while private notes, category names/icons/colours, ordering and favourites never enter NFC or QR.
+- With Android backup enabled, the system may copy the Room database and DataStore preferences,
+  including private library organisation, to the user's own Google backup for restoration.
   That copy belongs to the device's account, not to Txoka.
 - The full wording, including the backup caveat, is in `docs/privacy-policy.md`. It is published
   with GitHub Pages at <https://igarciadelamo.github.io/txoka/privacy/>, the public URL that Play
@@ -143,6 +162,13 @@ Tokens live in `ui/theme`: `Spacing`, `Corners`, `TxokaShapes`, the light and da
 extra roles (hairline, accent-soft, success, warning) exposed through `MaterialTheme.txoka`. Shared
 pieces are `ContactCard` (hero and preview layouts), `TxokaField`, `Eyebrow`, `TxokaAppBar` and the
 shared buttons, so screens do not invent their own paddings.
+
+The library and full-screen card viewer adapt to the current window orientation. In landscape,
+the immersive viewer hides system bars, fits the card to the available height at the physical
+ISO ID-1 ratio and keeps movement, QR and close controls in a compact side rail. It does not
+stretch the card to fill a wider screen or place those controls over either face. The library's
+landscape controls likewise sit beside its card area. Sensor and animation work pauses while
+another viewer or editor covers the previews.
 
 There is a single splash: the Android one. It shows the brand mark over the brand indigo and, on
 Android 12 and newer, the wordmark as a branding image at the bottom. Nothing else is drawn on top,

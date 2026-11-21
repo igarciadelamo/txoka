@@ -51,56 +51,79 @@ internal fun AppearanceMotionControls(
     onPausedChange: (Boolean) -> Unit,
     onExpand: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    stacked: Boolean = false,
 ) {
+    if (stacked) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            MotionButtonGroup(controller, paused, onPausedChange, onExpand, Modifier.fillMaxWidth())
+            MotionJoystick(controller)
+        }
+        return
+    }
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                MotionButton(
-                    glyph = MotionGlyph.PHONE,
-                    label = stringResource(R.string.appearance_sensors),
-                    selected = controller.sensorsEnabled,
-                    enabled = controller.sensorsAvailable,
-                    rotation = if (LocalConfiguration.current.orientation ==
-                        Configuration.ORIENTATION_LANDSCAPE
-                    ) {
-                        90f
-                    } else {
-                        0f
-                    },
-                    onClick = controller::toggleSensors,
-                )
-                MotionButton(
-                    MotionGlyph.CENTER,
-                    stringResource(R.string.appearance_center),
-                    onClick = controller::center,
-                )
-                MotionButton(
-                    MotionGlyph.PAUSE,
-                    stringResource(R.string.appearance_pause),
-                    selected = paused,
-                    onClick = { onPausedChange(!paused) },
-                )
-                if (onExpand != null) {
-                    MotionButton(MotionGlyph.EXPAND, stringResource(R.string.appearance_expand), onClick = onExpand)
-                }
-            }
-            Text(
-                stringResource(
-                    when {
-                        !controller.sensorsAvailable -> R.string.appearance_no_sensors
-                        controller.sensorsEnabled -> R.string.appearance_sensor_mode
-                        else -> R.string.appearance_manual_mode
-                    },
-                ),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        MotionButtonGroup(controller, paused, onPausedChange, onExpand, Modifier.weight(1f))
         MotionJoystick(controller)
+    }
+}
+
+@Composable
+private fun MotionButtonGroup(
+    controller: CardMotionController,
+    paused: Boolean,
+    onPausedChange: (Boolean) -> Unit,
+    onExpand: (() -> Unit)?,
+    modifier: Modifier,
+) {
+    Column(modifier = modifier) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            MotionButton(
+                glyph = MotionGlyph.PHONE,
+                label = stringResource(R.string.appearance_sensors),
+                selected = controller.sensorsEnabled,
+                enabled = controller.sensorsAvailable,
+                rotation = if (LocalConfiguration.current.orientation ==
+                    Configuration.ORIENTATION_LANDSCAPE
+                ) {
+                    90f
+                } else {
+                    0f
+                },
+                onClick = controller::toggleSensors,
+            )
+            MotionButton(
+                MotionGlyph.CENTER,
+                stringResource(R.string.appearance_center),
+                onClick = controller::center,
+            )
+            MotionButton(
+                MotionGlyph.PAUSE,
+                stringResource(R.string.appearance_pause),
+                selected = paused,
+                onClick = { onPausedChange(!paused) },
+            )
+            if (onExpand != null) {
+                MotionButton(MotionGlyph.EXPAND, stringResource(R.string.appearance_expand), onClick = onExpand)
+            }
+        }
+        Text(
+            stringResource(
+                when {
+                    !controller.sensorsAvailable -> R.string.appearance_no_sensors
+                    controller.sensorsEnabled -> R.string.appearance_sensor_mode
+                    else -> R.string.appearance_manual_mode
+                },
+            ),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

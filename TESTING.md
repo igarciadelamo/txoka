@@ -78,14 +78,19 @@ report is written to `app/build/reports/kover/htmlDebug/index.html`.
 ## Instrumented tests
 
 `ReceivedContactDaoTest` covers ordering, match lookup and note/delete queries against an
-in-memory Room database. `TxokaMigrationTest` exercises upgrades from versions 1 and 2 to version 3,
+in-memory Room database. It also checks transactional clear/restore with the original contact IDs,
+preservation of a contact arriving after clear, and complete batch rollback on an ID conflict.
+`TxokaMigrationTest` exercises upgrades from versions 1 and 2 to version 3,
 checking that fields, colours and notes survive and that appearance can then be stored.
 `CardMosaicRenderingTest` checks that all 29 procedural and bundled SVG mosaics retain both inks
 and that mask resolution stays bounded without changing the card aspect ratio.
 `CardMaterialRenderingTest` adds six native material checks, including the 24-pane optical atlas,
-source RGB identity, both tilt axes and separate mosaic/effect composition. The current repository
-has 16 instrumented tests in total: six DAO, two migration, two mosaic and six material tests.
-On 21 November 2026, all 16 passed on an Android 15 / API 35 Pixel 6 emulator at app source
+source RGB identity, both tilt axes and separate mosaic/effect composition. The repository now
+has **18 instrumented tests**: eight DAO, two migration, two mosaic and six material tests. Their
+execution against the new library and immersive-viewer revision is pending.
+
+For the preceding material/QR revision on 21 November 2026, all 16 tests then present passed on an
+Android 15 / API 35 Pixel 6 emulator at app source
 `dd9c3a5`, together with one separate screenshot-capture flow. The raw AndroidJUnitRunner log
 records 17 passes, zero failures and zero errors; the XML summary is derived from that log.
 Run them with a disposable emulator or device attached:
@@ -114,14 +119,44 @@ device checks.
 That dated result predates the new material and QR changes and is not a passing result for the
 current revision. The historical JVM result was 248 passing tests in 38 suites at `3d7ce41`.
 
-## Current verification — 21 November 2026
+## Library and immersive-viewer verification — 21 November 2026
 
-At app source `dd9c3a58464373776391f27a49dc8a3abc522a93`, the current
-`app/build/test-results/testDebugUnitTest/TEST-*.xml` reports contain **280 tests in 43 suites**,
+The latest local JVM reports for the library revision contain **334 tests in 49 suites**, with
+zero failures, errors or skips. The 95% Kover gate, debug app and instrumented-test APK compilation,
+debug/release lint, R8 release assembly, Detekt and ktlint passed in the final combined gate.
+These local results do not establish that the new Compose flows work on an Android device.
+
+The new regression coverage exercises:
+
+- Private category metadata surviving a reopened DataStore, category and card ordering, moves,
+  favorites, view mode, orphan pruning and concurrent edits without lost updates.
+- A bounded, versioned metadata codec: malformed and oversized input, UTF-8 byte limits, nesting,
+  invalid IDs and dangling assignments. Organization changes leave profiles, private notes and
+  NFC/QR payloads intact; Room stays at schema version 3.
+- Transactional clear and atomic batch restore with stable contact IDs. ViewModel cases cover
+  two queued Undo requests, retrying metadata after contacts have already been restored, and
+  retaining a recoverable Undo when metadata removal and contact rollback both fail.
+- Search, favorites/recent filters, sender updates, category order and deletion cleanup without
+  losing notes or unrelated received cards.
+
+The separate browser demo passes **211 Node cases in 19 test files**, including model and simulated
+DOM interactions and actual Canvas comparisons for all 29 mosaics over the three new materials.
+Published version 20 was checked by comparing eight public resources byte for
+byte with its source. This is source/publication verification, not a visual browser review or an
+Android test run.
+
+Execution of all 18 repository instrumented cases and the new native library/viewer capture flow
+remains pending. The eleven images and 17 runner passes below belong to `dd9c3a5`; they do not
+validate the later CoverFlow, organizer, rotation-retention or immersive-layout changes.
+
+## Material and QR baseline verification — 21 November 2026
+
+At app source `dd9c3a58464373776391f27a49dc8a3abc522a93`, the recorded
+`app/build/test-results/testDebugUnitTest/TEST-*.xml` reports contained **280 tests in 43 suites**,
 with zero failures, errors or skips. The 21 pure material tests are included in that
 total: seven artwork, four pane-atlas, three relief and seven texture tests.
 
-| Area | Verified coverage | Current result |
+| Area | Verified coverage at `dd9c3a5` | Recorded result |
 | --- | --- | --- |
 | Debug build and static checks | Debug app and instrumented-test APK compilation, Detekt, ktlint, 95% Kover gate and debug lint | Passed |
 | Appearance codec | Twenty independent goldens, all 3,801,600 valid combinations, atomic fallback and unchanged 768/769-byte NDEF boundary | Passed in JVM suite |
@@ -134,7 +169,7 @@ total: seven artwork, four pane-atlas, three relief and seven texture tests.
 | Android instrumentation | Six DAO, two migration, two mosaic and six material cases, plus one separate capture flow | Passed: 17 actual runner cases on Android 15 / API 35, Pixel 6 emulator |
 | Native QR screenshots | Independent jsQR decoding of the raw hub, portrait-viewer and landscape-viewer screens | Passed: the same 220-byte vCard, contact, colours and `X-TXOKA-STYLE:1:A2gB` in all three |
 
-The [current native evidence gallery](store/screenshots/materials-qr/README.md) contains eleven
+The [material and QR evidence gallery](store/screenshots/materials-qr/README.md) contains eleven
 unedited full-resolution Android screenshots and the raw runner evidence. Its manifest pins the
 app source above and QA capture revision `792d50cd50e3252f4d01283dc73ad1e12dd82240`. Recorded probes
 confirm that the QR remains visible after landscape rotation and pause survives both that rotation
@@ -144,6 +179,36 @@ resizing or replacing the displayed code.
 Camera permission/denial and SAF image-import flows on real devices, physical NFC interoperability,
 physical sensor response and wider composed visual/accessibility checks remain pending. The emulator
 run and its captured scenes do not establish these remaining device results.
+
+## Library and landscape regression checks
+
+Record device, Android version, theme, font scale and animation setting for the following checks.
+Use fictional received cards with different materials and at least two cards per category.
+
+- Swipe CoverFlow in both orientations, including a fast swipe, then use Previous/Next. Confirm
+  snapping, visible angled neighbors, the centered card and its accessible name. The backdrop
+  must interpolate between different category colors and stay stable within one category.
+- Switch between CoverFlow, category shelves and list. Search and favorites/recent filters must
+  retain the complete underlying library. Open the active card and verify its original material,
+  mosaic, text and contact details; neighboring cards and thumbnails must remain static.
+- Create and edit a category's name, icon, flat color and two-color gradient. Reorder categories,
+  move cards and reorder them with both drag handles and buttons. Deleting a category must leave
+  its cards available without a category. Restart and verify all confirmed organization changes.
+- Receive an update to an existing contact and edit its note. Its ID, category, manual position
+  and favorite state must remain attached. Clear the library and Undo; repeat with a new arrival
+  after clear and confirm neither that card nor restored notes/appearance are lost. Exercise
+  storage-failure and Undo-retry paths without duplicate restored IDs.
+- Rotate with a received-card viewer open on its front and QR back, while paused. The selected
+  card, visible face and pause must survive. Rotate with an unsaved category draft and custom
+  color selection; preserve the draft without committing it on cancellation.
+- In landscape, the immersive viewer must use the largest card that fits the available height
+  and width while retaining the physical width/height ratio, approximately 1.586. Its 112 dp
+  control rail contains QR, Close and movement controls; neither controls nor joystick may cover
+  the card. Verify display cutouts, transient system bars, small windows and restoration of
+  system-bar behavior after closing. CoverFlow uses an inset-aware lateral rail in landscape.
+- Check 48 dp targets, TalkBack descriptions and ordering, light/dark themes, 200% font scale and
+  disabled system animations. Only the active, uncovered card should animate or read sensors;
+  shelves, neighbors and organizer thumbnails stay still. Test real sensor sensitivity separately.
 
 ## NFC device checks
 
@@ -210,6 +275,6 @@ screenshots per language and [`store/play-listing.md`](store/play-listing.md), w
 copy, the release notes and the App content answers. `store/screenshots/readme/` keeps the
 downsized copies of the original overview images. The [appearance review gallery](store/screenshots/review/README.md)
 keeps unedited full-resolution Android captures of the newer card UI. The
-[materials and QR evidence gallery](store/screenshots/materials-qr/README.md) records the current
+[materials and QR evidence gallery](store/screenshots/materials-qr/README.md) records the historical
 `dd9c3a5` emulator run and its eleven raw captures. `docs/` is published by GitHub Pages and is for
 the privacy policy only.

@@ -142,7 +142,7 @@ private fun ContactCardFace(
     val accent = profile.card.accent.toComposeColor()
     val details = profile.details()
 
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth(), propagateMinConstraints = true) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

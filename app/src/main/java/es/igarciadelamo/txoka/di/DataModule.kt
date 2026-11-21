@@ -9,15 +9,20 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import es.igarciadelamo.txoka.data.library.DataStoreLibraryOrganizationRepository
 import es.igarciadelamo.txoka.data.profile.DataStoreProfileRepository
 import es.igarciadelamo.txoka.data.profile.DataStoreShareSettingsRepository
 import es.igarciadelamo.txoka.data.profile.TelephonyRegionSource
+import es.igarciadelamo.txoka.domain.library.LibraryOrganizationRepository
 import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.ShareSettingsRepository
 import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import javax.inject.Singleton
 
 private val Context.profileDataStore: DataStore<Preferences> by preferencesDataStore(name = "profile")
+private val Context.libraryOrganizationDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "library_organization",
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,6 +40,11 @@ object DataModule {
     @Singleton
     fun provideShareSettingsRepository(dataStore: DataStore<Preferences>): ShareSettingsRepository =
         DataStoreShareSettingsRepository(dataStore)
+
+    @Provides
+    @Singleton
+    fun provideLibraryOrganizationRepository(@ApplicationContext context: Context): LibraryOrganizationRepository =
+        DataStoreLibraryOrganizationRepository(context.libraryOrganizationDataStore)
 
     @Provides
     @Singleton

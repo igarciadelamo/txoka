@@ -3,6 +3,7 @@ package es.igarciadelamo.txoka.data.received
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -10,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface ReceivedContactDao {
     @Query("SELECT * FROM received_contacts ORDER BY receivedAt DESC")
     fun observeAll(): Flow<List<ReceivedContactEntity>>
+
+    @Query("SELECT * FROM received_contacts ORDER BY receivedAt DESC")
+    suspend fun getAll(): List<ReceivedContactEntity>
 
     @Query("SELECT * FROM received_contacts WHERE id = :id")
     fun observe(id: Long): Flow<ReceivedContactEntity?>
@@ -34,6 +38,9 @@ interface ReceivedContactDao {
     @Insert
     suspend fun insert(contact: ReceivedContactEntity): Long
 
+    @Insert
+    suspend fun insertAll(contacts: List<ReceivedContactEntity>)
+
     /** Replaces every column of the row, so callers keep the local note. */
     @Update
     suspend fun updateCard(card: ReceivedContactEntity)
@@ -46,4 +53,11 @@ interface ReceivedContactDao {
 
     @Query("DELETE FROM received_contacts")
     suspend fun deleteAll()
+
+    @Transaction
+    suspend fun deleteAllReturning(): List<ReceivedContactEntity> {
+        val removed = getAll()
+        deleteAll()
+        return removed
+    }
 }

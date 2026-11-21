@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.data.received
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -109,6 +110,37 @@ class ReceivedContactDaoTest {
         dao.deleteAll()
 
         assertTrue(dao.observeAll().first().isEmpty())
+    }
+
+    @Test
+    fun clearReturnsExactRowsAndBulkRestoreKeepsTheirOriginalIds() = runTest {
+        dao.insert(entity(name = "Marta", receivedAt = 1L))
+        dao.insert(entity(name = "Ana", receivedAt = 2L))
+        val expected = dao.getAll()
+
+        val removed = dao.deleteAllReturning()
+        assertEquals(expected, removed)
+        assertTrue(dao.getAll().isEmpty())
+        val incoming = dao.insert(entity(name = "New arrival", receivedAt = 3L))
+        dao.insertAll(removed)
+
+        assertEquals(expected.toSet(), dao.getAll().filterNot { it.id == incoming }.toSet())
+        assertEquals(3, dao.getAll().size)
+    }
+
+    @Test
+    fun bulkRestoreRollsBackEarlierRowsWhenALaterIdConflicts() = runTest {
+        val id = dao.insert(entity(name = "Marta"))
+        val existing = requireNotNull(dao.observe(id).first())
+        val firstInBatch = entity(name = "Ana").copy(id = 73)
+
+        try {
+            dao.insertAll(listOf(firstInBatch, existing))
+            throw AssertionError("Expected duplicate primary key")
+        } catch (_: SQLiteConstraintException) {
+            assertNull(dao.observe(firstInBatch.id).first())
+            assertEquals(listOf(existing), dao.getAll())
+        }
     }
 
     private fun entity(

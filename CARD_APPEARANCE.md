@@ -50,6 +50,31 @@ does not imply a contrast guarantee. Check legibility over every selected mosaic
 The physical reference is ISO ID-1, 85.60 × 53.98 mm, approximately 1.586:1. This is not the golden
 ratio. Accessibility may require extra height when large text or long contact details need it.
 
+## Private library presentation
+
+Received cards reuse their stored contact and appearance in three views: Cover Flow by default,
+category shelves, and a searchable list. The active Cover Flow card faces forward; neighbouring
+cards are angled static previews. Swiping snaps to a card, with explicit previous/next controls as
+an alternative. Only the active visible card runs motion/effects. Opening it uses the same
+full-screen renderer and generates the QR from that selected contact and supported appearance.
+
+Categories are private organisation, distinct from the card's mosaic catalogue categories. A
+library category has a name, icon and flat or two-colour gradient background. Its colours drive
+the Cover Flow backdrop: fractional pager movement interpolates between neighbouring categories,
+with no colour change between cards in the same category. Category editing previews the draft
+locally before confirmation; cards and categories can be reordered, cards moved and favourites set.
+
+`library_organization` is a separate preferences DataStore for categories, ordering, assignments,
+favourites and view mode. This revision adds no Room schema change and no profile, NFC or QR
+field. Library category names, icons and colours, card order and favourites never enter STYLE,
+legacy accent fields or the contact vCard. The 768-byte NDEF and 2,048-byte QR budgets are unchanged.
+
+Portrait and landscape keep the ISO ID-1 ratio. The immersive landscape viewer fits the card to
+the available height and places movement, QR and close controls in a compact side rail. Rotation
+must preserve the selected card, open viewer, playback state and category draft. These are UI
+requirements; native results recorded below cover the earlier materials/QR source, not this
+library and immersive-viewer revision.
+
 ## Transport and byte budget
 
 The first NDEF record remains MIME `text/vcard`, carrying vCard 3.0. The Android Application Record
@@ -210,15 +235,20 @@ These strings exclude the property's terminating CRLF.
 The codec suite enumerates all 3,801,600 valid background, corner, mosaic, effect and text
 combinations, including each new material with every optional-block combination. Its twenty
 independent goldens preserve the fourteen prior encodings and add minimum and maximum examples
-for each new background. On 21 November 2026 the current JVM run passed all 280 tests in
-43 suites, with zero failures, errors or skips. This includes unsigned selectors, canonical RGB,
+for each new background. On 21 November 2026 the materials/QR baseline at app source `dd9c3a5`
+passed all 280 JVM tests in 43 suites, with zero failures, errors or skips. This includes unsigned selectors, canonical RGB,
 malformed extension fallback, old vCards, escaped/folded Unicode, NDEF framing and the exact
 768/769-byte edge, real ZXing QR boundaries and QR-only save/HCE-clearing behaviour. The 21 pure
-material tests are included in the 280; the browser's separate 191 tests are not native tests.
+material tests are included in the 280. The separate browser source suite now has 208 passing
+Node cases, including library model and simulated-DOM interactions; it is not native testing or
+a browser visual check.
 Debug app/test APK compilation, Detekt, ktlint, the 95% coverage gate, debug/release lint and
 R8 release APK assembly passed.
 
-On the same date, app source `dd9c3a58464373776391f27a49dc8a3abc522a93` passed all 16 current
+Those native results remain tied to `dd9c3a5`. They do not establish that the subsequently added
+library or immersive landscape changes pass native gates; their results belong in `TESTING.md`.
+
+On the same date, app source `dd9c3a58464373776391f27a49dc8a3abc522a93` passed all 16 then-current
 repository instrumented tests on an Android 15 / API 35 Pixel 6 emulator, including persistence
 upgrades and native Canvas composition. One separate capture flow also passed: the raw
 AndroidJUnitRunner log records 17 passes, zero failures and zero errors; its XML summary is derived.

@@ -2,9 +2,11 @@ package es.igarciadelamo.txoka.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,7 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.ui.profile.AppearanceMotionControls
@@ -52,26 +57,12 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
-        CardViewerSystemBars()
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding()
-                .padding(Spacing.lg),
+                .background(MaterialTheme.colorScheme.background),
         ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextButton(onClick = { qrVisible = !qrVisible }, enabled = qrAvailable) {
-                    Text(stringResource(if (qrVisible) R.string.qr_back_to_card else R.string.qr_show))
-                }
-                IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
-                }
-            }
+            CardViewerSystemBars(immersive = maxWidth > maxHeight)
             CardViewerContent(
                 profile = profile,
                 motion = motion,
@@ -79,26 +70,49 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
                 qrVisible = qrVisible,
                 onQrVisibleChange = { qrVisible = it },
                 onPausedChange = { paused = it },
-                modifier = Modifier.weight(1f),
+                qrAvailable = qrAvailable,
+                onDismiss = onDismiss,
+                modifier = Modifier.fillMaxSize().safeDrawingPadding(),
             )
         }
     }
 }
 
 @Composable
-private fun CardViewerSystemBars() {
+private fun CardViewerSystemBars(immersive: Boolean) {
     val view = LocalView.current
     val window = (view.parent as? DialogWindowProvider)?.window ?: return
     val lightBackground = MaterialTheme.colorScheme.background.luminance() > .5f
-    DisposableEffect(window, view, lightBackground) {
+    DisposableEffect(window, view, lightBackground, immersive) {
         val controller = WindowCompat.getInsetsController(window, view)
         val previousStatusBars = controller.isAppearanceLightStatusBars
         val previousNavigationBars = controller.isAppearanceLightNavigationBars
+        val previousBehavior = controller.systemBarsBehavior
+        val insets = ViewCompat.getRootWindowInsets(view)
+        val statusWasVisible = insets?.isVisible(WindowInsetsCompat.Type.statusBars()) ?: true
+        val navigationWasVisible = insets?.isVisible(WindowInsetsCompat.Type.navigationBars()) ?: true
         controller.isAppearanceLightStatusBars = lightBackground
         controller.isAppearanceLightNavigationBars = lightBackground
+        if (immersive) {
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        }
         onDispose {
             controller.isAppearanceLightStatusBars = previousStatusBars
             controller.isAppearanceLightNavigationBars = previousNavigationBars
+            controller.systemBarsBehavior = previousBehavior
+            if (statusWasVisible) {
+                controller.show(WindowInsetsCompat.Type.statusBars())
+            } else {
+                controller.hide(WindowInsetsCompat.Type.statusBars())
+            }
+            if (navigationWasVisible) {
+                controller.show(WindowInsetsCompat.Type.navigationBars())
+            } else {
+                controller.hide(WindowInsetsCompat.Type.navigationBars())
+            }
         }
     }
 }
@@ -111,53 +125,122 @@ private fun CardViewerContent(
     qrVisible: Boolean,
     onQrVisibleChange: (Boolean) -> Unit,
     onPausedChange: (Boolean) -> Unit,
+    qrAvailable: Boolean,
+    onDismiss: () -> Unit,
     modifier: Modifier,
 ) {
-    BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        val landscape = maxWidth > maxHeight
-        val controlsWidth = 176.dp
-        val availableWidth = if (landscape) (maxWidth - controlsWidth - Spacing.md).coerceAtLeast(120.dp) else maxWidth
-        val availableHeight = if (landscape) maxHeight else (maxHeight - 112.dp).coerceAtLeast(80.dp)
-        val cardWidth = minOf(availableWidth, availableHeight * PHYSICAL_CARD_RATIO)
-        val card: @Composable () -> Unit = {
-            Column(
-                modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
-            ) {
-                ContactCard(
-                    profile = profile,
-                    motion = motion.motion,
-                    paused = paused,
-                    qrEnabled = true,
-                    qrVisible = qrVisible,
-                    onQrVisibleChange = onQrVisibleChange,
-                    showQrControls = false,
-                )
-            }
-        }
-        if (landscape) {
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        if (maxWidth > maxHeight) {
+            val controlsWidth = 112.dp
+            val availableWidth = (maxWidth - controlsWidth - Spacing.md - Spacing.sm * 2).coerceAtLeast(1.dp)
+            val availableHeight = (maxHeight - Spacing.xs * 2).coerceAtLeast(1.dp)
+            val cardWidth = minOf(availableWidth, availableHeight * PHYSICAL_CARD_RATIO)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                modifier = Modifier.fillMaxSize().padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                card()
-                AppearanceMotionControls(motion, paused, onPausedChange, modifier = Modifier.width(controlsWidth))
+                ViewerCard(
+                    profile,
+                    motion,
+                    paused,
+                    qrVisible,
+                    onQrVisibleChange,
+                    Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
+                )
+                Column(
+                    Modifier.width(controlsWidth).fillMaxHeight().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm, Alignment.CenterVertically),
+                ) {
+                    ViewerActions(qrVisible, qrAvailable, onQrVisibleChange, onDismiss)
+                    AppearanceMotionControls(motion, paused, onPausedChange, stacked = true)
+                }
             }
         } else {
             Column(
-                modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                modifier = Modifier.fillMaxSize().padding(Spacing.lg),
             ) {
-                ContactCard(
+                ViewerActions(qrVisible, qrAvailable, onQrVisibleChange, onDismiss)
+                PortraitViewer(
                     profile = profile,
-                    motion = motion.motion,
+                    motion = motion,
                     paused = paused,
-                    qrEnabled = true,
                     qrVisible = qrVisible,
-                    onQrVisibleChange = onQrVisibleChange,
-                    showQrControls = false,
+                    onQrChange = onQrVisibleChange,
+                    onPausedChange = onPausedChange,
+                    modifier = Modifier.weight(1f),
                 )
-                AppearanceMotionControls(motion, paused, onPausedChange)
             }
         }
+    }
+}
+
+@Composable
+private fun ViewerActions(
+    qrVisible: Boolean,
+    qrAvailable: Boolean,
+    onQrChange: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TextButton(
+            onClick = { onQrChange(!qrVisible) },
+            enabled = qrAvailable,
+            modifier = Modifier.weight(1f, fill = false),
+        ) {
+            Text(stringResource(if (qrVisible) R.string.qr_back_to_card else R.string.qr_show))
+        }
+        IconButton(onClick = onDismiss) {
+            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
+        }
+    }
+}
+
+@Composable
+private fun PortraitViewer(
+    profile: Profile,
+    motion: CardMotionController,
+    paused: Boolean,
+    qrVisible: Boolean,
+    onQrChange: (Boolean) -> Unit,
+    onPausedChange: (Boolean) -> Unit,
+    modifier: Modifier,
+) {
+    BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val availableHeight = (maxHeight - 112.dp).coerceAtLeast(80.dp)
+        val cardWidth = minOf(maxWidth, availableHeight * PHYSICAL_CARD_RATIO)
+        Column(
+            Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            ViewerCard(profile, motion, paused, qrVisible, onQrChange, Modifier.fillMaxWidth())
+            AppearanceMotionControls(motion, paused, onPausedChange)
+        }
+    }
+}
+
+@Composable
+private fun ViewerCard(
+    profile: Profile,
+    motion: CardMotionController,
+    paused: Boolean,
+    qrVisible: Boolean,
+    onQrChange: (Boolean) -> Unit,
+    modifier: Modifier,
+) {
+    Box(modifier) {
+        ContactCard(
+            profile = profile,
+            motion = motion.motion,
+            paused = paused,
+            qrEnabled = true,
+            qrVisible = qrVisible,
+            onQrVisibleChange = onQrChange,
+            showQrControls = false,
+        )
     }
 }

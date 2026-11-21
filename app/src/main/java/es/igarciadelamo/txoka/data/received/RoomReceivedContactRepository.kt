@@ -9,7 +9,6 @@ import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.domain.received.SaveResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -45,14 +44,11 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         dao.delete(id)
     }
 
-    override suspend fun deleteAll(): List<ReceivedContact> {
-        val removed = dao.observeAll().first().map { contact -> contact.toDomain() }
-        dao.deleteAll()
-        return removed
-    }
+    override suspend fun deleteAll(): List<ReceivedContact> =
+        dao.deleteAllReturning().map { contact -> contact.toDomain() }
 
     override suspend fun restore(contacts: List<ReceivedContact>) {
-        contacts.forEach { contact -> dao.insert(contact.toEntity()) }
+        dao.insertAll(contacts.map { contact -> contact.toEntity() })
     }
 
     /**
@@ -82,6 +78,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
     )
 
     private fun ReceivedContact.toEntity(): ReceivedContactEntity = ReceivedContactEntity(
+        id = id,
         name = name,
         phone = phone,
         email = email,
