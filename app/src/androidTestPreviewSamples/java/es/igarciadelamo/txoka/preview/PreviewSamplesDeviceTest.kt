@@ -28,11 +28,14 @@ class PreviewSamplesDeviceTest {
     @Before
     fun setUp() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        directory = File(instrumentation.context.cacheDir, "preview-samples-${UUID.randomUUID()}")
+        directory = File(instrumentation.targetContext.cacheDir, "preview-samples-${UUID.randomUUID()}")
         isolatedContext = object : ContextWrapper(instrumentation.targetContext) {
             override fun getApplicationContext(): Context = this
 
-            override fun getDatabasePath(name: String): File = File(directory, "databases/$name")
+            override fun getDatabasePath(name: String): File {
+                val path = File(name)
+                return if (path.isAbsolute) path else File(directory, "databases/$name")
+            }
 
             override fun getNoBackupFilesDir(): File = File(directory, "no_backup")
 
