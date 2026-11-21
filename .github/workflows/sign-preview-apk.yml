@@ -1,0 +1,121 @@
+name: Sign preview APK
+
+on:
+  workflow_run:
+    workflows: [Preview APK]
+    types: [completed]
+
+concurrency:
+  group: preview-sign-${{ github.event.workflow_run.head_repository.id }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+jobs:
+  policy:
+    name: Validate the completed preview build
+    if: >-
+      github.repository == 'igarciadelamo/txoka' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      eligible: ${{ steps.resolve.outputs.eligible }}
+      pr: ${{ steps.resolve.outputs.pr }}
+      sha: ${{ steps.resolve.outputs.sha }}
+      artifact_id: ${{ steps.resolve.outputs.artifact_id }}
+      artifact_digest: ${{ steps.resolve.outputs.artifact_digest }}
+      signed_artifact_name: ${{ steps.resolve.outputs.signed_artifact_name }}
+    steps:
+      - name: Check out only the trusted workflow commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Resolve and validate the run, PR and immutable artifact
+        id: resolve
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PREVIEW_RUN_ID: ${{ github.event.workflow_run.id }}
+          PREVIEW_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: >-
+          python3 scripts/ci/preview_apk.py resolve
+          --run-id "$PREVIEW_RUN_ID" --attempt "$PREVIEW_RUN_ATTEMPT"
+
+  sign:
+    name: Sign the isolated preview APK
+    needs: policy
+    if: needs.policy.outputs.eligible == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PREVIEW_RUN_ID: ${{ github.event.workflow_run.id }}
+      PREVIEW_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      PREVIEW_ARTIFACT_ID: ${{ needs.policy.outputs.artifact_id }}
+      PREVIEW_ARTIFACT_DIGEST: ${{ needs.policy.outputs.artifact_digest }}
+    steps:
+      - name: Check out only the trusted workflow commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Set up JDK 21
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: ""
+          log-accepted-android-sdk-licenses: false
+      - name: Install the pinned signing tools
+        run: |
+          sdkmanager 'cmdline-tools;23.0'
+          "$ANDROID_HOME/cmdline-tools/23.0/bin/sdkmanager" 'build-tools;37.0.0'
+      - name: Revalidate, download, inspect and sign the candidate
+        id: sign
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SIGNER_SHA: ${{ github.workflow_sha }}
+          PREVIEW_KEYSTORE_B64: ${{ secrets.PREVIEW_KEYSTORE_B64 }}
+          PREVIEW_KEYSTORE_PASSWORD: ${{ secrets.PREVIEW_KEYSTORE_PASSWORD }}
+        run: >-
+          python3 scripts/ci/preview_apk.py sign
+          --run-id "$PREVIEW_RUN_ID" --attempt "$PREVIEW_RUN_ATTEMPT"
+          --artifact-id "$PREVIEW_ARTIFACT_ID" --artifact-digest "$PREVIEW_ARTIFACT_DIGEST"
+          --build-tools "$ANDROID_HOME/build-tools/37.0.0" --output preview-signed
+      - name: Check the live PR immediately before publication
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          python3 scripts/ci/preview_apk.py guard
+          --run-id "$PREVIEW_RUN_ID" --attempt "$PREVIEW_RUN_ATTEMPT"
+          --artifact-id "$PREVIEW_ARTIFACT_ID" --artifact-digest "$PREVIEW_ARTIFACT_DIGEST"
+      - name: Upload the signed preview and verification metadata
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ needs.policy.outputs.signed_artifact_name }}
+          path: |
+            preview-signed/txoka-pr-*.apk
+            preview-signed/SHA256SUMS
+            preview-signed/manifest.json
+            preview-signed/README.txt
+          if-no-files-found: error
+          retention-days: 14
+      - name: Link the signed download
+        env:
+          PREVIEW_DOWNLOAD_URL: ${{ steps.upload.outputs.artifact-url }}
+          PREVIEW_PR: ${{ needs.policy.outputs.pr }}
+          PREVIEW_SOURCE_SHA: ${{ needs.policy.outputs.sha }}
+          PREVIEW_CERTIFICATE: ${{ steps.sign.outputs.certificate_sha256 }}
+          PREVIEW_APK_SHA256: ${{ steps.sign.outputs.apk_sha256 }}
+        run: |
+          printf '### Txoka PR #%s\n\nSource: `%s`\n\nPackage: `es.igarciadelamo.txoka.preview`\n\nCertificate SHA-256: `%s`\n\nAPK SHA-256: `%s`\n\n[Download the signed preview](%s)\n' \
+            "$PREVIEW_PR" "$PREVIEW_SOURCE_SHA" "$PREVIEW_CERTIFICATE" "$PREVIEW_APK_SHA256" "$PREVIEW_DOWNLOAD_URL" \
+            >> "$GITHUB_STEP_SUMMARY"

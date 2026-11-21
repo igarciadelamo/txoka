@@ -1,5 +1,9 @@
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.process.ExecOperations
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
+import javax.inject.Inject
 
 // Release signing lives outside the repository: create `keystore.properties` at the project root
 // with storeFile (relative to the root), storePassword, keyAlias and keyPassword. Without it the
@@ -20,6 +24,51 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
     alias(libs.plugins.ktlint)
+}
+
+abstract class GeneratePreviewSamplesTask : DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceDirectory: DirectoryProperty
+
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val schemaDirectory: DirectoryProperty
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val generator: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @get:Inject
+    abstract val execOperations: ExecOperations
+
+    @TaskAction
+    fun generate() {
+        execOperations.exec {
+            commandLine(
+                "python3",
+                generator.get().asFile,
+                "--database-source",
+                sourceDirectory.file("es/igarciadelamo/txoka/data/received/TxokaDatabase.kt").get().asFile,
+                "--schema-directory",
+                schemaDirectory.get().asFile,
+                "--appearance-source",
+                sourceDirectory.file("es/igarciadelamo/txoka/domain/profile/CardAppearance.kt").get().asFile,
+                "--output",
+                outputDirectory.dir("preview-samples").get().asFile,
+            )
+        }
+    }
+}
+
+val generatePreviewSamples = tasks.register<GeneratePreviewSamplesTask>("generatePreviewSamples") {
+    sourceDirectory.set(layout.projectDirectory.dir("src/main/java"))
+    schemaDirectory.set(layout.projectDirectory.dir("schemas/es.igarciadelamo.txoka.data.received.TxokaDatabase"))
+    generator.set(rootProject.layout.projectDirectory.file("scripts/ci/preview_samples.py"))
+    outputDirectory.set(layout.buildDirectory.dir("generated/previewSamples/assets"))
 }
 
 android {
@@ -59,6 +108,14 @@ android {
                 packageScope = setOf("androidx.**")
             }
         }
+        create("preview") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".preview"
+            versionNameSuffix = "-preview"
+            // PR builds are signed separately and must never inherit a local release key.
+            signingConfig = null
+            matchingFallbacks += listOf("release")
+        }
     }
 
     compileOptions {
@@ -69,6 +126,29 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("preview")) { variant ->
+        variant.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
+    }
+    onVariants(selector().withBuildType("preview")) { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            generatePreviewSamples,
+            GeneratePreviewSamplesTask::outputDirectory,
+        )
+    }
+    onVariants(selector().withBuildType("debug")) { variant ->
+        // Exercise the preview installer in the test APK without adding it to the debug app.
+        variant.deviceTests.values.forEach { test ->
+            test.sources.java?.addStaticSourceDirectory("src/preview/java")
+            test.sources.java?.addStaticSourceDirectory("src/androidTestPreviewSamples/java")
+            test.sources.assets?.addGeneratedSourceDirectory(
+                generatePreviewSamples,
+                GeneratePreviewSamplesTask::outputDirectory,
+            )
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 package es.igarciadelamo.txoka.domain.protocol
 
-import es.igarciadelamo.txoka.BuildConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -38,8 +37,8 @@ class NdefMessageTest {
     }
 
     @Test
-    fun `names the package the app is built with`() {
-        assertEquals(BuildConfig.APPLICATION_ID, NdefMessage.APP_PACKAGE)
+    fun `always names the official receiver package including in preview builds`() {
+        assertEquals("es.igarciadelamo.txoka", NdefMessage.APP_PACKAGE)
     }
 
     @Test

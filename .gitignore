@@ -13,3 +13,8 @@ keystore.properties
 *.p12
 .DS_Store
 .aider*
+__pycache__/
+*.py[cod]
+/security-reports/
+/preview-unsigned/
+/preview-signed/
