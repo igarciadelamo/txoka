@@ -1,9 +1,9 @@
 package es.igarciadelamo.txoka.domain.profile
 
 /**
- * What the editor accepts per field. A card has to fit in a 768-byte Type 4 Tag file and the vCard
- * escapes and folds long values, so these caps keep a normal card far below the budget; the encoded
- * size is still checked before saving because the caps alone cannot bound multibyte text.
+ * What the editor accepts per field. The encoded UTF-8 vCard is also checked against the QR budget
+ * before saving because escaping, folding and multibyte text affect its size. NFC has a smaller,
+ * independent budget, so some saved cards can only be shared by QR.
  */
 object ProfileLimits {
     const val NAME = 64

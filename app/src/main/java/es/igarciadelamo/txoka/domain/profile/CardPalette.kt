@@ -1,10 +1,10 @@
 package es.igarciadelamo.txoka.domain.profile
 
 /**
- * Two-colour gradient used to render a contact card. The second colour is always stored
- * explicitly so every device renders the same card, whichever version it runs.
+ * Legacy colours remain the fallback for readers that do not understand [appearance].
+ * A null appearance preserves the original gradient and automatic text contrast.
  */
-data class CardPalette(val accent: RgbColor, val accent2: RgbColor) {
+data class CardPalette(val accent: RgbColor, val accent2: RgbColor, val appearance: CardAppearance? = null) {
     companion object {
         // Both stops are dark enough for white text at 4.5:1 or better.
         val Default = CardPalette(

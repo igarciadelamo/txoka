@@ -9,17 +9,17 @@ permalink: /privacy/
 Applies to Txoka for Android, distributed on Google Play. This page is the policy URL declared in
 Play Console and must stay publicly reachable without a login.
 
-Last updated: 11 November 2026
+Last updated: 20 November 2026
 
 ## English
 
-Txoka shares a contact card between two phones over NFC and keeps the cards you receive. It is
-local-first: there is no account and no server.
+Txoka shares a contact card over NFC or QR and keeps the cards you receive. It is local-first:
+there is no account and no server.
 
 ### What the app stores on your phone
 
-- The card you create: name, phone, email, LinkedIn handle, Instagram handle and the two colours of
-  the card.
+- The card you create: name, phone, email, LinkedIn handle, Instagram handle and the card's colours
+  and supported appearance settings.
 - Your sharing preferences, such as requiring the device to be unlocked before sharing.
 - The cards you receive: the same fields as above, plus the date you received them and any note you
   add.
@@ -27,15 +27,27 @@ local-first: there is no account and no server.
 ### What the app does not do
 
 - It has no account and no sign-up.
-- It has no `INTERNET` permission, so it cannot send anything anywhere.
+- It has no `INTERNET` permission and makes no network connections. NFC and QR intentionally share
+  contact details directly with another person.
 - It has no analytics, advertising, crash reporting or tracking.
-- It bundles no third-party SDK that collects data. The libraries it uses (AndroidX, Hilt, Room,
-  libphonenumber, kotlinx) run locally.
+- It bundles no third-party SDK that collects data. The libraries it uses (AndroidX, CameraX, Hilt,
+  Room, libphonenumber, kotlinx and bundled ZXing) run locally.
 
 ### NFC
 
 Cards travel directly from one phone to another over NFC. Nothing passes through a server, and the
 other phone stores the card only if its owner accepts it.
+
+### QR and camera access
+
+QR codes contain the contact fields and supported card appearance, without private notes you add
+to received cards. Another scanner may import the basic contact without its appearance.
+
+Txoka asks for camera permission only when you choose "Use camera". Camera scanning is optional;
+you can instead select a QR image through the system file picker without camera or storage
+permission. Camera frames and selected images are decoded entirely on your device. Txoka does
+not persist or upload those raw frames or images. A decoded contact is stored in Txoka only after
+you confirm that you want to save it. Camera and NFC hardware are optional.
 
 ### Android backup
 
@@ -66,28 +78,42 @@ Isidro García — isidro.garcia@gmail.com
 
 ## Español
 
-Txoka comparte una tarjeta de contacto entre dos teléfonos por NFC y guarda las tarjetas que
-recibes. Es local-first: no hay cuenta ni servidor.
+Txoka comparte una tarjeta de contacto por NFC o QR y guarda las tarjetas que recibes. Es
+local-first: no hay cuenta ni servidor.
 
 ### Qué guarda la app en tu teléfono
 
-- La tarjeta que creas: nombre, teléfono, email, usuario de LinkedIn, usuario de Instagram y los dos
-  colores de la tarjeta.
+- La tarjeta que creas: nombre, teléfono, email, usuario de LinkedIn, usuario de Instagram y los
+  colores y ajustes de apariencia compatibles de la tarjeta.
 - Tus preferencias de compartición, como exigir que el dispositivo esté desbloqueado para compartir.
 - Las tarjetas que recibes: los mismos campos, más la fecha de recepción y la nota que añadas.
 
 ### Qué no hace la app
 
 - No tiene cuenta ni registro.
-- No tiene permiso de `INTERNET`, así que no puede enviar nada a ningún sitio.
+- No tiene permiso de `INTERNET` ni realiza conexiones de red. NFC y QR permiten compartir los
+  datos de contacto directamente con otra persona.
 - No tiene analítica, publicidad, informes de fallos ni rastreo.
-- No incluye ningún SDK de terceros que recoja datos. Las librerías que usa (AndroidX, Hilt, Room,
-  libphonenumber, kotlinx) funcionan en local.
+- No incluye ningún SDK de terceros que recoja datos. Las librerías que usa (AndroidX, CameraX,
+  Hilt, Room, libphonenumber, kotlinx y ZXing integrado) funcionan en local.
 
 ### NFC
 
 Las tarjetas viajan directamente de un teléfono a otro por NFC. Nada pasa por un servidor, y el otro
 teléfono solo guarda la tarjeta si su dueño la acepta.
+
+### QR y acceso a la cámara
+
+Los códigos QR contienen los campos de contacto y la apariencia compatible de la tarjeta, sin las
+notas privadas que añadas a las tarjetas recibidas. Otro lector puede importar el contacto básico
+sin su apariencia.
+
+Txoka solo pide permiso de cámara cuando eliges «Usar cámara». El escaneo con cámara es opcional;
+también puedes seleccionar una imagen QR con el selector de archivos del sistema, sin permiso de
+cámara ni de almacenamiento. Los fotogramas de la cámara y las imágenes seleccionadas se
+descodifican íntegramente en tu dispositivo. Txoka no guarda ni sube esos fotogramas o imágenes
+originales. Un contacto descodificado solo se guarda en Txoka cuando confirmas que quieres
+guardarlo. La cámara y el hardware NFC son opcionales.
 
 ### Copia de seguridad de Android
 

@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.domain.protocol
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearanceCodec
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.profile.SocialHandle
@@ -25,6 +26,7 @@ object VCardSerializer {
     private const val PROPERTY_PROTOCOL = "X-TXOKA-PROTOCOL"
     private const val PROPERTY_ACCENT = "X-TXOKA-CARD-ACCENT"
     private const val PROPERTY_ACCENT2 = "X-TXOKA-CARD-ACCENT2"
+    private const val PROPERTY_STYLE = "X-TXOKA-STYLE"
     private const val PROPERTY_SOCIAL = "X-SOCIALPROFILE"
     private const val PROPERTY_URL = "URL"
 
@@ -43,6 +45,9 @@ object VCardSerializer {
             add("$PROPERTY_PROTOCOL:${payload.protocolVersion}")
             add("$PROPERTY_ACCENT:${payload.palette.accent.hex}")
             add("$PROPERTY_ACCENT2:${payload.palette.accent2.hex}")
+            payload.palette.appearance?.let { appearance ->
+                add("$PROPERTY_STYLE:${CardAppearanceCodec.encode(appearance)}")
+            }
             add("END:VCARD")
         }
         return lines.joinToString(separator = CRLF, postfix = CRLF) { line -> fold(line) }
@@ -83,6 +88,13 @@ object VCardSerializer {
     }
 
     private fun palette(properties: List<Property>): CardPalette {
+        val fallback = legacyPalette(properties)
+        val styles = properties.filter { it.name == PROPERTY_STYLE }
+        val style = styles.singleOrNull()?.takeIf { it.params.isEmpty() }?.value?.let(CardAppearanceCodec::decode)
+        return fallback.copy(appearance = style)
+    }
+
+    private fun legacyPalette(properties: List<Property>): CardPalette {
         val accent = properties.firstOrNull { it.name == PROPERTY_ACCENT }
             ?.value
             ?.let(RgbColor::parse)
@@ -172,7 +184,7 @@ object VCardSerializer {
         return Property(
             name = name,
             params = parts.drop(1).map { param -> param.trim().uppercase() },
-            value = unescape(line.substring(colon + 1)),
+            value = line.substring(colon + 1).let { value -> if (name == PROPERTY_STYLE) value else unescape(value) },
         )
     }
 

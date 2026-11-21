@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.data.received
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearanceCodec
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
@@ -77,6 +78,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         receivedAt = System.currentTimeMillis(),
         accentHex = palette.accent.hex,
         accent2Hex = palette.accent2.hex,
+        appearance = palette.appearance?.let(CardAppearanceCodec::encode),
     )
 
     private fun ReceivedContact.toEntity(): ReceivedContactEntity = ReceivedContactEntity(
@@ -91,6 +93,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         receivedAt = receivedAt,
         accentHex = card.accent.hex,
         accent2Hex = card.accent2.hex,
+        appearance = card.appearance?.let(CardAppearanceCodec::encode),
     )
 
     private fun ReceivedContactEntity.toDomain(): ReceivedContact = ReceivedContact(
@@ -105,6 +108,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         card = CardPalette(
             accent = RgbColor.parse(accentHex) ?: CardPalette.Default.accent,
             accent2 = RgbColor.parse(accent2Hex) ?: CardPalette.Default.accent2,
+            appearance = appearance?.let(CardAppearanceCodec::decode),
         ),
     )
 }

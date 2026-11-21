@@ -1,6 +1,8 @@
 package es.igarciadelamo.txoka.ui.profile
 
 import es.igarciadelamo.txoka.domain.profile.CardPalette
+import es.igarciadelamo.txoka.domain.protocol.NdefMessage
+import es.igarciadelamo.txoka.domain.protocol.QrVCardCodec
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -50,7 +52,7 @@ class ProfileEditorUiStateTest {
     }
 
     @Test
-    fun `blocks a card that does not fit in the tag`() {
+    fun `allows a QR-only card above the NFC budget`() {
         val oversized = ProfileEditorUiState(
             name = "😀".repeat(64),
             phone = "+34600123456",
@@ -60,8 +62,22 @@ class ProfileEditorUiStateTest {
         )
 
         assertTrue(oversized.hasContact)
-        assertTrue(oversized.cardTooLarge)
-        assertFalse(oversized.canSave)
+        assertFalse(oversized.ndefFits)
+        assertTrue(oversized.ndefByteSize > NdefMessage.MAX_MESSAGE_BYTES)
+        assertTrue(oversized.qrFits)
+        assertTrue(oversized.qrByteSize <= QrVCardCodec.MAX_QR_VCARD_BYTES)
+        assertFalse(oversized.cardTooLarge)
+        assertTrue(oversized.canSave)
         assertFalse(ProfileEditorUiState(name = "Ana", email = "ana@example.com").cardTooLarge)
+    }
+
+    @Test
+    fun `blocks a card above the independent QR budget`() {
+        val state = ProfileEditorUiState(name = "界".repeat(800), email = "ana@example.com")
+
+        assertFalse(state.ndefFits)
+        assertFalse(state.qrFits)
+        assertTrue(state.cardTooLarge)
+        assertFalse(state.canSave)
     }
 }

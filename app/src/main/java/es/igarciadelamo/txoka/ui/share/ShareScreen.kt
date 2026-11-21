@@ -31,6 +31,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -51,13 +56,13 @@ import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.nfc.NfcStatus
 import es.igarciadelamo.txoka.nfc.ShareRoleState
 import es.igarciadelamo.txoka.ui.components.CardLayout
+import es.igarciadelamo.txoka.ui.components.CardMotion
+import es.igarciadelamo.txoka.ui.components.CardViewer
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
-import es.igarciadelamo.txoka.ui.components.cardContentColor
-import es.igarciadelamo.txoka.ui.components.cardOverlayTint
 import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -78,6 +83,7 @@ fun ShareScreen(
     onCancelReturn: () -> Unit,
     modifier: Modifier = Modifier,
     cardTooLarge: Boolean = false,
+    onScanQr: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -118,7 +124,7 @@ fun ShareScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 if (profile == null) {
-                    EmptyHub(onCreateCard = onCreateCard)
+                    EmptyHub(onCreateCard = onCreateCard, onScanQr = onScanQr)
                 } else {
                     HubContent(
                         profile = profile,
@@ -127,6 +133,7 @@ fun ShareScreen(
                         cardTooLarge = cardTooLarge,
                         nfc = nfc,
                         onEditProfile = onEditProfile,
+                        onScanQr = onScanQr,
                         onRoleSelected = onRoleSelected,
                         onCancelReturn = onCancelReturn,
                         onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
@@ -147,33 +154,38 @@ private fun HubContent(
     cardTooLarge: Boolean,
     nfc: NfcStatus,
     onEditProfile: () -> Unit,
+    onScanQr: () -> Unit,
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
 ) {
+    var viewerOpen by rememberSaveable { mutableStateOf(false) }
+    if (viewerOpen) CardViewer(profile = profile, onDismiss = { viewerOpen = false })
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
         Column {
-            Eyebrow(text = stringResource(R.string.hub_your_card))
-            Box(modifier = Modifier.padding(top = Spacing.sm)) {
-                ContactCard(
-                    profile = profile,
-                    layout = CardLayout.Hero,
-                )
-                IconButton(
-                    onClick = onEditProfile,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(Spacing.lg)
-                        .clip(CircleShape)
-                        .background(profile.cardOverlayTint().copy(alpha = 0.18f)),
-                ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Eyebrow(text = stringResource(R.string.hub_your_card), modifier = Modifier.weight(1f))
+                IconButton(onClick = onEditProfile) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
                         contentDescription = stringResource(R.string.action_edit_card),
-                        tint = profile.cardContentColor(),
+                    )
+                }
+                IconButton(onClick = { viewerOpen = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_expand),
+                        contentDescription = stringResource(R.string.card_viewer_open),
                     )
                 }
             }
+            ContactCard(
+                profile = profile,
+                qrEnabled = true,
+                modifier = Modifier.padding(top = Spacing.sm),
+                layout = CardLayout.Hero,
+                motion = if (viewerOpen) CardMotion() else null,
+                paused = viewerOpen,
+            )
         }
         SharingModule(
             role = role,
@@ -183,6 +195,7 @@ private fun HubContent(
             onRoleSelected = onRoleSelected,
             onCancelReturn = onCancelReturn,
             onOpenNfcSettings = onOpenNfcSettings,
+            onScanQr = onScanQr,
         )
     }
 }
@@ -196,6 +209,7 @@ private fun SharingModule(
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
+    onScanQr: () -> Unit,
 ) {
     val extras = MaterialTheme.txoka
     val tint = if (nfc == NfcStatus.Enabled) MaterialTheme.colorScheme.primary else extras.warning
@@ -258,6 +272,7 @@ private fun SharingModule(
                 Text(text = stringResource(R.string.action_open_settings))
             }
         }
+        QrScanAction(onScanQr)
     }
 }
 
@@ -273,11 +288,11 @@ private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Bool
     when {
         nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
         nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
-        cardTooLarge -> stringResource(R.string.share_module_too_long_hint)
         role.returning && role.remainingSeconds > 0 ->
             stringResource(R.string.share_module_return_hint_countdown, role.remainingSeconds)
         role.returning -> stringResource(R.string.share_module_return_hint)
         role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
+        cardTooLarge -> stringResource(R.string.qr_nfc_too_large_hint)
         requireUnlock -> stringResource(R.string.share_module_unlock_hint)
         else -> stringResource(R.string.share_module_hint)
     }
@@ -333,7 +348,7 @@ private fun RoleOption(label: String, selected: Boolean, onClick: () -> Unit, mo
 }
 
 @Composable
-private fun EmptyHub(onCreateCard: () -> Unit) {
+private fun EmptyHub(onCreateCard: () -> Unit, onScanQr: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -357,6 +372,23 @@ private fun EmptyHub(onCreateCard: () -> Unit) {
             text = stringResource(R.string.action_create_card),
             onClick = onCreateCard,
             modifier = Modifier.padding(top = Spacing.md),
+        )
+        QrScanAction(onScanQr)
+    }
+}
+
+@Composable
+private fun QrScanAction(onScanQr: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        TextButton(onClick = onScanQr, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+            Text(stringResource(R.string.qr_scan))
+        }
+        Text(
+            text = stringResource(R.string.qr_offline_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
