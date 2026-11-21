@@ -55,8 +55,8 @@ internal object PreviewSampleInstaller {
             DataInputStream(temporary.inputStream()).use { it.readFully(header) }
             if (!header.contentEquals(SqliteHeader)) throw IOException("Invalid sample database header")
             if (hasDatabase(database)) throw FileAlreadyExistsException(database.path)
-            // A hard link publishes the complete file atomically and refuses an existing destination.
-            Files.createLink(database.toPath(), temporary.toPath())
+            // Publish the complete file before Room opens, without replacing an existing destination.
+            Files.move(temporary.toPath(), database.toPath())
         } finally {
             temporary.delete()
         }

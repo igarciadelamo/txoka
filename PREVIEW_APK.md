@@ -50,9 +50,10 @@ installer is first added by an update.
 The marker lives outside the database in `noBackupFilesDir`. Deleting individual samples, emptying
 the library or deleting its database does not repopulate it on the next launch. An interrupted or
 failed installation also keeps the marker and skips later attempts. The complete copied file is
-flushed and published with an atomic hard link that refuses an existing destination; an incomplete
-copy never replaces user data. Uninstalling the preview or clearing all its app data resets this
-one-time state.
+flushed, checked again for an existing database or sidecar, then moved within the same private
+directory without replacement. The provider completes publication before `Application.onCreate`
+and Room open the database in the app's default process. Incomplete copies stay unpublished and
+are removed. Uninstalling the preview or clearing all its app data resets this one-time state.
 
 `generatePreviewSamples` creates the fixture under `app/build/generated/previewSamples/assets`.
 It reads the version declared by the checked-out `TxokaDatabase` and selects that exact exported
