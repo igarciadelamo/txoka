@@ -11,6 +11,9 @@ internal val CardBackground.label: Int
     get() = when (this) {
         CardBackground.GRADIENT -> R.string.appearance_gradient
         CardBackground.HOLOGRAM -> R.string.appearance_hologram
+        CardBackground.STAINED_GLASS -> R.string.appearance_bg_stained_glass
+        CardBackground.NACRE -> R.string.appearance_bg_nacre
+        CardBackground.BRUSHED_METAL -> R.string.appearance_bg_brushed_metal
         CardBackground.FLAT -> R.string.appearance_flat
     }
 

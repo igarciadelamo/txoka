@@ -12,6 +12,7 @@ import es.igarciadelamo.txoka.domain.profile.ProfileLimits
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.profile.TextFinish
 import es.igarciadelamo.txoka.domain.profile.TextSize
+import es.igarciadelamo.txoka.domain.protocol.QrVCardCodec
 import es.igarciadelamo.txoka.domain.protocol.fitsInTag
 import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
@@ -298,7 +299,7 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
-    fun `refuses to save a card above the tag limit`() = runTest {
+    fun `saves a QR-only card above the tag limit without truncating contact or style`() = runTest {
         val repository = FakeProfileRepository()
         val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
 
@@ -307,6 +308,31 @@ class ProfileEditorViewModelTest {
         viewModel.onEmailChange("a".repeat(ProfileLimits.EMAIL - 5) + "@b.cd")
         viewModel.onLinkedInChange("a".repeat(ProfileLimits.HANDLE))
         viewModel.onInstagramChange("b".repeat(ProfileLimits.HANDLE))
+        viewModel.onCardChange(richCard())
+        viewModel.save()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        val saved = requireNotNull(repository.savedProfile)
+        assertFalse(state.ndefFits)
+        assertTrue(state.qrFits)
+        assertFalse(state.cardTooLarge)
+        assertTrue(state.canSave)
+        assertTrue(state.saved)
+        assertEquals("😀".repeat(ProfileLimits.NAME), saved.name)
+        assertEquals("a".repeat(ProfileLimits.EMAIL - 5) + "@b.cd", saved.email)
+        assertEquals(richCard(), saved.card)
+        assertFalse(saved.toVCardPayload().fitsInTag())
+        assertTrue(QrVCardCodec.fits(saved))
+    }
+
+    @Test
+    fun `refuses to save a loaded card above the QR limit`() = runTest {
+        val profile = Profile(name = "界".repeat(800), email = "ana@example.com")
+        val repository = FakeProfileRepository(profile)
+        val viewModel = ProfileEditorViewModel(repository, FakeSimRegionSource())
+        advanceUntilIdle()
+
         viewModel.save()
         advanceUntilIdle()
 
@@ -346,7 +372,7 @@ class ProfileEditorViewModelTest {
     }
 
     @Test
-    fun `budgets the canonical phone before saving a near-cap styled card`() = runTest {
+    fun `budgets the canonical phone and saves a near-NFC-cap styled card through QR`() = runTest {
         val card = richCard()
         val candidate = (40..64).asSequence().flatMap { length ->
             (1..115).asSequence().map { local ->
@@ -371,9 +397,12 @@ class ProfileEditorViewModelTest {
         viewModel.save()
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.cardTooLarge)
-        assertFalse(viewModel.uiState.value.canSave)
-        assertNull(repository.savedProfile)
+        assertFalse(viewModel.uiState.value.ndefFits)
+        assertTrue(viewModel.uiState.value.qrFits)
+        assertFalse(viewModel.uiState.value.cardTooLarge)
+        assertTrue(viewModel.uiState.value.canSave)
+        assertEquals("+34600123456", repository.savedProfile?.phone)
+        assertEquals(card, repository.savedProfile?.card)
     }
 
     private fun richCard(): CardPalette = CardPalette.Default.copy(

@@ -89,6 +89,13 @@ fun ProfileEditorScreen(
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(horizontal = Spacing.xl),
             )
+        } else if (!state.ndefFits) {
+            Text(
+                text = stringResource(R.string.qr_nfc_too_large_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = Spacing.xl),
+            )
         }
         BottomBar(canSave = state.canSave && !colourEditing, onSave = viewModel::save)
     }

@@ -90,6 +90,44 @@ fun ContactCard(
     layout: CardLayout = CardLayout.Hero,
     motion: CardMotion? = null,
     paused: Boolean = false,
+    qrEnabled: Boolean = false,
+    qrVisible: Boolean? = null,
+    onQrVisibleChange: ((Boolean) -> Unit)? = null,
+    showQrControls: Boolean = true,
+) {
+    if (qrEnabled && !placeholder) {
+        val qrMotion = motion ?: if (paused) CardMotion() else rememberCardMotionController().motion
+        CardQrFlip(
+            profile = profile,
+            modifier = modifier,
+            motion = qrMotion,
+            paused = paused,
+            qrVisible = qrVisible,
+            onQrVisibleChange = onQrVisibleChange,
+            showQrControls = showQrControls,
+        ) { faceModifier, facePaused ->
+            ContactCardFace(
+                profile,
+                faceModifier,
+                placeholder,
+                layout,
+                if (facePaused) CardMotion() else qrMotion,
+                facePaused,
+            )
+        }
+    } else {
+        ContactCardFace(profile, modifier, placeholder, layout, motion, paused)
+    }
+}
+
+@Composable
+private fun ContactCardFace(
+    profile: Profile,
+    modifier: Modifier,
+    placeholder: Boolean,
+    layout: CardLayout,
+    motion: CardMotion?,
+    paused: Boolean,
 ) {
     if (profile.card.appearance != null && !placeholder) {
         AppearanceContactCard(profile = profile, modifier = modifier, motion = motion, paused = paused)

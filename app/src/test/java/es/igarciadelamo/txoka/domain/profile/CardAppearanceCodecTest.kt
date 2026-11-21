@@ -15,7 +15,7 @@ class CardAppearanceCodecTest {
     private val dataColor = RgbColor(10, 11, 12)
 
     @Test
-    fun `matches the fourteen independent contract goldens`() {
+    fun `matches the twenty independent contract goldens`() {
         val independentText = CardAppearance(
             name = CardTextStyle(TextFinish.EMBOSSED, TextSize.S, RgbColor(0x12, 0x34, 0x56)),
             data = CardTextStyle(TextFinish.RAISED, TextSize.XL),
@@ -66,10 +66,35 @@ class CardAppearanceCodecTest {
             "edVz0wECAwQFBgcICQoLDA" to extendedMaximum.copy(
                 name = extendedMaximum.name.copy(finish = TextFinish.BUBBLE),
             ),
+            "AmgB" to CardAppearance(background = CardBackground.STAINED_GLASS),
+            "A2gB" to CardAppearance(background = CardBackground.NACRE),
+            "BGgB" to CardAppearance(background = CardBackground.BRUSHED_METAL),
+            "etRz0wECAwQFBgcICQoLDA" to extendedMaximum.copy(background = CardBackground.STAINED_GLASS),
+            "e9Rz0wECAwQFBgcICQoLDA" to extendedMaximum.copy(background = CardBackground.NACRE),
+            "fNRz0wECAwQFBgcICQoLDA" to extendedMaximum.copy(background = CardBackground.BRUSHED_METAL),
         )
         goldens.forEach { (encoded, appearance) ->
             assertEquals(appearance, CardAppearanceCodec.decode("1:$encoded"))
             assertEquals("1:$encoded", CardAppearanceCodec.encode(appearance))
+        }
+    }
+
+    @Test
+    fun `background wire identifiers remain explicit and leave five and seven unknown`() {
+        assertEquals(
+            mapOf(
+                CardBackground.GRADIENT to 0,
+                CardBackground.HOLOGRAM to 1,
+                CardBackground.STAINED_GLASS to 2,
+                CardBackground.NACRE to 3,
+                CardBackground.BRUSHED_METAL to 4,
+                CardBackground.FLAT to 6,
+            ),
+            CardBackground.entries.associateWith { it.wireId },
+        )
+        listOf(5, 7).forEach { background ->
+            assertNull(CardAppearanceCodec.decode(encoded(background, 0x68, 1)))
+            assertNull(CardAppearanceCodec.decode(encoded(background or 8, 0x68, 1, 1, 2, 3, 4, 5, 6)))
         }
     }
 
@@ -104,7 +129,7 @@ class CardAppearanceCodecTest {
 
     @Test
     fun `rejects every reserved field and flat four corner flag`() {
-        listOf(2, 3, 4, 5, 7, 0x80).forEach { assertNull(CardAppearanceCodec.decode(encoded(it, 0x68, 1))) }
+        listOf(5, 7, 0x80).forEach { assertNull(CardAppearanceCodec.decode(encoded(it, 0x68, 1))) }
         listOf(6, 7).forEach { finish ->
             assertNull(CardAppearanceCodec.decode(encoded(0, 0x68 or finish, 1)))
             assertNull(CardAppearanceCodec.decode(encoded(0, 0x40 or (finish shl 3), 1)))
@@ -154,15 +179,15 @@ class CardAppearanceCodecTest {
 
     @Test
     @Suppress("NestedBlockDepth")
-    fun `round trips all 1728000 flag combinations and matches independent length distribution`() {
+    fun `round trips all 3801600 flag combinations and matches independent length distribution`() {
         val histogram = sortedMapOf<Int, Int>()
-        val backgrounds = listOf(
-            CardBackground.GRADIENT to false,
-            CardBackground.GRADIENT to true,
-            CardBackground.HOLOGRAM to false,
-            CardBackground.HOLOGRAM to true,
-            CardBackground.FLAT to false,
-        )
+        val backgrounds = CardBackground.entries.flatMap { background ->
+            if (background == CardBackground.FLAT) {
+                listOf(background to false)
+            } else {
+                listOf(background to false, background to true)
+            }
+        }
         for ((background, corners) in backgrounds) {
             for (mosaic in CardMosaic.entries) {
                 for (effect in CardEffect.entries) {
@@ -185,11 +210,11 @@ class CardAppearanceCodecTest {
                 }
             }
         }
-        assertEquals(1_728_000, histogram.values.sum())
+        assertEquals(3_801_600, histogram.values.sum())
         assertEquals(
             sortedMapOf(
-                3 to 60_480, 4 to 198_720, 6 to 120_960, 7 to 397_440, 9 to 100_800,
-                10 to 331_200, 12 to 80_640, 13 to 264_960, 15 to 40_320, 16 to 132_480,
+                3 to 120_960, 4 to 397_440, 6 to 241_920, 7 to 794_880, 9 to 221_760,
+                10 to 728_640, 12 to 201_600, 13 to 662_400, 15 to 100_800, 16 to 331_200,
             ),
             histogram,
         )

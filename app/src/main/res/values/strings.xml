@@ -15,7 +15,7 @@
     <string name="card_colour_sheet_title">Card colour</string>
     <string name="card_colour_wheel">Colour wheel, %1$s</string>
 
-    <string name="error_card_too_long">This card is too long to share over NFC. Shorten your name, email or links.</string>
+    <string name="error_card_too_long">This card is too long to share by QR. Shorten your name, email or links.</string>
     <string name="error_email_invalid">Enter a valid email address</string>
     <string name="error_name_required">Name is required</string>
     <string name="error_phone_invalid">Enter a valid phone number</string>
@@ -72,7 +72,7 @@
     <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>
     <string name="nfc_unavailable_body">You can still create and keep cards, but they cannot be shared over NFC.</string>
     <string name="share_module_hint">Hold near a phone to send your card</string>
-    <string name="share_module_too_long_hint">This card is too long to share. Edit it to shorten it.</string>
+    <string name="share_module_too_long_hint">This card is too long for NFC. Share it by QR.</string>
     <string name="share_module_unlock_hint">Unlock the phone to share</string>
     <string name="share_module_receive_hint">Hold near a phone to receive a card</string>
     <string name="share_module_return_hint">Hold again to share yours back</string>
@@ -225,4 +225,28 @@
     <string name="appearance_brightness">Brightness</string>
     <string name="appearance_hex">HEX colour</string>
     <string name="appearance_hex_error">Enter six hexadecimal digits, for example #4F46E5</string>
+
+    <string name="appearance_bg_stained_glass">Stained glass</string>
+    <string name="appearance_bg_nacre">Nacre</string>
+    <string name="appearance_bg_brushed_metal">Brushed metal</string>
+    <string name="qr_show">Show QR</string>
+    <string name="qr_back_to_card">Back to card</string>
+    <string name="qr_code_description">Contact card QR code</string>
+    <string name="qr_shared_fields">The QR shares the contact fields and card style. Private notes stay on this phone.</string>
+    <string name="qr_too_large">This card exceeds the QR limit. Shorten its contact fields to show a QR code.</string>
+    <string name="qr_scan">Scan QR</string>
+    <string name="qr_offline_hint">Share or scan a QR code on any phone, without NFC or internet.</string>
+    <string name="qr_nfc_too_large_hint">This card is too large for NFC. Show its QR code to share all its fields and style.</string>
+    <string name="qr_scan_title">Scan QR</string>
+    <string name="qr_scan_hint">Point the camera at a contact QR, or choose an image. You can review the card before saving it.</string>
+    <string name="qr_scan_camera">Use camera</string>
+    <string name="qr_scan_image">Choose QR image</string>
+    <string name="qr_scan_permission_denied">Camera access is off. You can try again or choose a QR image without granting access.</string>
+    <string name="qr_scan_camera_unavailable">The camera is unavailable. Choose a QR image instead.</string>
+    <string name="qr_scan_invalid">No supported contact QR found. Try another image or QR.</string>
+    <string name="qr_scan_reading_image">Reading image…</string>
+    <string name="qr_scan_viewfinder">Camera preview for scanning a contact QR</string>
+
+    <string name="qr_needs_more_space">Enlarge the card or rotate your phone to show the complete QR.</string>
+    <string name="sheet_shared_contact">Shared contact card</string>
 </resources>

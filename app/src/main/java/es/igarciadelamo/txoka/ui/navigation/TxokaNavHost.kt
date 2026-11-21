@@ -26,6 +26,13 @@ fun TxokaNavHost(modifier: Modifier = Modifier, navController: NavHostController
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onCreateCard = { navController.navigate(ProfileEditorRoute) },
                 onEditProfile = { navController.navigate(ProfileEditorRoute) },
+                onScanQr = { navController.navigate(QrScanRoute) },
+            )
+        }
+        composable<QrScanRoute> {
+            es.igarciadelamo.txoka.ui.qr.QrScanRoute(
+                onBack = navController::popBackStack,
+                onImported = { navController.popBackStack() },
             )
         }
         composable<ReceivedRoute> {

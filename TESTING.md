@@ -67,9 +67,9 @@ checks.
 ## Unit tests and coverage
 
 The JVM suite covers the protocol, the profile logic, the NFC responder and every view model.
-Kover enforces a 95% line coverage gate over those layers; Compose screens and the Android-only
-adapters are covered by manual checks instead. The HTML report is written to
-`app/build/reports/kover/htmlDebug/index.html`.
+Kover enforces a 95% line coverage gate over those layers; Compose screen flows and Android-only
+adapters need manual checks, with focused rendering tests for mosaics and materials. The HTML
+report is written to `app/build/reports/kover/htmlDebug/index.html`.
 
 ```sh
 ./gradlew :app:koverVerifyDebug :app:koverHtmlReportDebug
@@ -81,8 +81,12 @@ adapters are covered by manual checks instead. The HTML report is written to
 in-memory Room database. `TxokaMigrationTest` exercises upgrades from versions 1 and 2 to version 3,
 checking that fields, colours and notes survive and that appearance can then be stored.
 `CardMosaicRenderingTest` checks that all 29 procedural and bundled SVG mosaics retain both inks
-and that mask resolution stays bounded without changing the card aspect ratio. Run them with a
-disposable emulator or device attached:
+and that mask resolution stays bounded without changing the card aspect ratio.
+`CardMaterialRenderingTest` adds six native material checks, including the 24-pane optical atlas,
+source RGB identity, both tilt axes and separate mosaic/effect composition. The current repository
+has 16 instrumented tests in total: six DAO, two migration, two mosaic and six material tests.
+Their execution for this revision remains pending; compiling the test APK is not a device run.
+Run them with a disposable emulator or device attached:
 
 ```sh
 ./gradlew :app:connectedDebugAndroidTest
@@ -105,6 +109,31 @@ six DAO tests, two migrations to Room version 3, and two mosaic rendering tests 
 viewer stays open and paused after rotation. Physical NFC and motion response remain separate
 device checks.
 
+That dated result predates the new material and QR changes and is not a passing result for the
+current revision. The historical JVM result was 248 passing tests in 38 suites at `3d7ce41`.
+
+## Current verification — 21 November 2026
+
+The current `app/build/test-results/testDebugUnitTest/TEST-*.xml` reports contain **280 tests in
+43 suites**, with zero failures, errors or skips. The 21 pure material tests are included in that
+total: seven artwork, four pane-atlas, three relief and seven texture tests.
+
+| Area | Verified coverage | Current result |
+| --- | --- | --- |
+| Debug build and static checks | Debug app and instrumented-test APK compilation, Detekt, ktlint, 95% Kover gate and debug lint | Passed |
+| Appearance codec | Twenty independent goldens, all 3,801,600 valid combinations, atomic fallback and unchanged 768/769-byte NDEF boundary | Passed in JVM suite |
+| Material fields | Canonical 480 × 303 RGB identity at neutral coral/cyan, 24-pane atlas, bounded textures and anchored two-axis light | Passed in the 21 included material tests |
+| QR vCard | Real ZXing version-38 UTF-8 symbol round trips at correction M/ECI 26, Unicode and STYLE, exact 2,048-byte cap and 2,049-byte rejection | Passed in JVM suite |
+| QR-only profile | Save above the NFC cap, warning state and clearing a previously published HCE card | Passed in JVM suite |
+| Browser demo | All 191 tests across 16 test files, including independent pixel QR decoding | Passed; separate from native tests |
+| Native/browser material parity | Nine actual 480 × 303 renders: three neutral reference images byte-identical; all remaining tilt/default-palette channel differences at most 1 | Passed |
+| Release build and lint | R8 release APK assembly and release lint | Passed |
+| Android instrumentation | All 16 current repository cases | Pending device run |
+
+Camera permission/denial and image-import flows, physical NFC interoperability, physical sensor
+response and composed Android visual/accessibility checks remain pending. Neither JVM/Canvas
+comparisons nor APK compilation establish these device results.
+
 ## NFC device checks
 
 Sharing and receiving need two physical phones. [`NFC_DEVICE_TEST_PLAN.md`](NFC_DEVICE_TEST_PLAN.md)
@@ -124,7 +153,13 @@ addition to the existing device checklist, verify the following before releasing
   paused and confirm it remains open and paused. Compare small tilts on two physical phones;
   an emulator cannot prove sensitivity.
 - All backgrounds and mosaics in airplane mode; no missing external assets. Confirm both flat
-  inks, gradient visibility, holographic reflection and elemental effects.
+  inks, gradient visibility, holographic reflection and elemental effects. Check stained-glass
+  texture with near-hairline joints, nacre's layered highlights and brushed metal's directional
+  finish against the approved edited sources. Check the canonical coral/cyan neutral base raster
+  against its bundled RGB asset, then review palette remapping with two colours and four corners.
+  Tilt each axis and confirm changing light while texture coordinates remain anchored to the
+  card. The three material backgrounds must have no added black legibility scrim. Review composed text,
+  mosaics, effects and scaled screenshots separately from base-raster RGB identity.
 - Both text targets, all finishes and sizes, long names/social-only cards, 200% font scale, TalkBack,
   light/dark themes and a system-disabled animation scale. Check contrast for chosen colours.
 - Repeated colour-picker sessions: presets commit immediately; custom previews require Select;
@@ -134,6 +169,28 @@ addition to the existing device checklist, verify the following before releasing
 
 Do not infer physical NFC interoperability or visual quality from codec tests. Record device,
 Android version and results rather than treating the browser demo as a native test run.
+
+### QR regression checks
+
+- Double-tap cards in the hub and received detail, and open the full-screen viewer. Confirm the
+  180-degree Y-axis flip, the same selected style on the back, a centred black-and-white QR code,
+  a clear four-module quiet zone and integer-size modules. Return with a double-tap or the visible
+  button. Check TalkBack, 200% font scale, rotation and disabled system animation.
+- Decode displayed QR codes on physical phones, including long Unicode fields and a maximum-size
+  styled card. Confirm Txoka restores style; separately record what a native camera or other
+  contact scanner imports, since it may ignore the appearance extension.
+- Opening the scanner must not request camera permission. Choose **Use camera**, allow access and
+  scan; repeat after denial. Image import through the system file picker must work without camera
+  or storage permission, including on a device without a camera or NFC.
+- Camera scanning and image import must work in airplane mode and reach confirmation before any
+  contact is stored. Cancel and invalid/non-vCard images must not create contacts. Confirm queued
+  cards and repeated-card updates behave like NFC, preserving private local notes.
+- Save a card above the 768-byte NDEF cap but within the 2,048-byte UTF-8 QR cap. Confirm the editor
+  warns about NFC, the previous HCE card is no longer served, and QR preserves every field and
+  STYLE. A card above the QR cap must fail Save without truncation.
+- Confirm the QR contains the contact and supported appearance but no received-contact note, NDEF
+  wrapper or Android Application Record. Camera frames and imported raw images must not be saved
+  or uploaded by the app.
 
 ## Store kit
 

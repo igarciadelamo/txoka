@@ -184,6 +184,7 @@ private fun DetailContent(
     ) {
         ContactCard(
             profile = contact.toProfile(),
+            qrEnabled = true,
             layout = CardLayout.Hero,
             motion = if (cardVisible) null else CardMotion(),
             paused = !cardVisible,

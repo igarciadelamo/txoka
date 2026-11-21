@@ -19,3 +19,6 @@ data object AboutRoute
 
 @Serializable
 data object ProfileEditorRoute
+
+@Serializable
+data object QrScanRoute

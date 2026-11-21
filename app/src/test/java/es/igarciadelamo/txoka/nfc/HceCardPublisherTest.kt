@@ -1,9 +1,15 @@
 package es.igarciadelamo.txoka.nfc
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearance
+import es.igarciadelamo.txoka.domain.profile.CardBackground
+import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.domain.profile.ShareRole
 import es.igarciadelamo.txoka.domain.profile.ShareSettings
+import es.igarciadelamo.txoka.domain.protocol.QrVCardCodec
 import es.igarciadelamo.txoka.domain.protocol.Type4Tag
+import es.igarciadelamo.txoka.domain.protocol.fitsInTag
+import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import es.igarciadelamo.txoka.testing.FakeProfileRepository
 import es.igarciadelamo.txoka.testing.FakeShareSettingsRepository
 import es.igarciadelamo.txoka.testing.NfcTestPackets.SelectAid
@@ -13,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class HceCardPublisherTest {
@@ -79,6 +87,36 @@ class HceCardPublisherTest {
     fun `publishes nothing when the card does not fit`() = runTest {
         val responder = HceResponder()
         publisher(Profile(name = "A".repeat(900)), ShareSettings(), responder).publishCurrent()
+
+        assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
+    }
+
+    @Test
+    fun `QR-only profile clears a previously published NFC card`() = runTest {
+        val qrOnly = Profile(
+            name = "😀".repeat(64),
+            phone = "+34600123456",
+            email = "a".repeat(115) + "@b.cd",
+            linkedin = "a".repeat(60),
+            instagram = "b".repeat(60),
+            card = CardPalette.Default.copy(appearance = CardAppearance(background = CardBackground.HOLOGRAM)),
+        )
+        assertTrue(QrVCardCodec.fits(qrOnly))
+        assertFalse(qrOnly.toVCardPayload().fitsInTag())
+        val repository = FakeProfileRepository(profile)
+        val responder = HceResponder()
+        val publisher = HceCardPublisher(
+            profileRepository = repository,
+            settingsRepository = FakeShareSettingsRepository(),
+            roles = ShareRoleController(backgroundScope),
+            responder = responder,
+            scope = backgroundScope,
+        )
+        publisher.publishCurrent()
+        assertEquals(Type4Tag.SW_OK, status(responder.respond(SelectAid, deviceLocked = false)))
+
+        repository.save(qrOnly)
+        publisher.publishCurrent()
 
         assertEquals(Type4Tag.SW_FILE_NOT_FOUND, status(responder.respond(SelectAid, deviceLocked = false)))
     }

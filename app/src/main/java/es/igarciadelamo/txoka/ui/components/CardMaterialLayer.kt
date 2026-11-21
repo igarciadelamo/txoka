@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import es.igarciadelamo.txoka.domain.profile.CardAppearance
 import es.igarciadelamo.txoka.domain.profile.CardBackground
@@ -63,6 +64,7 @@ internal fun CardMaterialLayer(palette: CardPalette, motion: CardMotion, time: F
     val mask = rememberCardMosaicMask(appearance.mosaic, dimensions.width, dimensions.height)
     val painter = remember { CardMaterialPainter() }
     val pixels = rememberMaterialPixels(appearance.effect, dimensions, motion, time, palette)
+    val background = rememberNativeMaterialPixels(palette, dimensions, motion)
     ComposeCanvas(modifier.onSizeChanged { dimensions = it }) {
         drawIntoCanvas {
             painter.draw(
@@ -75,9 +77,54 @@ internal fun CardMaterialLayer(palette: CardPalette, motion: CardMotion, time: F
                 time,
                 mask?.asAndroidBitmap(),
                 pixels?.asAndroidBitmap(),
+                background?.asAndroidBitmap(),
             )
         }
     }
+}
+
+@Composable
+private fun rememberNativeMaterialPixels(palette: CardPalette, dimensions: IntSize, motion: CardMotion): ImageBitmap? {
+    val appearance = palette.appearance ?: return null
+    if (!appearance.background.hasNativeTexture) return null
+    var pixels by remember(
+        appearance.background,
+        dimensions,
+        palette.accent,
+        palette.accent2,
+        appearance.topRight,
+        appearance.bottomLeft,
+    ) { mutableStateOf<ImageBitmap?>(null) }
+    val latestMotion by rememberUpdatedState(motion)
+    val context = LocalContext.current.applicationContext
+    LaunchedEffect(
+        appearance.background,
+        dimensions,
+        palette.accent,
+        palette.accent2,
+        appearance.topRight,
+        appearance.bottomLeft,
+    ) {
+        if (dimensions.width <= 0 || dimensions.height <= 0) return@LaunchedEffect
+        val width = minOf(480, dimensions.width)
+        val height = (width.toFloat() * dimensions.height / dimensions.width).roundToInt().coerceIn(1, 320)
+        val relief = withContext(Dispatchers.IO) { CardMaterialReliefAssets.load(context, appearance.background) }
+        val artwork = withContext(Dispatchers.IO) { CardMaterialArtworkAssets.load(context, appearance.background) }
+        val cells = if (appearance.background == CardBackground.STAINED_GLASS) {
+            withContext(Dispatchers.IO) { CardMaterialCellsAssets.load(context) }
+        } else {
+            null
+        }
+        val texture = CardMaterialTexture(width, height, relief, artwork, cells)
+        snapshotFlow { latestMotion.bounded() }.conflate().collect { pose ->
+            pixels = withContext(Dispatchers.Default) {
+                val values = texture.render(appearance.background, palette, pose)
+                Bitmap.createBitmap(values, width, height, Bitmap.Config.ARGB_8888).asImageBitmap()
+            }
+            delay(MATERIAL_FRAME_INTERVAL_MILLIS)
+        }
+    }
+    return pixels
 }
 
 @Composable
@@ -107,7 +154,7 @@ private fun rememberMaterialPixels(
     return pixels
 }
 
-private class CardMaterialPainter {
+internal class CardMaterialPainter {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val destination = RectF()
     private val maskTransfer = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
@@ -122,10 +169,15 @@ private class CardMaterialPainter {
         time: Float,
         mask: Bitmap?,
         effect: Bitmap?,
+        background: Bitmap? = null,
     ) {
         destination.set(0f, 0f, width, height)
         paint.resetMaterial()
-        background(canvas, width, height, palette, appearance, motion)
+        if (background != null && appearance.background.hasNativeTexture) {
+            canvas.drawBitmap(background, null as Rect?, destination, paint)
+        } else {
+            background(canvas, width, height, palette, appearance, motion)
+        }
         if (mask != null && appearance.mosaic != CardMosaic.NONE) {
             mosaic(canvas, width, height, palette, appearance, motion, mask)
         }
@@ -140,11 +192,7 @@ private class CardMaterialPainter {
             )
             canvas.drawRect(destination, paint)
         }
-        paint.resetMaterial()
-        paint.color = Color.argb(if (appearance.effect == CardEffect.FIRE) 71 else 41, 0, 0, 0)
-        if (appearance.background != CardBackground.FLAT || appearance.effect != CardEffect.NONE) {
-            canvas.drawRect(destination, paint)
-        }
+        drawLegacyContrast(canvas, appearance)
         paint.resetMaterial()
         effect?.let { canvas.drawBitmap(it, null as Rect?, destination, paint) }
         canvas.save()
@@ -157,6 +205,16 @@ private class CardMaterialPainter {
             else -> Unit
         }
         canvas.restore()
+    }
+
+    private fun drawLegacyContrast(canvas: Canvas, appearance: CardAppearance) {
+        paint.resetMaterial()
+        if (appearance.background.hasNativeTexture) return
+        val needsContrast = appearance.background != CardBackground.FLAT || appearance.effect != CardEffect.NONE
+        if (needsContrast) {
+            paint.color = Color.argb(if (appearance.effect == CardEffect.FIRE) 71 else 41, 0, 0, 0)
+            canvas.drawRect(destination, paint)
+        }
     }
 
     private fun background(
@@ -208,6 +266,10 @@ private class CardMaterialPainter {
             CardBackground.HOLOGRAM -> {
                 paint.shader = foil(width, height, motion, second, first, .45f)
                 paint.alpha = 204
+            }
+            CardBackground.STAINED_GLASS, CardBackground.NACRE, CardBackground.BRUSHED_METAL -> {
+                paint.shader = gradient(width, height, motion, intArrayOf(second, first))
+                paint.alpha = 116
             }
         }
         canvas.drawRect(destination, paint)

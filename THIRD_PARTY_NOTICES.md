@@ -6,11 +6,12 @@ The app links or bundles the following third-party components:
 
 | Component | Licence |
 | --- | --- |
-| AndroidX: Activity, Compose, Lifecycle, Navigation, Room, SQLite, DataStore | Apache-2.0 |
+| AndroidX: Activity, CameraX, Compose, Lifecycle, Navigation, Room, SQLite, DataStore | Apache-2.0 |
 | Kotlin, kotlinx.coroutines, kotlinx.serialization | Apache-2.0 |
 | Okio | Apache-2.0 |
 | Dagger Hilt, Jakarta Dependency Injection, javax.inject | Apache-2.0 |
 | libphonenumber | Apache-2.0 |
+| ZXing Core | Apache-2.0 |
 | Manrope font | SIL Open Font License 1.1 |
 
 Full licence texts:

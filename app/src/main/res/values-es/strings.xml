@@ -13,7 +13,7 @@
     <string name="card_colour_sheet_title">Color de la tarjeta</string>
     <string name="card_colour_wheel">Rueda de color, %1$s</string>
 
-    <string name="error_card_too_long">La tarjeta es demasiado larga para compartirla por NFC. Acorta el nombre, el email o los enlaces.</string>
+    <string name="error_card_too_long">La tarjeta es demasiado larga para compartirla por QR. Acorta el nombre, el email o los enlaces.</string>
     <string name="error_email_invalid">Introduce un email válido</string>
     <string name="error_name_required">El nombre es obligatorio</string>
     <string name="error_phone_invalid">Introduce un teléfono válido</string>
@@ -70,7 +70,7 @@
     <string name="nfc_disabled_body">Vuelve a activar el NFC para seguir compartiendo tu tarjeta.</string>
     <string name="nfc_unavailable_body">Aún puedes crear y guardar tarjetas, pero no compartirlas por NFC.</string>
     <string name="share_module_hint">Acércalo a un móvil para enviar tu tarjeta</string>
-    <string name="share_module_too_long_hint">La tarjeta es demasiado larga para compartirla. Edítala para acortarla.</string>
+    <string name="share_module_too_long_hint">La tarjeta es demasiado larga para NFC. Compártela por QR.</string>
     <string name="share_module_unlock_hint">Desbloquea el móvil para compartir</string>
     <string name="share_module_receive_hint">Acércalo a un móvil para recibir una tarjeta</string>
     <string name="share_module_return_hint">Acércalo otra vez para devolver la tuya</string>
@@ -223,4 +223,28 @@
     <string name="appearance_brightness">Brillo</string>
     <string name="appearance_hex">Color HEX</string>
     <string name="appearance_hex_error">Introduce seis dígitos hexadecimales, por ejemplo #4F46E5</string>
+
+    <string name="appearance_bg_stained_glass">Vidriera</string>
+    <string name="appearance_bg_nacre">Nácar</string>
+    <string name="appearance_bg_brushed_metal">Metal cepillado</string>
+    <string name="qr_show">Mostrar QR</string>
+    <string name="qr_back_to_card">Volver a tarjeta</string>
+    <string name="qr_code_description">Código QR de la tarjeta de contacto</string>
+    <string name="qr_shared_fields">El QR comparte los datos de contacto y el estilo de la tarjeta. Las notas privadas se quedan en este teléfono.</string>
+    <string name="qr_too_large">Esta tarjeta supera el límite del QR. Acorta sus datos de contacto para mostrar el código.</string>
+    <string name="qr_scan">Escanear QR</string>
+    <string name="qr_offline_hint">Comparte o escanea un código QR en cualquier teléfono, sin NFC ni internet.</string>
+    <string name="qr_nfc_too_large_hint">Esta tarjeta es demasiado grande para NFC. Muestra su código QR para compartir todos sus datos y estilo.</string>
+    <string name="qr_scan_title">Escanear QR</string>
+    <string name="qr_scan_hint">Apunta la cámara a un QR de contacto o elige una imagen. Podrás revisar la tarjeta antes de guardarla.</string>
+    <string name="qr_scan_camera">Usar cámara</string>
+    <string name="qr_scan_image">Elegir imagen QR</string>
+    <string name="qr_scan_permission_denied">El acceso a la cámara está desactivado. Puedes volver a intentarlo o elegir una imagen QR sin dar acceso.</string>
+    <string name="qr_scan_camera_unavailable">La cámara no está disponible. Elige una imagen QR.</string>
+    <string name="qr_scan_invalid">No se ha encontrado un QR de contacto compatible. Prueba con otra imagen o QR.</string>
+    <string name="qr_scan_reading_image">Leyendo imagen…</string>
+    <string name="qr_scan_viewfinder">Vista previa de cámara para escanear un QR de contacto</string>
+
+    <string name="qr_needs_more_space">Amplía la tarjeta o gira el teléfono para mostrar el QR completo.</string>
+    <string name="sheet_shared_contact">Tarjeta de contacto compartida</string>
 </resources>

@@ -83,6 +83,7 @@ fun ShareScreen(
     onCancelReturn: () -> Unit,
     modifier: Modifier = Modifier,
     cardTooLarge: Boolean = false,
+    onScanQr: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -123,7 +124,7 @@ fun ShareScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 if (profile == null) {
-                    EmptyHub(onCreateCard = onCreateCard)
+                    EmptyHub(onCreateCard = onCreateCard, onScanQr = onScanQr)
                 } else {
                     HubContent(
                         profile = profile,
@@ -132,6 +133,7 @@ fun ShareScreen(
                         cardTooLarge = cardTooLarge,
                         nfc = nfc,
                         onEditProfile = onEditProfile,
+                        onScanQr = onScanQr,
                         onRoleSelected = onRoleSelected,
                         onCancelReturn = onCancelReturn,
                         onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
@@ -152,6 +154,7 @@ private fun HubContent(
     cardTooLarge: Boolean,
     nfc: NfcStatus,
     onEditProfile: () -> Unit,
+    onScanQr: () -> Unit,
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
@@ -177,6 +180,7 @@ private fun HubContent(
             }
             ContactCard(
                 profile = profile,
+                qrEnabled = true,
                 modifier = Modifier.padding(top = Spacing.sm),
                 layout = CardLayout.Hero,
                 motion = if (viewerOpen) CardMotion() else null,
@@ -191,6 +195,7 @@ private fun HubContent(
             onRoleSelected = onRoleSelected,
             onCancelReturn = onCancelReturn,
             onOpenNfcSettings = onOpenNfcSettings,
+            onScanQr = onScanQr,
         )
     }
 }
@@ -204,6 +209,7 @@ private fun SharingModule(
     onRoleSelected: (ShareRole) -> Unit,
     onCancelReturn: () -> Unit,
     onOpenNfcSettings: () -> Unit,
+    onScanQr: () -> Unit,
 ) {
     val extras = MaterialTheme.txoka
     val tint = if (nfc == NfcStatus.Enabled) MaterialTheme.colorScheme.primary else extras.warning
@@ -266,6 +272,7 @@ private fun SharingModule(
                 Text(text = stringResource(R.string.action_open_settings))
             }
         }
+        QrScanAction(onScanQr)
     }
 }
 
@@ -281,11 +288,11 @@ private fun moduleHint(nfc: NfcStatus, role: ShareRoleState, requireUnlock: Bool
     when {
         nfc == NfcStatus.Unavailable -> stringResource(R.string.nfc_unavailable_body)
         nfc == NfcStatus.Disabled -> stringResource(R.string.nfc_disabled_body)
-        cardTooLarge -> stringResource(R.string.share_module_too_long_hint)
         role.returning && role.remainingSeconds > 0 ->
             stringResource(R.string.share_module_return_hint_countdown, role.remainingSeconds)
         role.returning -> stringResource(R.string.share_module_return_hint)
         role.role == ShareRole.Receive -> stringResource(R.string.share_module_receive_hint)
+        cardTooLarge -> stringResource(R.string.qr_nfc_too_large_hint)
         requireUnlock -> stringResource(R.string.share_module_unlock_hint)
         else -> stringResource(R.string.share_module_hint)
     }
@@ -341,7 +348,7 @@ private fun RoleOption(label: String, selected: Boolean, onClick: () -> Unit, mo
 }
 
 @Composable
-private fun EmptyHub(onCreateCard: () -> Unit) {
+private fun EmptyHub(onCreateCard: () -> Unit, onScanQr: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -365,6 +372,23 @@ private fun EmptyHub(onCreateCard: () -> Unit) {
             text = stringResource(R.string.action_create_card),
             onClick = onCreateCard,
             modifier = Modifier.padding(top = Spacing.md),
+        )
+        QrScanAction(onScanQr)
+    }
+}
+
+@Composable
+private fun QrScanAction(onScanQr: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        TextButton(onClick = onScanQr, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+            Text(stringResource(R.string.qr_scan))
+        }
+        Text(
+            text = stringResource(R.string.qr_offline_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

@@ -5,6 +5,9 @@ package es.igarciadelamo.txoka.domain.profile
 enum class CardBackground(val wireId: Int) {
     GRADIENT(0),
     HOLOGRAM(1),
+    STAINED_GLASS(2),
+    NACRE(3),
+    BRUSHED_METAL(4),
     FLAT(6),
 }
 

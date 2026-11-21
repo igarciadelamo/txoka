@@ -17,9 +17,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +41,8 @@ import es.igarciadelamo.txoka.ui.theme.Spacing
 fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
     val motion = rememberCardMotionController()
     var paused by rememberSaveable { mutableStateOf(false) }
+    var qrVisible by rememberSaveable(profile) { mutableStateOf(false) }
+    val qrAvailable = remember(profile) { profile.canShowQr() }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
@@ -49,10 +54,27 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
                 .safeDrawingPadding()
                 .padding(Spacing.lg),
         ) {
-            IconButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(onClick = { qrVisible = !qrVisible }, enabled = qrAvailable) {
+                    Text(stringResource(if (qrVisible) R.string.qr_back_to_card else R.string.qr_show))
+                }
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.card_viewer_close))
+                }
             }
-            CardViewerContent(profile, motion, paused, onPausedChange = { paused = it }, modifier = Modifier.weight(1f))
+            CardViewerContent(
+                profile = profile,
+                motion = motion,
+                paused = paused,
+                qrVisible = qrVisible,
+                onQrVisibleChange = { qrVisible = it },
+                onPausedChange = { paused = it },
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
@@ -62,6 +84,8 @@ private fun CardViewerContent(
     profile: Profile,
     motion: CardMotionController,
     paused: Boolean,
+    qrVisible: Boolean,
+    onQrVisibleChange: (Boolean) -> Unit,
     onPausedChange: (Boolean) -> Unit,
     modifier: Modifier,
 ) {
@@ -75,7 +99,15 @@ private fun CardViewerContent(
             Column(
                 modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
             ) {
-                ContactCard(profile = profile, motion = motion.motion, paused = paused)
+                ContactCard(
+                    profile = profile,
+                    motion = motion.motion,
+                    paused = paused,
+                    qrEnabled = true,
+                    qrVisible = qrVisible,
+                    onQrVisibleChange = onQrVisibleChange,
+                    showQrControls = false,
+                )
             }
         }
         if (landscape) {
@@ -91,7 +123,15 @@ private fun CardViewerContent(
                 modifier = Modifier.width(cardWidth).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(Spacing.md),
             ) {
-                ContactCard(profile = profile, motion = motion.motion, paused = paused)
+                ContactCard(
+                    profile = profile,
+                    motion = motion.motion,
+                    paused = paused,
+                    qrEnabled = true,
+                    qrVisible = qrVisible,
+                    onQrVisibleChange = onQrVisibleChange,
+                    showQrControls = false,
+                )
                 AppearanceMotionControls(motion, paused, onPausedChange)
             }
         }

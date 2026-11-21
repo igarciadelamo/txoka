@@ -291,36 +291,34 @@ private fun BackgroundSettings(
     onChange: (CardPalette) -> Unit,
     onColour: (CardColourTarget) -> Unit,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        CardBackground.entries.forEach { background ->
-            AppearanceTile(
-                selected = appearance.background == background,
-                label = stringResource(background.label),
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    val next = appearance.copy(
+    TileGrid(CardBackground.entries.toList()) { background, modifier ->
+        AppearanceTile(
+            selected = appearance.background == background,
+            label = stringResource(background.label),
+            modifier = modifier,
+            onClick = {
+                val next = appearance.copy(
+                    background = background,
+                    topRight = appearance.topRight.takeUnless { background == CardBackground.FLAT },
+                    bottomLeft = appearance.bottomLeft.takeUnless { background == CardBackground.FLAT },
+                )
+                onChange(card.copy(appearance = next))
+            },
+        ) {
+            CardSurface(
+                palette = card.copy(
+                    appearance = appearance.copy(
                         background = background,
+                        mosaic = CardMosaic.NONE,
+                        effect = CardEffect.NONE,
                         topRight = appearance.topRight.takeUnless { background == CardBackground.FLAT },
                         bottomLeft = appearance.bottomLeft.takeUnless { background == CardBackground.FLAT },
-                    )
-                    onChange(card.copy(appearance = next))
-                },
-            ) {
-                CardSurface(
-                    palette = card.copy(
-                        appearance = appearance.copy(
-                            background = background,
-                            mosaic = CardMosaic.NONE,
-                            effect = CardEffect.NONE,
-                            topRight = appearance.topRight.takeUnless { background == CardBackground.FLAT },
-                            bottomLeft = appearance.bottomLeft.takeUnless { background == CardBackground.FLAT },
-                        ),
                     ),
-                    motion = CardMotion(.12f, -.08f),
-                    paused = true,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
+                ),
+                motion = CardMotion(.12f, -.08f),
+                paused = true,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
     Row(verticalAlignment = Alignment.CenterVertically) {

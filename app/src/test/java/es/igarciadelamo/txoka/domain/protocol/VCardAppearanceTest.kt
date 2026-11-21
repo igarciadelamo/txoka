@@ -62,6 +62,24 @@ class VCardAppearanceTest {
     }
 
     @Test
+    fun `new materials preserve four corner tints and layers at the unchanged maximum size`() {
+        val originalBytes = VCardSerializer.encode(payload).toByteArray().size
+        listOf(
+            CardBackground.STAINED_GLASS to "etRz0wECAwQFBgcICQoLDA",
+            CardBackground.NACRE to "e9Rz0wECAwQFBgcICQoLDA",
+            CardBackground.BRUSHED_METAL to "fNRz0wECAwQFBgcICQoLDA",
+        ).forEach { (background, golden) ->
+            val material = payload.copy(palette = fallback.copy(appearance = style.copy(background = background)))
+            val text = VCardSerializer.encode(material)
+            assertTrue(text.contains("X-TXOKA-STYLE:1:$golden\r\n"))
+            assertTrue(text.contains("X-TXOKA-CARD-ACCENT:#123456\r\n"))
+            assertTrue(text.contains("X-TXOKA-CARD-ACCENT2:#ABCDEF\r\n"))
+            assertEquals(originalBytes, text.toByteArray().size)
+            assertEquals(material, decode(text))
+        }
+    }
+
+    @Test
     fun `legacy card round trip keeps null appearance and historical colours`() {
         val legacy = payload.copy(palette = fallback)
         val text = VCardSerializer.encode(legacy)
@@ -100,6 +118,11 @@ class VCardAppearanceTest {
             "X-TXOKA-STYLE:",
             "X-TXOKA-STYLE:1:cWgBvw", // Retired/unknown unsigned selector 191.
             "X-TXOKA-STYLE:1:cWgB1A", // Unknown unsigned selector 212.
+            "X-TXOKA-STYLE:1:BWgB", // Reserved background 5.
+            "X-TXOKA-STYLE:1:B2gB", // Unknown background 7.
+            "X-TXOKA-STYLE:1:fdRz0wECAwQFBgcICQoLDA", // Background 5 with otherwise valid optional blocks.
+            "X-TXOKA-STYLE:1:f9Rz0wECAwQFBgcICQoLDA", // Background 7 with otherwise valid optional blocks.
+            "X-TXOKA-STYLE:1:etRz0wECAwQFBgcICQoL", // Truncated stained-glass colour block.
         ).forEach { invalid ->
             assertEquals(invalid, payload.copy(palette = fallback), decode(text.replace(validProperty, invalid)))
         }

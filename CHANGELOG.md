@@ -9,13 +9,23 @@ All notable changes to Txoka are recorded here. The format follows
 
 ### Added
 
-- Layered card appearance: gradient, holographic or flat backgrounds, bundled vector mosaics,
-  elemental effects and independent name/contact lettering, sizes and colours.
+- Layered card appearance: gradient, holographic, stained-glass, nacre, brushed-metal or flat
+  backgrounds, bundled vector mosaics, elemental effects and independent name/contact lettering,
+  sizes and colours. The three materials use bundled RGB textures directly edited from the
+  approved reference, local palette remapping and anchored two-axis lighting within the existing
+  style format.
 - Compact versioned NFC style extension with palette fallback for older readers and strict
   malformed-extension handling within the existing 768-byte message limit.
 - Local appearance persistence, Room schema 3 migration, motion controls and a landscape-aware
   full-screen card viewer.
 - Appearance contract and browser design reference.
+- Offline QR sharing with the contact's supported appearance: double-tap a card or use **Show QR**
+  to flip it over, retaining the chosen style behind a centred black-and-white QR code.
+- QR scanning with CameraX and bundled ZXing, plus image import through the system file picker.
+  Optional camera permission is requested only after **Use camera**; image import needs no camera
+  or storage permission. Contacts still require confirmation and private notes are not shared.
+- QR-only profiles up to 2,048 UTF-8 vCard bytes. Profiles above the unchanged 768-byte NFC message
+  cap can be saved with a warning; HCE clears the previous card instead of serving stale data.
 
 ## [1.0.0] - 2026-11-12
 
