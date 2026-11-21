@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,10 +28,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import es.igarciadelamo.txoka.R
 import es.igarciadelamo.txoka.domain.profile.Profile
 import es.igarciadelamo.txoka.ui.profile.AppearanceMotionControls
@@ -47,6 +52,7 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
+        CardViewerSystemBars()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,6 +81,24 @@ fun CardViewer(profile: Profile, onDismiss: () -> Unit) {
                 onPausedChange = { paused = it },
                 modifier = Modifier.weight(1f),
             )
+        }
+    }
+}
+
+@Composable
+private fun CardViewerSystemBars() {
+    val view = LocalView.current
+    val window = (view.parent as? DialogWindowProvider)?.window ?: return
+    val lightBackground = MaterialTheme.colorScheme.background.luminance() > .5f
+    DisposableEffect(window, view, lightBackground) {
+        val controller = WindowCompat.getInsetsController(window, view)
+        val previousStatusBars = controller.isAppearanceLightStatusBars
+        val previousNavigationBars = controller.isAppearanceLightNavigationBars
+        controller.isAppearanceLightStatusBars = lightBackground
+        controller.isAppearanceLightNavigationBars = lightBackground
+        onDispose {
+            controller.isAppearanceLightStatusBars = previousStatusBars
+            controller.isAppearanceLightNavigationBars = previousNavigationBars
         }
     }
 }

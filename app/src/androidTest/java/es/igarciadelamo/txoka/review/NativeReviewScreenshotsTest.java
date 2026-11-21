@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public final class NativeReviewScreenshotsTest {
     private static final String APP = "es.igarciadelamo.txoka";
-    private static final String APP_SOURCE = "4692fbc65a988a64201fea886286aaf93288882c";
+    private static final String APP_SOURCE = "dd9c3a58464373776391f27a49dc8a3abc522a93";
     private final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
     private final Context context = instrumentation.getTargetContext();
     private final UiAutomation automation = instrumentation.getUiAutomation();

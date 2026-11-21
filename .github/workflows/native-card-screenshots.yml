@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 env:
-  APP_SOURCE_SHA: "4692fbc65a988a64201fea886286aaf93288882c"
+  APP_SOURCE_SHA: "dd9c3a58464373776391f27a49dc8a3abc522a93"
 
 concurrency:
   group: native-card-review
