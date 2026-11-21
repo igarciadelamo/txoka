@@ -1,0 +1,136 @@
+{
+  "decoder": "jsQR (independent of Android ZXing)",
+  "appSourceSha": "dd9c3a58464373776391f27a49dc8a3abc522a93",
+  "decoded": [
+    {
+      "file": "07-hub-qr-back.png",
+      "screenshotSha256": "3de929a359db5263c52bb96257cebc2c5f67c3f372c138def4f2c69dd2273f70",
+      "width": 1080,
+      "height": 2400,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 754,
+          "y": 755
+        },
+        "topLeftCorner": {
+          "x": 327,
+          "y": 755
+        },
+        "bottomRightCorner": {
+          "x": 754,
+          "y": 1182
+        },
+        "bottomLeftCorner": {
+          "x": 327,
+          "y": 1182
+        },
+        "topRightFinderPattern": {
+          "x": 729.5,
+          "y": 779.5
+        },
+        "topLeftFinderPattern": {
+          "x": 351.5,
+          "y": 779.5
+        },
+        "bottomLeftFinderPattern": {
+          "x": 351.5,
+          "y": 1157.5
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 708.5,
+          "y": 1136.5
+        }
+      }
+    },
+    {
+      "file": "09-viewer-portrait-qr.png",
+      "screenshotSha256": "4151f3aeac6be9e6094a9fa9dde9b0c482b091651a327c1bde51960e07a32b30",
+      "width": 1080,
+      "height": 2400,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 784,
+          "y": 932
+        },
+        "topLeftCorner": {
+          "x": 296,
+          "y": 932
+        },
+        "bottomRightCorner": {
+          "x": 784,
+          "y": 1420
+        },
+        "bottomLeftCorner": {
+          "x": 296,
+          "y": 1420
+        },
+        "topRightFinderPattern": {
+          "x": 756,
+          "y": 960
+        },
+        "topLeftFinderPattern": {
+          "x": 324,
+          "y": 960
+        },
+        "bottomLeftFinderPattern": {
+          "x": 324,
+          "y": 1392
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 732,
+          "y": 1368
+        }
+      }
+    },
+    {
+      "file": "10-viewer-landscape-qr.png",
+      "screenshotSha256": "e1db3dfa95a93a034de789206b727aded0768a48f8ed05ee4ad4781e3ae6befe",
+      "width": 2400,
+      "height": 1080,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 1292,
+          "y": 329
+        },
+        "topLeftCorner": {
+          "x": 743,
+          "y": 329
+        },
+        "bottomRightCorner": {
+          "x": 1292,
+          "y": 878
+        },
+        "bottomLeftCorner": {
+          "x": 743,
+          "y": 878
+        },
+        "topRightFinderPattern": {
+          "x": 1260.5,
+          "y": 360.5
+        },
+        "topLeftFinderPattern": {
+          "x": 774.5,
+          "y": 360.5
+        },
+        "bottomLeftFinderPattern": {
+          "x": 774.5,
+          "y": 846.5
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 1233.5,
+          "y": 819.5
+        }
+      }
+    }
+  ],
+  "note": "Decoded raw whole-screen PNGs without cropping, resizing, or replacing the rendered QR."
+}

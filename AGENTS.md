@@ -32,8 +32,12 @@ baseline at `3d7ce41` are recorded in `TESTING.md`.
   camera scanning and QR image import. On 21 November 2026, all 280 JVM tests in 43 suites passed,
   including 21 material tests and real ZXing QR boundary tests. Debug app/test APK compilation,
   Detekt, ktlint, the 95% Kover gate, debug/release lint and R8 release APK assembly passed.
-  Current instrumentation, camera, NFC and physical sensor checks remain pending. Historical
-  results in `TESTING.md` identify the earlier source revision they cover.
+  On the same date, all 16 repository instrumented tests plus one capture flow passed on an
+  Android 15 / API 35 Pixel 6 emulator at app source `dd9c3a5`. Eleven raw screenshots and
+  independent decoding of the hub and both viewer QR backs are recorded in the
+  [native evidence gallery](store/screenshots/materials-qr/README.md). Camera permission/denial
+  and SAF image import on real devices, physical NFC and sensors, and wider visual/accessibility
+  checks remain pending. Historical results in `TESTING.md` identify the earlier revision they cover.
 - Remaining backlog: vCard-file sharing and SAF export/import of the received library.
 
 ## Non-negotiable rules

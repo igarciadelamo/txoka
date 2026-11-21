@@ -85,7 +85,9 @@ and that mask resolution stays bounded without changing the card aspect ratio.
 `CardMaterialRenderingTest` adds six native material checks, including the 24-pane optical atlas,
 source RGB identity, both tilt axes and separate mosaic/effect composition. The current repository
 has 16 instrumented tests in total: six DAO, two migration, two mosaic and six material tests.
-Their execution for this revision remains pending; compiling the test APK is not a device run.
+On 21 November 2026, all 16 passed on an Android 15 / API 35 Pixel 6 emulator at app source
+`dd9c3a5`, together with one separate screenshot-capture flow. The raw AndroidJUnitRunner log
+records 17 passes, zero failures and zero errors; the XML summary is derived from that log.
 Run them with a disposable emulator or device attached:
 
 ```sh
@@ -114,8 +116,9 @@ current revision. The historical JVM result was 248 passing tests in 38 suites a
 
 ## Current verification — 21 November 2026
 
-The current `app/build/test-results/testDebugUnitTest/TEST-*.xml` reports contain **280 tests in
-43 suites**, with zero failures, errors or skips. The 21 pure material tests are included in that
+At app source `dd9c3a58464373776391f27a49dc8a3abc522a93`, the current
+`app/build/test-results/testDebugUnitTest/TEST-*.xml` reports contain **280 tests in 43 suites**,
+with zero failures, errors or skips. The 21 pure material tests are included in that
 total: seven artwork, four pane-atlas, three relief and seven texture tests.
 
 | Area | Verified coverage | Current result |
@@ -128,11 +131,19 @@ total: seven artwork, four pane-atlas, three relief and seven texture tests.
 | Browser demo | All 191 tests across 16 test files, including independent pixel QR decoding | Passed; separate from native tests |
 | Native/browser material parity | Nine actual 480 × 303 renders: three neutral reference images byte-identical; all remaining tilt/default-palette channel differences at most 1 | Passed |
 | Release build and lint | R8 release APK assembly and release lint | Passed |
-| Android instrumentation | All 16 current repository cases | Pending device run |
+| Android instrumentation | Six DAO, two migration, two mosaic and six material cases, plus one separate capture flow | Passed: 17 actual runner cases on Android 15 / API 35, Pixel 6 emulator |
+| Native QR screenshots | Independent jsQR decoding of the raw hub, portrait-viewer and landscape-viewer screens | Passed: the same 220-byte vCard, contact, colours and `X-TXOKA-STYLE:1:A2gB` in all three |
 
-Camera permission/denial and image-import flows, physical NFC interoperability, physical sensor
-response and composed Android visual/accessibility checks remain pending. Neither JVM/Canvas
-comparisons nor APK compilation establish these device results.
+The [current native evidence gallery](store/screenshots/materials-qr/README.md) contains eleven
+unedited full-resolution Android screenshots and the raw runner evidence. Its manifest pins the
+app source above and QA capture revision `792d50cd50e3252f4d01283dc73ad1e12dd82240`. Recorded probes
+confirm that the QR remains visible after landscape rotation and pause survives both that rotation
+and the return to portrait. Screenshot QR decoding used the whole raw screens, without cropping,
+resizing or replacing the displayed code.
+
+Camera permission/denial and SAF image-import flows on real devices, physical NFC interoperability,
+physical sensor response and wider composed visual/accessibility checks remain pending. The emulator
+run and its captured scenes do not establish these remaining device results.
 
 ## NFC device checks
 
@@ -198,5 +209,7 @@ Android version and results rather than treating the browser demo as a native te
 screenshots per language and [`store/play-listing.md`](store/play-listing.md), with the listing
 copy, the release notes and the App content answers. `store/screenshots/readme/` keeps the
 downsized copies of the original overview images. The [appearance review gallery](store/screenshots/review/README.md)
-keeps unedited full-resolution Android captures of the newer card UI. `docs/` is published by GitHub
-Pages and is for the privacy policy only.
+keeps unedited full-resolution Android captures of the newer card UI. The
+[materials and QR evidence gallery](store/screenshots/materials-qr/README.md) records the current
+`dd9c3a5` emulator run and its eleven raw captures. `docs/` is published by GitHub Pages and is for
+the privacy policy only.

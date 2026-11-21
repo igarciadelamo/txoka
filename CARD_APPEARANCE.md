@@ -218,7 +218,16 @@ material tests are included in the 280; the browser's separate 191 tests are not
 Debug app/test APK compilation, Detekt, ktlint, the 95% coverage gate, debug/release lint and
 R8 release APK assembly passed.
 
-The 16 current Android instrumented tests, including persistence upgrades and native Canvas
-composition, remain pending execution. Historical results at `3d7ce41` predate these materials
-and QR. Camera/image-import flows, actual sensor response, NFC interoperability and composed
-visual/accessibility checks still require device validation; JVM tests cannot establish them.
+On the same date, app source `dd9c3a58464373776391f27a49dc8a3abc522a93` passed all 16 current
+repository instrumented tests on an Android 15 / API 35 Pixel 6 emulator, including persistence
+upgrades and native Canvas composition. One separate capture flow also passed: the raw
+AndroidJUnitRunner log records 17 passes, zero failures and zero errors; its XML summary is derived.
+The [native evidence gallery](store/screenshots/materials-qr/README.md) retains eleven raw captures.
+Independent jsQR decoding of the whole hub, portrait-viewer and landscape-viewer QR screens produced
+the same 220-byte vCard with the same contact, colours and `X-TXOKA-STYLE:1:A2gB`. Manifest probes
+confirm QR visibility after landscape rotation and preserved pause after rotation and return to
+portrait. QA capture revision: `792d50cd50e3252f4d01283dc73ad1e12dd82240`.
+
+Historical results at `3d7ce41` predate these materials and QR. Camera permission/denial and SAF
+image import on real devices, actual sensor response, NFC interoperability and wider composed
+visual/accessibility checks still require device validation.
