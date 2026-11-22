@@ -1,0 +1,213 @@
+{
+  "appSourceSha": "d9c1c01340a3cfba3db3a00e058a18745708d43c",
+  "qaCommitSha": "bca1af283ab273494d727859a53cb2629529fc9e",
+  "workflowRun": "45043218637",
+  "folder": "/tmp/txoka-native-library-review-v11",
+  "rawScreenshots": 22,
+  "instrumentedTests": 20,
+  "manifestSha256": "00abd8e8bd50443f23b710f7fc25a80afca8531ef889ac63b2ef1267afac933f",
+  "runtimeProbes": {
+    "masks": {
+      "stored_appearance": "1:cWgBoA",
+      "decoded_appearance": "CardAppearance(background=HOLOGRAM, mosaic=NATURE_FISH, effect=NONE, name=CardTextStyle(finish=PLAIN, size=M, color=null), data=CardTextStyle(finish=BUBBLE, size=M, color=null), topRight=null, bottomLeft=null)",
+      "TRIANGLES": {
+        "present": true,
+        "elapsed_ms": 13,
+        "width": 256,
+        "height": 161,
+        "bitmap_config": "ALPHA_8",
+        "transparent_pixels": 17482,
+        "opaque_pixels": 19470,
+        "partial_pixels": 4264
+      },
+      "NATURE_FISH": {
+        "present": true,
+        "elapsed_ms": 4242,
+        "width": 954,
+        "height": 600,
+        "bitmap_config": "ALPHA_8",
+        "transparent_pixels": 258905,
+        "opaque_pixels": 159894,
+        "partial_pixels": 153601
+      },
+      "fish_direct_renderer": [
+        {
+          "width": 192,
+          "height": 121,
+          "present": true,
+          "transparent_pixels": 3585,
+          "nonzero_alpha_pixels": 19647,
+          "elapsed_ms": 1293
+        },
+        {
+          "width": 954,
+          "height": 600,
+          "present": true,
+          "transparent_pixels": 258905,
+          "nonzero_alpha_pixels": 313495,
+          "elapsed_ms": 962
+        }
+      ]
+    },
+    "saved_appearance": "1:A2gB",
+    "qr_visible_after_landscape_rotation": true,
+    "pause_preserved_after_landscape_rotation": true,
+    "pause_preserved_after_return_to_portrait": true,
+    "work_first": {
+      "x": 8,
+      "y": 684,
+      "argb": -13415064,
+      "expected_hex": "#334D68",
+      "maximum_channel_difference": 0
+    },
+    "work_second": {
+      "x": 8,
+      "y": 684,
+      "argb": -13415064,
+      "expected_hex": "#334D68",
+      "maximum_channel_difference": 0
+    },
+    "friends": {
+      "x": 8,
+      "y": 684,
+      "argb": -9289882,
+      "expected_hex": "#723F66",
+      "maximum_channel_difference": 0
+    },
+    "coverflow_native_swipe_method": "UiAutomation.injectInputEvent",
+    "coverflow_native_swipe_touch": {
+      "start_x": 829.239990234375,
+      "end_x": 248.760009765625,
+      "y": 1295,
+      "target_bounds": "86 1009 993 1581"
+    },
+    "coverflow_native_swipe_advanced": true,
+    "coverflow_native_swipe_from": 3,
+    "coverflow_native_swipe_to": 5,
+    "friends_after_swipe": {
+      "x": 8,
+      "y": 684,
+      "argb": -9289882,
+      "expected_hex": "#723F66",
+      "maximum_channel_difference": 0
+    },
+    "library_landscape_card": {
+      "bounds": "755 74 2235 1007",
+      "screen_width": 2400,
+      "screen_height": 1080,
+      "height_fraction": 0.8638888888888889,
+      "ratio": 1.5862808145766345,
+      "available_bounds": "590 63 2400 1017",
+      "controls_bounds": "128 63 590 1017",
+      "available_height": 954,
+      "vertical_margin_px": 21,
+      "density_dpi": 420,
+      "max_card_height": 933,
+      "fit_fraction": 1,
+      "available_height_fraction": 0.9779874213836478
+    },
+    "library_viewer_landscape_card": {
+      "bounds": "262 11 1941 1069",
+      "screen_width": 2400,
+      "screen_height": 1080,
+      "height_fraction": 0.9796296296296296,
+      "ratio": 1.5869565217391304,
+      "anchor_bounds": "315 58 730 162",
+      "anchor_text": "Nerea Vidal",
+      "measurement_method": "native_anonymous_card_parent_containing_name"
+    },
+    "library_viewer_retained_after_rotation": true,
+    "library_viewer_qr_and_pause_retained_after_rotation": true,
+    "organizer_card_actions": [
+      {
+        "card_name": "Alba Serrano",
+        "action": "Move up",
+        "row_bounds": "32 888 1048 1140",
+        "anchor_bounds": "358 924 890 978",
+        "action_bounds": "587 1046 650 1109",
+        "button_bounds": "556 1015 682 1141",
+        "button_bounds_tolerance_px": 2,
+        "enabled_ancestors_verified": true,
+        "method": "scoped_native_accessibility_row"
+      },
+      {
+        "card_name": "Alba Serrano",
+        "action": "Add to favorites",
+        "row_bounds": "32 615 1048 867",
+        "anchor_bounds": "358 651 890 705",
+        "action_bounds": "954 647 1017 710",
+        "button_bounds": "923 616 1049 742",
+        "button_bounds_tolerance_px": 2,
+        "enabled_ancestors_verified": true,
+        "method": "scoped_native_accessibility_row"
+      }
+    ],
+    "organizer_reordered_cards": true,
+    "organizer_saved_favorite": true,
+    "category_draft_retained_after_rotation": true,
+    "organizer_saved_category_name": true,
+    "work_edited": {
+      "x": 8,
+      "y": 684,
+      "argb": -13415064,
+      "expected_hex": "#334D68",
+      "maximum_channel_difference": 0
+    },
+    "library_organization_after_edits": {
+      "version": 1,
+      "categories": [
+        {
+          "id": "work",
+          "name": "Work Studio",
+          "icon": "WORK",
+          "accent": "#334D68"
+        },
+        {
+          "id": "friends",
+          "name": "Friends",
+          "icon": "FRIENDS",
+          "accent": "#723F66"
+        },
+        {
+          "id": "travel",
+          "name": "Travel",
+          "icon": "TRAVEL",
+          "accent": "#467361",
+          "accent2": "#BB9D54"
+        }
+      ],
+      "assignments": {
+        "1": "work",
+        "2": "work",
+        "3": "friends",
+        "4": "friends",
+        "5": "travel",
+        "6": "travel"
+      },
+      "cardOrder": {
+        "work": [
+          2,
+          1
+        ],
+        "friends": [
+          3,
+          4
+        ],
+        "travel": [
+          5,
+          6
+        ],
+        "": [
+          7
+        ]
+      },
+      "favorites": [
+        1,
+        4,
+        2
+      ]
+    }
+  },
+  "qrDecoding": "Pending separate independent reader; this verifier does not decode QR",
+  "archiveSha256": "016010736d0d3fb6f0eeca2329465a59a5557df2779e16bf4fb41af82939b8b4"
+}

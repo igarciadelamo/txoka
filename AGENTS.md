@@ -38,14 +38,24 @@ baseline at `3d7ce41` are recorded in `TESTING.md`.
   [native evidence gallery](store/screenshots/materials-qr/README.md). Camera permission/denial
   and SAF image import on real devices, physical NFC and sensors, and wider visual/accessibility
   checks remain pending. Historical results in `TESTING.md` identify the earlier revision they cover.
-- The subsequent library revision adds Cover Flow, category shelves and a list fallback; categories,
-  card order, favorites and view mode live in a separate private DataStore. The viewer maximizes
-  landscape card height with immersive system bars and side controls. The latest local run passed
+- The library adds Cover Flow, category shelves and a list fallback; categories, card order,
+  favorites and view mode live in a separate private DataStore. The viewer maximizes landscape
+  card height with immersive system bars and side controls. At `d9c1c01` on 22 November 2026,
   all 334 JVM tests in 49 suites, the 95% Kover gate, debug app/test APK compilation, both lint
-  variants, R8 release assembly, Detekt and ktlint. The new emulator capture run
-  remains pending; the `dd9c3a5` screenshots do not validate these changes. The repository now has
-  18 permanent instrumented cases, including two new Room clear/restore regressions awaiting execution.
-  The separate demo passes 211 source/DOM tests in 19 files; this is not browser visual validation.
+  variants, R8 release assembly, Detekt and ktlint passed.
+- `d9c1c01` also corrects production `ALPHA_8` SVG composition: the palette shader is painted
+  through mask coverage, leaving uncovered material pixels untouched. The ARGB path remains
+  available and the painter state resets before subsequent layers. The repository has 19 permanent
+  instrumented cases, including a 20 SVG × 3 material × 3 pose matrix. All 19 plus the separate
+  capture flow passed on API 35 in run `45043218637`: 20 cases, 22 raw screenshots and five
+  independently decoded QR screens. The [library evidence gallery](store/screenshots/library/README.md)
+  pins app source `d9c1c01` and capture source `bca1af283ab273494d727859a53cb2629529fc9e`.
+  The correction changes rendering only, without NFC/QR fields or bytes. Physical NFC, sensors,
+  camera/import flows and wider visual/accessibility checks remain separate device work.
+- The separate demo passes 216 Node cases in 20 files, including five Canvas resource/recovery
+  regressions. On published version 22, Chromium passed 120 SVG/material/selection-order
+  combinations and both tilt axes; a controlled Canvas allocation failure recovered without a
+  page reload. These browser checks do not establish behaviour in Brave on a physical phone.
 - Remaining backlog: vCard-file sharing and SAF export/import of the received library.
 
 ## Non-negotiable rules

@@ -83,14 +83,24 @@ height in an immersive window, with movement, QR and close controls in a side ra
 
 ## Appearance review
 
-The [native screenshot gallery](store/screenshots/review/README.md) shows the card in the hub,
-its layered editor and the landscape viewer. These are unedited Android emulator captures with
-fictitious contact details.
+The [native library and landscape gallery](store/screenshots/library/README.md) shows the card
+materials, Cover Flow category backgrounds, shelves, organizer and immersive viewer in **22 raw
+Android screenshots** with fictional contact details. The older
+[editor gallery](store/screenshots/review/README.md) and
+[materials/QR gallery](store/screenshots/materials-qr/README.md) remain separate historical evidence.
+
+The latest revision passes **334 JVM tests** and **20 API 35 Android cases**: 19 permanent tests
+plus the capture flow. Debug/release build, lint, the 95% coverage gate and static checks pass.
+Five independently decoded QR screens retain the correct own-card or received-card payload.
+The demo's 216 Node cases and additional Chromium checks are recorded separately in
+[`TESTING.md`](TESTING.md); physical NFC, sensors and Brave still require device checks.
 
 <p align="center">
-  <a href="store/screenshots/review/01-hub-hologram.png"><img src="store/screenshots/review/01-hub-hologram.png" width="180" alt="Holographic card in the native Txoka hub"></a>
-  <a href="store/screenshots/review/03-editor-mosaics.png"><img src="store/screenshots/review/03-editor-mosaics.png" width="180" alt="Pinned card preview above the native mosaic catalogue"></a>
-  <a href="store/screenshots/review/04-editor-lettering.png"><img src="store/screenshots/review/04-editor-lettering.png" width="180" alt="Independent name and contact lettering finishes in the native editor"></a>
+  <a href="store/screenshots/library/12-library-coverflow-work.png"><img src="store/screenshots/library/12-library-coverflow-work.png" width="200" alt="Native Cover Flow with the Work category background"></a>
+  <a href="store/screenshots/library/13-library-coverflow-friends.png"><img src="store/screenshots/library/13-library-coverflow-friends.png" width="200" alt="The Friends category changes the native carousel background"></a>
+</p>
+<p align="center">
+  <a href="store/screenshots/library/15-library-viewer-landscape-front.png"><img src="store/screenshots/library/15-library-viewer-landscape-front.png" width="660" alt="Received card using the landscape viewer height with controls beside it"></a>
 </p>
 
 ## Known limitations

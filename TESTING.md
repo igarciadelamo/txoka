@@ -85,9 +85,16 @@ checking that fields, colours and notes survive and that appearance can then be 
 `CardMosaicRenderingTest` checks that all 29 procedural and bundled SVG mosaics retain both inks
 and that mask resolution stays bounded without changing the card aspect ratio.
 `CardMaterialRenderingTest` adds six native material checks, including the 24-pane optical atlas,
-source RGB identity, both tilt axes and separate mosaic/effect composition. The repository now
-has **18 instrumented tests**: eight DAO, two migration, two mosaic and six material tests. Their
-execution against the new library and immersive-viewer revision is pending.
+source RGB identity, both tilt axes and separate mosaic/effect composition. Its mask regression
+compares production `ALPHA_8` with ARGB masks, including partial coverage and uncovered pixels.
+`NativeSvgMaterialIntegrationTest` uses all 20 supplied SVGs with three real material textures
+and three poses: **180 combinations**. It checks exact preservation of uncovered pixels, visible
+mosaic ink, retained material detail and independent X/Y light response.
+The repository has **19 permanent instrumented tests**: eight DAO, two migration, two mosaic,
+six material and one SVG/material matrix. All 19 plus the separate capture flow passed on
+Android 15 / API 35 at app source `d9c1c01` in run `45043218637`: **20 actual runner cases**.
+The [library evidence gallery](store/screenshots/library/README.md) retains 22 raw screenshots,
+the source-bound capture manifest and the runner evidence.
 
 For the preceding material/QR revision on 21 November 2026, all 16 tests then present passed on an
 Android 15 / API 35 Pixel 6 emulator at app source
@@ -119,10 +126,10 @@ device checks.
 That dated result predates the new material and QR changes and is not a passing result for the
 current revision. The historical JVM result was 248 passing tests in 38 suites at `3d7ce41`.
 
-## Library and immersive-viewer verification — 21 November 2026
+## Library, immersive-viewer and SVG verification — 22 November 2026
 
-The latest local JVM reports for the library revision contain **334 tests in 49 suites**, with
-zero failures, errors or skips. The 95% Kover gate, debug app and instrumented-test APK compilation,
+At app source `d9c1c01340a3cfba3db3a00e058a18745708d43c`, the local JVM reports contain
+**334 tests in 49 suites**, with zero failures, errors or skips. The 95% Kover gate, debug app and instrumented-test APK compilation,
 debug/release lint, R8 release assembly, Detekt and ktlint passed in the final combined gate.
 These local results do not establish that the new Compose flows work on an Android device.
 
@@ -139,15 +146,47 @@ The new regression coverage exercises:
 - Search, favorites/recent filters, sender updates, category order and deletion cleanup without
   losing notes or unrelated received cards.
 
-The separate browser demo passes **211 Node cases in 19 test files**, including model and simulated
-DOM interactions and actual Canvas comparisons for all 29 mosaics over the three new materials.
-Published version 20 was checked by comparing eight public resources byte for
-byte with its source. This is source/publication verification, not a visual browser review or an
-Android test run.
+The SVG correction paints production alpha-only masks through the existing palette shader rather
+than treating them as an ARGB `DST_IN` image. This preserves uncovered pixels and the underlying
+material texture. ARGB masks retain their existing path, and painter state resets before later
+layers. The viewer QR button also avoids splitting its label in the landscape side rail.
+These rendering/layout changes add no NFC or QR bytes. Private library organization also remains
+outside both payloads.
 
-Execution of all 18 repository instrumented cases and the new native library/viewer capture flow
-remains pending. The eleven images and 17 runner passes below belong to `dd9c3a5`; they do not
-validate the later CoverFlow, organizer, rotation-retention or immersive-layout changes.
+The separate browser demo passes **216 Node cases in 20 test files**, including model and simulated
+DOM interactions, actual Canvas comparisons and five regressions for Canvas resource pressure,
+independent thumbnail buffers and bounded recovery retries. Published version 22 was checked
+against its source byte for byte for seven public resources. Chromium additionally passed all
+**120 combinations** of 20 SVGs × three materials × two selection orders on that published version,
+checking card/thumbnail visibility and both tilt axes. A controlled transient Canvas allocation
+failure recovered without reloading the page. These are browser checks, not Android tests or
+validation of Brave on a physical phone.
+
+All **20 Android cases** passed in [run `45043218637`](https://github.com/igarciadelamo/txoka/actions/runs/45043218637):
+19 permanent repository cases, including the native SVG/material matrix and alpha-only/ARGB mask
+regression, plus the capture flow. The run binds application source
+`d9c1c01340a3cfba3db3a00e058a18745708d43c` and capture source
+`bca1af283ab273494d727859a53cb2629529fc9e`. The
+[library evidence gallery](store/screenshots/library/README.md) retains **22 complete native PNGs**
+with verified hashes, the manifest and raw AndroidJUnitRunner log. Its XML summary is derived
+from that log rather than produced by the runner.
+
+The captured flow exercises swipe/snapping, category backdrop changes, card ordering, favorites,
+search, category editing/saving and rotation with an unsaved category draft. It verifies that the
+selected received card and its QR/pause state survive rotation. The landscape library card uses
+97.8% of the stage below the system bars and the maximum physical card height allowed by its
+8 dp vertical margin. The immersive viewer uses 98.0% of the complete screen height. Bounds
+checks preserve the ID-1 ratio and reject overlap by viewer controls or the permanent joystick.
+
+Independent jsQR decoding of **five whole raw screenshots** confirms the same 220-byte Marta Ruiz
+payload in the three hub/own-card QR views and the same 193-byte Nerea Vidal payload in the two
+received-card QR views. Both retain their colours and nacre STYLE `1:A2gB`; categories, ordering,
+favorites and private notes are absent. The gallery includes screenshot/payload hashes and QR
+locations in `qr-decoding.json`. These checks validate the captured emulator flows; physical NFC,
+sensor response, camera permission/scanning and SAF import on real devices remain pending.
+
+The eleven images and 17 runner passes in the following section belong to `dd9c3a5` and remain
+historical evidence separate from this library, landscape and SVG revision.
 
 ## Material and QR baseline verification — 21 November 2026
 
@@ -275,6 +314,8 @@ screenshots per language and [`store/play-listing.md`](store/play-listing.md), w
 copy, the release notes and the App content answers. `store/screenshots/readme/` keeps the
 downsized copies of the original overview images. The [appearance review gallery](store/screenshots/review/README.md)
 keeps unedited full-resolution Android captures of the newer card UI. The
-[materials and QR evidence gallery](store/screenshots/materials-qr/README.md) records the historical
-`dd9c3a5` emulator run and its eleven raw captures. `docs/` is published by GitHub Pages and is for
-the privacy policy only.
+[library evidence gallery](store/screenshots/library/README.md) records the current `d9c1c01` emulator
+run, its 22 raw captures and five independent QR decodes. The
+[materials and QR evidence gallery](store/screenshots/materials-qr/README.md) retains the historical
+`dd9c3a5` run and its eleven captures. `docs/` is published by GitHub Pages and is for the privacy
+policy only.

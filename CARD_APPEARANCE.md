@@ -43,6 +43,11 @@ have separate visual checks. No material-specific settings or fields are added t
 asset bytes and normals never enter NFC or QR. Flat remains the only background that rejects
 four corners.
 
+Production SVG masks use `ALPHA_8`. The renderer paints their coverage directly through the
+palette shader, leaving uncovered material pixels unchanged, and resets the paint before later
+lighting. The ARGB-mask fallback remains supported. This corrects a composition failure where
+colour could cover transparent SVG regions. It changes no selector, palette or transport bytes.
+
 Legacy cards have no appearance object. They retain automatic contrast and the historical gradient.
 Explicit styles use white text by default, or `#9BA5B5` for metallic glyphs. A user-selected colour
 does not imply a contrast guarantee. Check legibility over every selected mosaic and effect.
@@ -239,16 +244,32 @@ for each new background. On 21 November 2026 the materials/QR baseline at app so
 passed all 280 JVM tests in 43 suites, with zero failures, errors or skips. This includes unsigned selectors, canonical RGB,
 malformed extension fallback, old vCards, escaped/folded Unicode, NDEF framing and the exact
 768/769-byte edge, real ZXing QR boundaries and QR-only save/HCE-clearing behaviour. The 21 pure
-material tests are included in the 280. The separate browser source suite now has 208 passing
-Node cases, including library model and simulated-DOM interactions; it is not native testing or
-a browser visual check.
+material tests are included in the 280.
 Debug app/test APK compilation, Detekt, ktlint, the 95% coverage gate, debug/release lint and
 R8 release APK assembly passed.
 
-Those native results remain tied to `dd9c3a5`. They do not establish that the subsequently added
-library or immersive landscape changes pass native gates; their results belong in `TESTING.md`.
+On 22 November 2026, app source `d9c1c01340a3cfba3db3a00e058a18745708d43c`, including the
+library, immersive viewer and SVG-mask correction, passed all 334 JVM tests in 49 suites,
+debug app/test APK compilation, Detekt, ktlint, the 95% coverage gate, both lint variants and
+R8 release APK assembly. There are 19 permanent instrumented cases: eight DAO, two migration,
+two mosaic, six material and one supplied-SVG/material matrix. The latter checks 20 SVGs across
+three materials and three poses, including both tilt axes. All 19 permanent cases plus the
+capture flow passed in API 35 run `45043218637`: **20 actual runner cases**. Capture source
+`bca1af283ab273494d727859a53cb2629529fc9e` produced **22 raw screenshots**, retaining native
+geometry, swipe/category behaviour, organizer edits and card/QR/pause state across rotation.
+The [library evidence gallery](store/screenshots/library/README.md) records the source binding,
+raw runner log, PNG hashes and layout bounds. Independent jsQR decoding of five whole screens
+preserves the own-card and received-card payloads across their respective views, including their
+colours and STYLE, without private library metadata. See `TESTING.md` for details and device limits.
 
-On the same date, app source `dd9c3a58464373776391f27a49dc8a3abc522a93` passed all 16 then-current
+The separate demo passes 216 Node cases in 20 files, including five regressions for bounded
+Canvas-resource recovery and independent thumbnail buffers. On the published version, Chromium
+also passed 120 SVG/material combinations in both selection orders, with visible thumbnails and
+independent X/Y response. A controlled transient Canvas-allocation failure recovered without
+reloading. These browser checks are separate from Android tests and do not validate Brave on a
+physical phone.
+
+On 21 November 2026, app source `dd9c3a58464373776391f27a49dc8a3abc522a93` passed all 16 then-current
 repository instrumented tests on an Android 15 / API 35 Pixel 6 emulator, including persistence
 upgrades and native Canvas composition. One separate capture flow also passed: the raw
 AndroidJUnitRunner log records 17 passes, zero failures and zero errors; its XML summary is derived.

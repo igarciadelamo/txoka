@@ -1,0 +1,245 @@
+{
+  "decoder": "jsQR (independent of Android ZXing)",
+  "appSourceSha": "d9c1c01340a3cfba3db3a00e058a18745708d43c",
+  "qaCommitSha": "bca1af283ab273494d727859a53cb2629529fc9e",
+  "workflowRun": "45043218637",
+  "groups": [
+    {
+      "id": "profile",
+      "screens": 3,
+      "payloadBytes": 220,
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "style": "1:A2gB"
+    },
+    {
+      "id": "received",
+      "screens": 2,
+      "payloadBytes": 193,
+      "payloadSha256": "cbaba96cdf478304597717b1fae29f3fa5a6e49773111746c385b4c94245a0db",
+      "style": "1:A2gB"
+    }
+  ],
+  "decoded": [
+    {
+      "file": "07-hub-qr-back.png",
+      "group": "profile",
+      "screenshotSha256": "82687377c6daea9eb66c10c30e813e0182cbcfe7f6f4a1721b779559019581f1",
+      "width": 1080,
+      "height": 2400,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 754,
+          "y": 755
+        },
+        "topLeftCorner": {
+          "x": 327,
+          "y": 755
+        },
+        "bottomRightCorner": {
+          "x": 754,
+          "y": 1182
+        },
+        "bottomLeftCorner": {
+          "x": 327,
+          "y": 1182
+        },
+        "topRightFinderPattern": {
+          "x": 729.5,
+          "y": 779.5
+        },
+        "topLeftFinderPattern": {
+          "x": 351.5,
+          "y": 779.5
+        },
+        "bottomLeftFinderPattern": {
+          "x": 351.5,
+          "y": 1157.5
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 708.5,
+          "y": 1136.5
+        }
+      }
+    },
+    {
+      "file": "09-viewer-portrait-qr.png",
+      "group": "profile",
+      "screenshotSha256": "eafa08a112e9a91fc2abe509e6d92d37c8e53230995590e520c9e94390b51b7e",
+      "width": 1080,
+      "height": 2400,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 784,
+          "y": 932
+        },
+        "topLeftCorner": {
+          "x": 296,
+          "y": 932
+        },
+        "bottomRightCorner": {
+          "x": 784,
+          "y": 1420
+        },
+        "bottomLeftCorner": {
+          "x": 296,
+          "y": 1420
+        },
+        "topRightFinderPattern": {
+          "x": 756,
+          "y": 960
+        },
+        "topLeftFinderPattern": {
+          "x": 324,
+          "y": 960
+        },
+        "bottomLeftFinderPattern": {
+          "x": 324,
+          "y": 1392
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 732,
+          "y": 1368
+        }
+      }
+    },
+    {
+      "file": "10-viewer-landscape-qr.png",
+      "group": "profile",
+      "screenshotSha256": "38c55aa5ba84c6aad4bc7eee936a44c2f5d30060432d9b6c0a7b425e77531464",
+      "width": 2400,
+      "height": 1080,
+      "payloadBytes": 220,
+      "style": "1:A2gB",
+      "payloadSha256": "2bc2f767766f66abe6ee88193f223e812b9c34713ccfb44357a80a8a67b089da",
+      "location": {
+        "topRightCorner": {
+          "x": 1529,
+          "y": 114
+        },
+        "topLeftCorner": {
+          "x": 675,
+          "y": 114
+        },
+        "bottomRightCorner": {
+          "x": 1529,
+          "y": 968
+        },
+        "bottomLeftCorner": {
+          "x": 675,
+          "y": 968
+        },
+        "topRightFinderPattern": {
+          "x": 1480,
+          "y": 163
+        },
+        "topLeftFinderPattern": {
+          "x": 724,
+          "y": 163
+        },
+        "bottomLeftFinderPattern": {
+          "x": 724,
+          "y": 919
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 1438,
+          "y": 877
+        }
+      }
+    },
+    {
+      "file": "16-library-viewer-landscape-qr.png",
+      "group": "received",
+      "screenshotSha256": "ab90f46804070da5e0dfec2382d6a1801392ecce862fdd73936c65b0dbffed72",
+      "width": 2400,
+      "height": 1080,
+      "payloadBytes": 193,
+      "style": "1:A2gB",
+      "payloadSha256": "cbaba96cdf478304597717b1fae29f3fa5a6e49773111746c385b4c94245a0db",
+      "location": {
+        "topRightCorner": {
+          "x": 1529,
+          "y": 113
+        },
+        "topLeftCorner": {
+          "x": 674,
+          "y": 113
+        },
+        "bottomRightCorner": {
+          "x": 1529,
+          "y": 967.9999999999999
+        },
+        "bottomLeftCorner": {
+          "x": 674,
+          "y": 967.9999999999999
+        },
+        "topRightFinderPattern": {
+          "x": 1476.5,
+          "y": 165.5
+        },
+        "topLeftFinderPattern": {
+          "x": 726.5,
+          "y": 165.5
+        },
+        "bottomLeftFinderPattern": {
+          "x": 726.5,
+          "y": 915.5
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 1431.5,
+          "y": 870.5
+        }
+      }
+    },
+    {
+      "file": "17-library-viewer-portrait-qr.png",
+      "group": "received",
+      "screenshotSha256": "e969214557294102a8a32b4d52276487469c282aadda595f51318cf23bb9e9f3",
+      "width": 1080,
+      "height": 2400,
+      "payloadBytes": 193,
+      "style": "1:A2gB",
+      "payloadSha256": "cbaba96cdf478304597717b1fae29f3fa5a6e49773111746c385b4c94245a0db",
+      "location": {
+        "topRightCorner": {
+          "x": 767.9999999999999,
+          "y": 948
+        },
+        "topLeftCorner": {
+          "x": 312,
+          "y": 948
+        },
+        "bottomRightCorner": {
+          "x": 767.9999999999999,
+          "y": 1404
+        },
+        "bottomLeftCorner": {
+          "x": 312,
+          "y": 1404
+        },
+        "topRightFinderPattern": {
+          "x": 740,
+          "y": 976
+        },
+        "topLeftFinderPattern": {
+          "x": 340,
+          "y": 976
+        },
+        "bottomLeftFinderPattern": {
+          "x": 340,
+          "y": 1376
+        },
+        "bottomRightAlignmentPattern": {
+          "x": 716,
+          "y": 1352
+        }
+      }
+    }
+  ],
+  "note": "Decoded raw whole-screen PNGs at native size, without cropping, resizing, replacing or writing images."
+}
