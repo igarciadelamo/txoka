@@ -253,7 +253,6 @@ internal class CardMaterialPainter {
         motion: CardMotion,
         mask: Bitmap,
     ) {
-        val layer = canvas.saveLayer(destination, null)
         paint.resetMaterial()
         val first = palette.accent.argb.toInt()
         val second = palette.accent2.argb.toInt()
@@ -272,6 +271,13 @@ internal class CardMaterialPainter {
                 paint.alpha = 116
             }
         }
+        if (mask.config == Bitmap.Config.ALPHA_8) {
+            // Alpha-only bitmaps supply coverage; transparent pixels must leave the material untouched.
+            canvas.drawBitmap(mask, null as Rect?, destination, paint)
+            paint.resetMaterial()
+            return
+        }
+        val layer = canvas.saveLayer(destination, null)
         canvas.drawRect(destination, paint)
         paint.resetMaterial()
         paint.xfermode = maskTransfer

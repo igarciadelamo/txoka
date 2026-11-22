@@ -77,24 +77,46 @@ class CardMaterialRenderingTest {
     @Test
     fun mosaicMaskChangesOnlyItsCoveredHalfOnEveryNativeMaterial() {
         val maskPixels = IntArray(WIDTH * HEIGHT) { index ->
-            if (index % WIDTH < WIDTH / 2) Color.WHITE else Color.TRANSPARENT
+            when {
+                index % WIDTH < WIDTH / 4 -> Color.WHITE
+                index % WIDTH < WIDTH / 2 -> Color.argb(128, 255, 255, 255)
+                else -> Color.TRANSPARENT
+            }
         }
-        val mask = Bitmap.createBitmap(maskPixels, WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
-        materials.forEach { background ->
-            val appearance = CardAppearance(background = background)
-            val plain = draw(appearance)
-            val decorated = draw(appearance.copy(mosaic = CardMosaic.SQUARES), mask = mask)
-            var changed = 0
-            plain.indices.forEach { index ->
-                if (index % WIDTH >= WIDTH / 2) {
-                    assertEquals("Mask leaked into uncovered $background", plain[index], decorated[index])
-                } else if (plain[index] != decorated[index]) {
-                    changed++
+        val colorMask = Bitmap.createBitmap(maskPixels, WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
+        val masks = listOf(colorMask, colorMask.extractAlpha())
+        try {
+            materials.forEach { background ->
+                val appearance = CardAppearance(background = background)
+                val plain = draw(appearance)
+                val results = masks.map { mask ->
+                    val decorated = draw(appearance.copy(mosaic = CardMosaic.SQUARES), mask = mask)
+                    var changed = 0
+                    plain.indices.forEach { index ->
+                        if (index % WIDTH >= WIDTH / 2) {
+                            assertEquals(
+                                "Mask leaked into uncovered $background / ${mask.config}",
+                                plain[index],
+                                decorated[index],
+                            )
+                        } else if (plain[index] != decorated[index]) {
+                            changed++
+                        }
+                    }
+                    assertTrue("Mosaic disappeared on $background / ${mask.config}", changed > WIDTH * HEIGHT / 4)
+                    decorated
+                }
+                results.first().indices.forEach { index ->
+                    listOf(0, 8, 16, 24).forEach { shift ->
+                        val first = results.first()[index] shr shift and 255
+                        val second = results.last()[index] shr shift and 255
+                        assertTrue("Mask alpha differs on $background at $index", abs(first - second) <= 1)
+                    }
                 }
             }
-            assertTrue("Mosaic disappeared on $background", changed > WIDTH * HEIGHT / 4)
+        } finally {
+            masks.forEach(Bitmap::recycle)
         }
-        mask.recycle()
     }
 
     @Test
