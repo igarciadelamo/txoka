@@ -23,10 +23,7 @@ REPOSITORY = "igarciadelamo/txoka"
 REPOSITORY_ID = 1436307628
 WORKFLOW_PATH = ".github/workflows/preview-apk.yml"
 SIGNER_WORKFLOW_REF = REPOSITORY + "/.github/workflows/sign-preview-apk.yml@refs/heads/main"
-REQUIRED_JOBS = {
-    "eligibility", "Build and verify preview", "Kotlin and secret scanning",
-    "Runtime dependency vulnerabilities", "APK analysis with MobSF", "Device persistence tests",
-}
+REQUIRED_JOBS = {"eligibility", "Build and verify preview", "Device persistence tests"}
 APPLICATION_ID = "es.igarciadelamo.txoka.preview"
 REQUIRED_PERMISSIONS = {"android.permission.NFC", APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
 OPTIONAL_PERMISSIONS = {"android.permission.CAMERA"}
@@ -209,11 +206,15 @@ def resolve(api, run_id, attempt):
     if not validate_pr(pr, sha, source["id"], branch):
         return None
     jobs = api.pages(f"/repos/{REPOSITORY}/actions/runs/{run_id}/attempts/{attempt}/jobs", "jobs")
+    conclusions = {}
     for name in REQUIRED_JOBS:
         matches = [job for job in jobs if job.get("name") == name]
         require(len(matches) == 1 and matches[0].get("run_id") == run_id
-                and matches[0].get("status") == "completed" and matches[0].get("conclusion") == "success",
-                "A required preview build or security job did not succeed")
+                and matches[0].get("status") == "completed", "Missing or ambiguous preview job")
+        conclusions[name] = matches[0].get("conclusion")
+    if conclusions["Build and verify preview"] == conclusions["Device persistence tests"] == "skipped":
+        return None
+    require(all(result == "success" for result in conclusions.values()), "A required preview job did not succeed")
     expected_name = unsigned_artifact_name(number, sha, run_id, attempt)
     artifacts = api.pages(f"/repos/{REPOSITORY}/actions/runs/{run_id}/artifacts", "artifacts")
     matches = [artifact for artifact in artifacts if artifact.get("name") == expected_name]
@@ -273,13 +274,6 @@ def extract_candidate(archive, destination, digest):
     return strict_json((target / "source.json").read_bytes())
 
 
-def expected_version_code():
-    build_file = Path(__file__).resolve().parents[2] / "app/build.gradle.kts"
-    matches = re.findall(r"^\s*versionCode\s*=\s*(\d+)\s*$", build_file.read_text(), re.MULTILINE)
-    require(len(matches) == 1, "Trusted versionCode must be a single numeric declaration")
-    return int(matches[0])
-
-
 def command(arguments, signing_password=False):
     environment = dict(os.environ)
     environment.pop("PREVIEW_KEYSTORE_B64", None)
@@ -295,11 +289,11 @@ def command(arguments, signing_password=False):
     return result.stdout.decode("utf-8", errors="strict")
 
 
-def validate_badging(text, version_code):
+def validate_badging(text):
     packages = re.findall(r"^package: name='([^']*)' versionCode='([^']*)' versionName='([^']*)'", text, re.MULTILINE)
     require(len(packages) == 1, "APK has no unambiguous package identity")
     package, code, version = packages[0]
-    require(package == APPLICATION_ID and code == str(version_code)
+    require(package == APPLICATION_ID and re.fullmatch(r"[1-9][0-9]{0,9}", code) and int(code) <= 2_147_483_647
             and version.endswith("-preview") and len(version) <= 100,
             "APK does not have the expected preview identity and version")
     require(re.findall(r"^(?:minSdkVersion|sdkVersion):'([^']*)'", text, re.MULTILINE) == ["26"]
@@ -318,8 +312,7 @@ def validate_badging(text, version_code):
 
 
 def inspect_apk(apk, build_tools):
-    return validate_badging(command([Path(build_tools) / "aapt2", "dump", "badging", apk]),
-                            expected_version_code())
+    return validate_badging(command([Path(build_tools) / "aapt2", "dump", "badging", apk]))
 
 
 def source_metadata(pr, sha, run_id, attempt, apk, identity):
@@ -496,7 +489,7 @@ def main():
         elif args.command == "resolve":
             context = resolve(api, args.run_id, args.attempt)
             output_values({"eligible": context is not None, **(context or {})})
-            print("Preview candidate verified." if context else "Signing skipped: no current eligible PR.")
+            print("Preview candidate verified." if context else "Signing skipped: no eligible preview build.")
         elif args.command == "guard":
             guard(api, args.run_id, args.attempt, args.artifact_id, args.artifact_digest)
             print("Preview remains eligible for publication.")

@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: preview-sign-${{ github.event.workflow_run.head_repository.id }}-${{ github.event.workflow_run.head_branch }}
+  group: preview-sign-${{ github.event.workflow_run.id }}
   cancel-in-progress: true
 
 permissions:
@@ -48,6 +48,7 @@ jobs:
 
   sign:
     name: Sign the isolated preview APK
+    environment: preview
     needs: policy
     if: needs.policy.outputs.eligible == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04

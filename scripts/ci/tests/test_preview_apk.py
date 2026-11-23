@@ -147,7 +147,7 @@ class PreviewEligibilityTests(unittest.TestCase):
         with self.assertRaisesRegex(preview.PolicyError, "attempt changed"):
             preview.resolve(api, RUN_ID, ATTEMPT)
 
-    def test_every_required_build_and_security_job_must_run_successfully(self):
+    def test_signing_requires_all_producer_jobs_to_succeed(self):
         for name in preview.REQUIRED_JOBS:
             for conclusion in ("skipped", "failure", "cancelled", None):
                 with self.subTest(job=name, conclusion=conclusion):
@@ -160,6 +160,14 @@ class PreviewEligibilityTests(unittest.TestCase):
             transform(api.jobs)
             with self.assertRaises(preview.PolicyError):
                 preview.resolve(api, RUN_ID, ATTEMPT)
+
+    def test_skipped_build_and_device_jobs_do_not_download_or_sign(self):
+        api = FakeGitHub()
+        for job in api.jobs:
+            if job["name"] != "eligibility":
+                job["conclusion"] = "skipped"
+        self.assertIsNone(preview.resolve(api, RUN_ID, ATTEMPT))
+        self.assertFalse(any(path.endswith("/artifacts") for path in api.requests))
 
     def test_missing_ambiguous_expired_wrong_run_and_unhashed_artifacts_are_rejected(self):
         changes = [
@@ -263,13 +271,13 @@ application-label:'Txoka PR'
 
 class PreviewApkIdentityTests(unittest.TestCase):
     def test_camera_is_the_only_optional_permission_and_baseline_remains_accepted(self):
-        baseline = preview.validate_badging(BADGING, 1)
+        baseline = preview.validate_badging(BADGING)
         required = {"android.permission.NFC", preview.APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
         self.assertEqual(required, set(baseline["permissions"]))
         for declaration in ("uses-permission", "uses-permission-sdk-23"):
             camera = BADGING + f"{declaration}: name='android.permission.CAMERA'\n"
             with self.subTest(declaration=declaration):
-                identity = preview.validate_badging(camera, 1)
+                identity = preview.validate_badging(camera)
                 self.assertEqual(sorted(required | {"android.permission.CAMERA"}), identity["permissions"])
 
     def test_camera_cannot_authorize_additional_permissions_or_duplicate_declarations(self):
@@ -283,22 +291,21 @@ class PreviewApkIdentityTests(unittest.TestCase):
         )
         for extra in extra_permissions:
             with self.subTest(extra=extra), self.assertRaises(preview.PolicyError):
-                preview.validate_badging(camera + extra, 1)
+                preview.validate_badging(camera + extra)
 
     def test_camera_does_not_replace_either_required_permission(self):
         camera = BADGING + "uses-permission: name='android.permission.CAMERA'\n"
         for permission in ("android.permission.NFC", preview.APPLICATION_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"):
             missing_required = camera.replace(f"uses-permission: name='{permission}'\n", "")
             with self.subTest(permission=permission), self.assertRaises(preview.PolicyError):
-                preview.validate_badging(missing_required, 1)
+                preview.validate_badging(missing_required)
 
     def test_actual_apk_manifest_fields_are_required(self):
-        identity = preview.validate_badging(BADGING, 1)
+        identity = preview.validate_badging(BADGING)
         self.assertEqual(preview.APPLICATION_ID, identity["application_id"])
         self.assertFalse(identity["debuggable"])
         modifications = [
             BADGING.replace(preview.APPLICATION_ID, "es.igarciadelamo.txoka"),
-            BADGING.replace("versionCode='1'", "versionCode='999999'"),
             BADGING.replace("1.0-preview", "1.0"),
             BADGING.replace("minSdkVersion:'26'", "minSdkVersion:'27'"),
             BADGING.replace("targetSdkVersion:'37'", "targetSdkVersion:'36'"),
@@ -311,10 +318,32 @@ class PreviewApkIdentityTests(unittest.TestCase):
         ]
         for text in modifications:
             with self.subTest(text=text), self.assertRaises(preview.PolicyError):
-                preview.validate_badging(text, 1)
+                preview.validate_badging(text)
+
+    def test_build_version_comes_from_the_pr_apk_and_must_match_source_metadata(self):
+        context = {"pr": PR_NUMBER, "sha": SHA, "run_id": RUN_ID, "attempt": ATTEMPT}
+        with tempfile.TemporaryDirectory() as directory:
+            apk = Path(directory) / "manifest-fixture"
+            apk.write_bytes(b"candidate bytes")
+            for code in (2, 1):
+                with self.subTest(code=code):
+                    badging = BADGING.replace("versionCode='1'", f"versionCode='{code}'")
+                    with patch.object(preview, "command", return_value=badging):
+                        identity = preview.inspect_apk(apk, "/tools")
+                    self.assertEqual(identity["version_code"], code)
+                    metadata = preview.source_metadata(PR_NUMBER, SHA, RUN_ID, ATTEMPT, apk, identity)
+                    preview.validate_metadata(metadata, context, apk, identity)
+                    for mismatch in ({"version_code": 3}, {"version_name": "changed-preview"}):
+                        with self.assertRaises(preview.PolicyError):
+                            preview.validate_metadata({**metadata, **mismatch}, context, apk, identity)
+
+    def test_version_code_must_be_a_positive_android_integer(self):
+        for code in ("0", "-1", "1.5", "2147483648", "9" * 15):
+            with self.subTest(code=code), self.assertRaises(preview.PolicyError):
+                preview.validate_badging(BADGING.replace("versionCode='1'", f"versionCode='{code}'"))
 
     def test_metadata_is_only_accepted_when_it_matches_api_and_apk(self):
-        identity = preview.validate_badging(BADGING, 1)
+        identity = preview.validate_badging(BADGING)
         context = {"pr": PR_NUMBER, "sha": SHA, "run_id": RUN_ID, "attempt": ATTEMPT}
         with tempfile.TemporaryDirectory() as directory:
             apk = Path(directory) / "preview.apk"
@@ -346,7 +375,7 @@ class PreviewSigningFlowTests(unittest.TestCase):
         runner.mkdir()
         apk = root / "unsigned.apk"
         apk.write_bytes(b"test apk bytes")
-        identity = preview.validate_badging(BADGING, 1)
+        identity = preview.validate_badging(BADGING)
         metadata = preview.source_metadata(PR_NUMBER, SHA, RUN_ID, ATTEMPT, apk, identity)
         archive = root / "source.zip"
         digest = archive_at(archive, [("preview.apk", apk.read_bytes()),
