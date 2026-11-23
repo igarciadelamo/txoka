@@ -1,0 +1,42 @@
+import groovy.json.JsonOutput
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+
+gradle.projectsEvaluated {
+    def appProject = gradle.rootProject.project(':app')
+    appProject.tasks.register('writePreviewSbom') {
+        description = 'Export resolved preview runtime Maven components for OSV scanning.'
+        group = 'verification'
+        notCompatibleWithConfigurationCache('The security inventory resolves the current runtime dependency graph.')
+        def report = appProject.layout.buildDirectory.file('reports/security/preview-sbom.cdx.json')
+        outputs.file(report)
+        // A fresh resolved inventory is required for every security scan.
+        outputs.upToDateWhen { false }
+        doLast {
+            def runtime = appProject.configurations.getByName('previewRuntimeClasspath')
+            runtime.resolvedConfiguration.rethrowFailure()
+            def components = runtime.incoming.resolutionResult.allComponents
+                .findAll { it.id instanceof ModuleComponentIdentifier }
+                .collect {
+                    def id = it.id
+                    if (!id.group || !id.module || !id.version || id.version.contains('+')) {
+                        throw new GradleException('Runtime inventory contains unresolved Maven coordinates.')
+                    }
+                    def encode = { String value -> URLEncoder.encode(value, 'UTF-8').replace('+', '%20') }
+                    [type: 'library', group: id.group, name: id.module, version: id.version,
+                     purl: "pkg:maven/${encode(id.group)}/${encode(id.module)}@${encode(id.version)}"]
+                }
+                .unique { it.purl }
+                .sort { a, b -> a.purl <=> b.purl }
+            if (components.isEmpty()) {
+                throw new GradleException('Preview runtime Maven inventory is empty; refusing an incomplete scan.')
+            }
+            def data = [bomFormat: 'CycloneDX', specVersion: '1.6', version: 1,
+                        metadata: [properties: [[name: 'txoka:configuration', value: 'previewRuntimeClasspath']]],
+                        components: components]
+            def output = report.get().asFile
+            output.parentFile.mkdirs()
+            output.text = JsonOutput.prettyPrint(JsonOutput.toJson(data)) + '\n'
+            logger.lifecycle("Preview runtime SBOM: ${components.size()} Maven components -> ${output}")
+        }
+    }
+}

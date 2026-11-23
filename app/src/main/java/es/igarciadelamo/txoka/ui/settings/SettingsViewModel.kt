@@ -62,12 +62,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { settingsRepository.setRequireDeviceUnlock(enabled) }
     }
 
-    /** Debug only: pushes a demo card through the same confirmation flow as a real tag. */
+    /** Pushes a demo card through the same confirmation flow as a real tag. */
     fun onSimulateIncomingCard() {
         fakeTransport.emitDemoCard()
     }
 
-    /** Debug only: queues two cards from different senders to exercise the confirmation queue. */
+    /** Queues two cards from different senders to exercise the confirmation queue. */
     fun onSimulateIncomingCards() {
         fakeTransport.emitDemoCards()
     }
