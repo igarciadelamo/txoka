@@ -102,7 +102,7 @@
     <string name="section_social">Enlaces</string>
     <string name="social_handle_description">%1$s, %2$s</string>
     <string name="settings_about">Acerca de</string>
-    <string name="settings_debug_only">Solo en versiones de depuración</string>
+    <string name="settings_simulate_hint">Prueba la recepción sin NFC</string>
     <string name="settings_library">Biblioteca</string>
     <string name="settings_sharing">Compartir</string>
     <string name="settings_version">Versión %1$s</string>

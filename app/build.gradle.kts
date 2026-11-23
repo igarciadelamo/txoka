@@ -84,6 +84,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("boolean", "ENABLE_RECEIVE_SIMULATOR", "false")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -99,6 +100,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "ENABLE_RECEIVE_SIMULATOR", "true")
+        }
         release {
             signingConfig = signingConfigs.findByName("release")
             optimization {
@@ -110,6 +114,7 @@ android {
         }
         create("preview") {
             initWith(getByName("release"))
+            buildConfigField("boolean", "ENABLE_RECEIVE_SIMULATOR", "true")
             applicationIdSuffix = ".preview"
             versionNameSuffix = "-preview"
             // PR builds are signed separately and must never inherit a local release key.

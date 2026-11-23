@@ -21,6 +21,12 @@ class BuildIdentityTest {
         if (BuildConfig.BUILD_TYPE == "preview") assertFalse(BuildConfig.DEBUG)
     }
 
+    @Test
+    fun `only debug and preview enable simulated reception`() {
+        val expected = BuildConfig.BUILD_TYPE in setOf("debug", "preview")
+        assertEquals(expected, BuildConfig.ENABLE_RECEIVE_SIMULATOR)
+    }
+
     private companion object {
         const val OFFICIAL_PACKAGE = "es.igarciadelamo.txoka"
     }

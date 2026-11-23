@@ -145,10 +145,10 @@ private fun LibraryGroup(
             onClick = onOpenReceived,
             fallbackIcon = Icons.Filled.Person,
         )
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.ENABLE_RECEIVE_SIMULATOR) {
             SettingsRow(
                 title = stringResource(R.string.settings_demo_card),
-                subtitle = stringResource(R.string.settings_debug_only),
+                subtitle = stringResource(R.string.settings_simulate_hint),
                 onClick = onSimulateIncomingCard,
                 fallbackIcon = Icons.Filled.Add,
                 tint = MaterialTheme.txoka.warning,
@@ -156,7 +156,7 @@ private fun LibraryGroup(
             )
             SettingsRow(
                 title = stringResource(R.string.settings_demo_queue),
-                subtitle = stringResource(R.string.settings_debug_only),
+                subtitle = stringResource(R.string.settings_simulate_hint),
                 onClick = onSimulateIncomingCards,
                 fallbackIcon = Icons.Filled.Add,
                 tint = MaterialTheme.txoka.warning,
