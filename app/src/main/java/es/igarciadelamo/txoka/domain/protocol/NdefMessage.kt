@@ -90,32 +90,38 @@ object NdefMessage {
         return String(message, layout.payloadStart, layout.payloadLength, Charsets.UTF_8)
     }
 
+    @Suppress("ReturnCount")
     private fun layoutOf(message: ByteArray): Layout? {
         if (message.size <= MIN_MESSAGE_BYTES) return null
 
         val isShort = message[0].toInt() and FLAG_SR != 0
         var index = 1
         val typeLength = message[index++].toInt() and BYTE_MASK
-        val payloadLength: Int = if (isShort) {
-            (message[index++].toInt() and BYTE_MASK)
+        val payloadLength: Long = if (isShort) {
+            (message[index++].toInt() and BYTE_MASK).toLong()
         } else {
             if (message.size < index + LONG_LENGTH_BYTES) return null
-            var length = 0
+            var length = 0L
             repeat(LONG_LENGTH_BYTES) {
-                length = (length shl BITS_PER_BYTE) or (message[index++].toInt() and BYTE_MASK)
+                length = (length shl BITS_PER_BYTE) or (message[index++].toLong() and BYTE_MASK.toLong())
             }
             length
         }
-        val idLength = if (message[0].toInt() and FLAG_IL != 0) message[index++].toInt() and BYTE_MASK else 0
+        val idLength = if (message[0].toInt() and FLAG_IL != 0) {
+            if (index >= message.size) return null
+            message[index++].toInt() and BYTE_MASK
+        } else {
+            0
+        }
         val typeStart = index
         val payloadStart = typeStart + typeLength + idLength
-        if (payloadStart > message.size) return null
+        if (payloadStart > message.size || payloadLength > message.size - payloadStart) return null
 
         return Layout(
             typeStart = typeStart,
             typeLength = typeLength,
             payloadStart = payloadStart,
-            payloadLength = payloadLength,
+            payloadLength = payloadLength.toInt(),
         )
     }
 

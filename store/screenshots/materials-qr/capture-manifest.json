@@ -1,0 +1,149 @@
+{
+  "app_source_sha": "dd9c3a58464373776391f27a49dc8a3abc522a93",
+  "qa_commit_sha": "792d50cd50e3252f4d01283dc73ad1e12dd82240",
+  "workflow_run": "44891192684",
+  "api_level": 35,
+  "device": "Pixel 6 emulator, native 1080x2400 \/ 420dpi",
+  "package": "es.igarciadelamo.txoka",
+  "sample_data": "Fictitious Marta Ruiz profile; example.com address",
+  "captures": "Raw UiAutomation.takeScreenshot PNGs; no image editing or compositing",
+  "physical_nfc_verified": false,
+  "scenes": [
+    {
+      "file": "01-hub-hologram.png",
+      "caption": "Native hub with a holographic fish mosaic and sample contact details",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "043366698f0c4adb37fe6485e9703dd12a3fe60151f2609b0a2222f61c3483dd"
+    },
+    {
+      "file": "02-editor-material-options.png",
+      "caption": "All six background choices in the actual native editor",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "fc073e4243de7724b0122f6089467f498747e5ac8a2be6dc67261d40be2e8407"
+    },
+    {
+      "file": "03-editor-stained-glass.png",
+      "caption": "Bundled glass relief and native stained-glass lighting",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "97c8954f74435e477d8c5e2784bc7fa2b58c36f2247641645ca12134f9c1319b"
+    },
+    {
+      "file": "04-editor-nacre.png",
+      "caption": "Native nacre material with the complete card preview",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "a23e5e5ce514c5fe3ae05279a7b5c503a286b2994a0c12c67feafc53acc8e891"
+    },
+    {
+      "file": "05-editor-brushed-metal.png",
+      "caption": "Native directional brushed metal and its WYSIWYG choice",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "275270c16c6c61e2614f745b9a2a031b4a5e046ef1897c0aa84ce3f3dadb5d27"
+    },
+    {
+      "file": "06-hub-material-front.png",
+      "caption": "Saved nacre card and offline QR controls in the hub",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "64a72dc22a19ce01c1f1cbe6dbb0430aa393304f2ec2e34ae9af3b28128c5f24"
+    },
+    {
+      "file": "07-hub-qr-back.png",
+      "caption": "The actual QR back of the saved native contact card",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "3de929a359db5263c52bb96257cebc2c5f67c3f372c138def4f2c69dd2273f70"
+    },
+    {
+      "file": "08-viewer-portrait-front.png",
+      "caption": "Portrait full-screen native card and movement controls",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "5640b28b2e1133ac17a64f484ff09365ecb3499e474837de19bf7773bde9dceb"
+    },
+    {
+      "file": "09-viewer-portrait-qr.png",
+      "caption": "Portrait native viewer showing a complete scannable QR",
+      "diagnostic": false,
+      "width": 1080,
+      "height": 2400,
+      "sha256": "4151f3aeac6be9e6094a9fa9dde9b0c482b091651a327c1bde51960e07a32b30"
+    },
+    {
+      "file": "10-viewer-landscape-qr.png",
+      "caption": "Landscape QR back with persistent pause and movement feedback",
+      "diagnostic": false,
+      "width": 2400,
+      "height": 1080,
+      "sha256": "e1db3dfa95a93a034de789206b727aded0768a48f8ed05ee4ad4781e3ae6befe"
+    },
+    {
+      "file": "11-viewer-landscape-front.png",
+      "caption": "Landscape native nacre card with separate controls",
+      "diagnostic": false,
+      "width": 2400,
+      "height": 1080,
+      "sha256": "81049fc8ec84b415fe7c16620d520dd2d476434044ac85859e3fd892da7fe880"
+    }
+  ],
+  "probes": {
+    "masks": {
+      "stored_appearance": "1:cWgBoA",
+      "decoded_appearance": "CardAppearance(background=HOLOGRAM, mosaic=NATURE_FISH, effect=NONE, name=CardTextStyle(finish=PLAIN, size=M, color=null), data=CardTextStyle(finish=BUBBLE, size=M, color=null), topRight=null, bottomLeft=null)",
+      "TRIANGLES": {
+        "present": true,
+        "elapsed_ms": 23,
+        "width": 256,
+        "height": 161,
+        "bitmap_config": "ALPHA_8",
+        "transparent_pixels": 17482,
+        "opaque_pixels": 19470,
+        "partial_pixels": 4264
+      },
+      "NATURE_FISH": {
+        "present": true,
+        "elapsed_ms": 4793,
+        "width": 954,
+        "height": 600,
+        "bitmap_config": "ALPHA_8",
+        "transparent_pixels": 258905,
+        "opaque_pixels": 159894,
+        "partial_pixels": 153601
+      },
+      "fish_direct_renderer": [
+        {
+          "width": 192,
+          "height": 121,
+          "present": true,
+          "transparent_pixels": 3585,
+          "nonzero_alpha_pixels": 19647,
+          "elapsed_ms": 555
+        },
+        {
+          "width": 954,
+          "height": 600,
+          "present": true,
+          "transparent_pixels": 258905,
+          "nonzero_alpha_pixels": 313495,
+          "elapsed_ms": 1084
+        }
+      ]
+    },
+    "saved_appearance": "1:A2gB",
+    "qr_visible_after_landscape_rotation": true,
+    "pause_preserved_after_landscape_rotation": true,
+    "pause_preserved_after_return_to_portrait": true
+  }
+}

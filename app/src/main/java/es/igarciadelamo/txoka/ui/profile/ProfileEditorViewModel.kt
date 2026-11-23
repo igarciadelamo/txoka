@@ -13,7 +13,9 @@ import es.igarciadelamo.txoka.domain.profile.ProfileRepository
 import es.igarciadelamo.txoka.domain.profile.SimRegionSource
 import es.igarciadelamo.txoka.domain.profile.SocialHandle
 import es.igarciadelamo.txoka.domain.profile.SocialNetwork
-import es.igarciadelamo.txoka.domain.protocol.fitsInTag
+import es.igarciadelamo.txoka.domain.protocol.NdefMessage
+import es.igarciadelamo.txoka.domain.protocol.QrVCardCodec
+import es.igarciadelamo.txoka.domain.protocol.VCardSerializer
 import es.igarciadelamo.txoka.domain.protocol.toVCardPayload
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,19 +48,28 @@ data class ProfileEditorUiState(
     val hasContact: Boolean
         get() = phone.isNotBlank() || email.isNotBlank() || linkedin.isNotBlank() || instagram.isNotBlank()
 
-    /**
-     * The card is encoded as vCard inside a 768-byte tag, and HCE silently publishes nothing above
-     * the limit, so an oversized card cannot be saved.
-     */
+    val ndefByteSize: Int
+        get() = NdefMessage.encodedSize(VCardSerializer.encode(toPreview().toVCardPayload()))
+
+    val ndefFits: Boolean
+        get() = ndefByteSize <= NdefMessage.MAX_MESSAGE_BYTES
+
+    val qrByteSize: Int
+        get() = QrVCardCodec.byteSize(toPreview())
+
+    val qrFits: Boolean
+        get() = qrByteSize <= QrVCardCodec.MAX_QR_VCARD_BYTES
+
+    /** QR-only cards may be saved; HCE keeps publishing nothing above its separate NFC limit. */
     val cardTooLarge: Boolean
-        get() = !toPreview().toVCardPayload().fitsInTag()
+        get() = !qrFits
 
     val canSave: Boolean
         get() = name.isNotBlank() && hasContact && !cardTooLarge
 
     fun toPreview(): Profile = Profile(
         name = name.trim(),
-        phone = phone.trim().ifEmpty { null },
+        phone = phone.trim().ifEmpty { null }?.let { PhoneNumbers.toE164(it, country.iso) ?: it },
         email = email.trim().ifEmpty { null },
         linkedin = SocialHandle.normalize(linkedin, SocialNetwork.LinkedIn),
         instagram = SocialHandle.normalize(instagram, SocialNetwork.Instagram),
@@ -139,16 +150,19 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onPresetSelected(palette: CardPalette) {
-        _uiState.update { it.copy(card = palette) }
+        _uiState.update { it.copy(card = palette.copy(appearance = it.card.appearance)) }
     }
 
     fun onCustomColourSelected(palette: CardPalette) {
+        _uiState.update { it.copy(card = palette.copy(appearance = it.card.appearance)) }
+    }
+
+    fun onCardChange(palette: CardPalette) {
         _uiState.update { it.copy(card = palette) }
     }
 
     fun save() {
         val state = _uiState.value
-        // HCE has nothing to publish for an oversized card, so it must not reach the store.
         if (state.cardTooLarge) return
 
         val name = state.name.trim()
@@ -189,6 +203,8 @@ class ProfileEditorViewModel @Inject constructor(
             instagram = instagram,
             card = state.card,
         )
+
+        if (!QrVCardCodec.fits(profile)) return
 
         viewModelScope.launch {
             repository.save(profile)

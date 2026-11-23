@@ -69,8 +69,10 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
 
     override suspend fun restore(contacts: List<ReceivedContact>) {
         state.update { current ->
-            val restored = contacts.map { contact -> contact.copy(id = nextId++) }
-            (current + restored).sortedByDescending { contact -> contact.receivedAt }
+            check(contacts.map { it.id }.distinct().size == contacts.size)
+            check(contacts.none { restored -> current.any { it.id == restored.id } })
+            nextId = maxOf(nextId, (contacts.maxOfOrNull { it.id } ?: 0L) + 1)
+            (current + contacts).sortedByDescending { contact -> contact.receivedAt }
         }
     }
 

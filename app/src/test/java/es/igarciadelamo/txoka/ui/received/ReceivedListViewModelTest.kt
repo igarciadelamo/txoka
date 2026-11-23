@@ -1,6 +1,7 @@
 package es.igarciadelamo.txoka.ui.received
 
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
+import es.igarciadelamo.txoka.testing.FakeLibraryOrganizationRepository
 import es.igarciadelamo.txoka.testing.FakeReceivedContactRepository
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
 import kotlinx.coroutines.flow.collect
@@ -32,7 +33,8 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `lists every contact by default`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel =
+            ReceivedListViewModel(FakeReceivedContactRepository(contacts), FakeLibraryOrganizationRepository())
         collect(viewModel)
 
         assertEquals(3, viewModel.state.value.contacts.size)
@@ -41,7 +43,8 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `filters by name, phone and email`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel =
+            ReceivedListViewModel(FakeReceivedContactRepository(contacts), FakeLibraryOrganizationRepository())
         collect(viewModel)
 
         viewModel.onQueryChange("ana")
@@ -67,7 +70,8 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `returns nothing when the query does not match`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel =
+            ReceivedListViewModel(FakeReceivedContactRepository(contacts), FakeLibraryOrganizationRepository())
         collect(viewModel)
 
         viewModel.onQueryChange("zzz")
@@ -79,7 +83,8 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `empties the library and puts it back on undo`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel =
+            ReceivedListViewModel(FakeReceivedContactRepository(contacts), FakeLibraryOrganizationRepository())
         val events = mutableListOf<ReceivedListEvent>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.events.collect { event -> events += event }

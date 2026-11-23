@@ -2,6 +2,7 @@ package es.igarciadelamo.txoka.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -76,7 +77,10 @@ fun TxokaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable 
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val extras = if (darkTheme) DarkExtraColors else LightExtraColors
 
-    CompositionLocalProvider(LocalTxokaExtraColors provides extras) {
+    CompositionLocalProvider(
+        LocalTxokaExtraColors provides extras,
+        LocalContentColor provides colorScheme.onBackground,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = TxokaTypography,

@@ -109,6 +109,30 @@ class NdefMessageTest {
         assertNull(NdefMessage.decode(ByteArray(0)))
     }
 
+    @Test
+    fun `rejects truncated long headers and missing id length without throwing`() {
+        val header = byteArrayOf(0x8A.toByte(), 10, 0, 0, 0, 0)
+        (0..header.size).forEach { size -> assertNull(NdefMessage.decode(header.copyOf(size))) }
+        assertNull(NdefMessage.decode(header + byteArrayOf(20)))
+        assertNull(NdefMessage.decode(byteArrayOf(0x9A.toByte(), 10, 0, 20, 0)))
+    }
+
+    @Test
+    fun `rejects unsigned payload lengths that overflow signed integers`() {
+        listOf(0x7F, 0x80, 0xFF).forEach { highByte ->
+            val header = byteArrayOf(0x82.toByte(), 10, highByte.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte())
+            assertNull(NdefMessage.decode(header + NdefMessage.MIME_TYPE.toByteArray()))
+        }
+    }
+
+    @Test
+    fun `rejects every truncated type id and payload prefix`() {
+        val type = NdefMessage.MIME_TYPE.toByteArray()
+        val record = byteArrayOf(0x9A.toByte(), type.size.toByte(), 3, 2) + type + byteArrayOf(1, 2, 65, 66, 67)
+        (0 until record.size).forEach { size -> assertNull("prefix $size", NdefMessage.decode(record.copyOf(size))) }
+        assertEquals("ABC", NdefMessage.decode(record))
+    }
+
     /** Index where the record after the vCard starts. */
     private fun recordEnd(message: ByteArray): Int {
         val isShort = message[0].toInt() and 0x10 != 0

@@ -72,7 +72,8 @@ private val CardBorderDash = 8.dp
 /**
  * Content colour that reads on top of the card gradient, mirrored by the hub overlay actions.
  */
-fun Profile.cardContentColor(): Color = CardContrast.contentColor(card).toComposeColor()
+fun Profile.cardContentColor(): Color =
+    (card.appearance?.name?.effectiveColor ?: CardContrast.contentColor(card)).toComposeColor()
 
 /** Translucent decoration that never lowers the contrast of [cardContentColor]. */
 fun Profile.cardOverlayTint(): Color = if (cardContentColor() == Color.White) Color.Black else Color.White
@@ -87,7 +88,51 @@ fun ContactCard(
     modifier: Modifier = Modifier,
     placeholder: Boolean = false,
     layout: CardLayout = CardLayout.Hero,
+    motion: CardMotion? = null,
+    paused: Boolean = false,
+    qrEnabled: Boolean = false,
+    qrVisible: Boolean? = null,
+    onQrVisibleChange: ((Boolean) -> Unit)? = null,
+    showQrControls: Boolean = true,
 ) {
+    if (qrEnabled && !placeholder) {
+        val qrMotion = motion ?: if (paused) CardMotion() else rememberCardMotionController().motion
+        CardQrFlip(
+            profile = profile,
+            modifier = modifier,
+            motion = qrMotion,
+            paused = paused,
+            qrVisible = qrVisible,
+            onQrVisibleChange = onQrVisibleChange,
+            showQrControls = showQrControls,
+        ) { faceModifier, facePaused ->
+            ContactCardFace(
+                profile,
+                faceModifier,
+                placeholder,
+                layout,
+                if (facePaused) CardMotion() else qrMotion,
+                facePaused,
+            )
+        }
+    } else {
+        ContactCardFace(profile, modifier, placeholder, layout, motion, paused)
+    }
+}
+
+@Composable
+private fun ContactCardFace(
+    profile: Profile,
+    modifier: Modifier,
+    placeholder: Boolean,
+    layout: CardLayout,
+    motion: CardMotion?,
+    paused: Boolean,
+) {
+    if (profile.card.appearance != null && !placeholder) {
+        AppearanceContactCard(profile = profile, modifier = modifier, motion = motion, paused = paused)
+        return
+    }
     val contentColor = if (placeholder) {
         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = GHOST_CONTENT_ALPHA)
     } else {
@@ -97,7 +142,7 @@ fun ContactCard(
     val accent = profile.card.accent.toComposeColor()
     val details = profile.details()
 
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth(), propagateMinConstraints = true) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

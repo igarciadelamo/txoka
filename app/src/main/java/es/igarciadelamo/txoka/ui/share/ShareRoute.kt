@@ -15,6 +15,7 @@ fun ShareRoute(
     onOpenSettings: () -> Unit,
     onCreateCard: () -> Unit,
     onEditProfile: () -> Unit,
+    onScanQr: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ShareViewModel = hiltViewModel(),
 ) {
@@ -33,6 +34,7 @@ fun ShareRoute(
         onOpenSettings = onOpenSettings,
         onCreateCard = onCreateCard,
         onEditProfile = onEditProfile,
+        onScanQr = onScanQr,
         onRoleSelected = viewModel::onRoleSelected,
         onCancelReturn = viewModel::onCancelReturn,
         requireUnlock = state.requireUnlock,

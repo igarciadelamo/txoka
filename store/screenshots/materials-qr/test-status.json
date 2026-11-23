@@ -1,0 +1,108 @@
+{
+  "origin": "Actual raw AndroidJUnitRunner instrumentation status records; XML report is derived, not runner-generated",
+  "sourceLogSha256": "de9f694c45370010d5ceb5d3538c96fd0597e0dc29bf0df4d7d4724f9be1c44e",
+  "appSourceSha": "dd9c3a58464373776391f27a49dc8a3abc522a93",
+  "qaCommitSha": "792d50cd50e3252f4d01283dc73ad1e12dd82240",
+  "workflowRun": "44891192684",
+  "tests": 17,
+  "passes": 17,
+  "failures": 0,
+  "errors": 0,
+  "permanentTests": 16,
+  "captureTests": 1,
+  "seconds": 197.862,
+  "classes": {
+    "es.igarciadelamo.txoka.review.NativeReviewScreenshotsTest": 1,
+    "es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest": 2,
+    "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest": 6,
+    "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest": 6,
+    "es.igarciadelamo.txoka.data.received.TxokaMigrationTest": 2
+  },
+  "cases": [
+    {
+      "class": "es.igarciadelamo.txoka.review.NativeReviewScreenshotsTest",
+      "name": "captureNativeReviewScenes",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest",
+      "name": "everyProceduralAndBundledSvgMosaicRetainsBothInks",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest",
+      "name": "maskResolutionIsBoundedWithoutChangingCardAspect",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "nativeMaterialsFillTheCanvasAndReflectBothMotionAxes",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "glassCellAtlasRetainsAllTwentyFourSourcePanes",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "mosaicMaskChangesOnlyItsCoveredHalfOnEveryNativeMaterial",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "bundledGlassAndShellAtlasesContainUsableHeightDetail",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "effectPixelsRemainASeparateOverlayOnEveryNativeMaterial",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest",
+      "name": "neutralCanvasReproducesApprovedRgbArtworkWithoutAnExtraScrim",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "insertsAndObservesOrderedByNewestFirst",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "updatesNotesAndDeletes",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "updatesEveryColumnAndTheCallerCarriesTheNote",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "findsMatchesByPhoneEmailOrHandle",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "deletesEveryCard",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest",
+      "name": "returnsEveryContactWhenTheKeysPointAtDifferentRows",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.TxokaMigrationTest",
+      "name": "migratesVersion1AndKeepsStoredCards",
+      "result": "passed"
+    },
+    {
+      "class": "es.igarciadelamo.txoka.data.received.TxokaMigrationTest",
+      "name": "migratesVersion2AndKeepsAllCardData",
+      "result": "passed"
+    }
+  ]
+}

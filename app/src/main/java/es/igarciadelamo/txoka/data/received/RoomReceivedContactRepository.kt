@@ -1,5 +1,6 @@
 package es.igarciadelamo.txoka.data.received
 
+import es.igarciadelamo.txoka.domain.profile.CardAppearanceCodec
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
@@ -8,7 +9,6 @@ import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.domain.received.SaveResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,14 +44,11 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         dao.delete(id)
     }
 
-    override suspend fun deleteAll(): List<ReceivedContact> {
-        val removed = dao.observeAll().first().map { contact -> contact.toDomain() }
-        dao.deleteAll()
-        return removed
-    }
+    override suspend fun deleteAll(): List<ReceivedContact> =
+        dao.deleteAllReturning().map { contact -> contact.toDomain() }
 
     override suspend fun restore(contacts: List<ReceivedContact>) {
-        contacts.forEach { contact -> dao.insert(contact.toEntity()) }
+        dao.insertAll(contacts.map { contact -> contact.toEntity() })
     }
 
     /**
@@ -77,9 +74,11 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         receivedAt = System.currentTimeMillis(),
         accentHex = palette.accent.hex,
         accent2Hex = palette.accent2.hex,
+        appearance = palette.appearance?.let(CardAppearanceCodec::encode),
     )
 
     private fun ReceivedContact.toEntity(): ReceivedContactEntity = ReceivedContactEntity(
+        id = id,
         name = name,
         phone = phone,
         email = email,
@@ -91,6 +90,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         receivedAt = receivedAt,
         accentHex = card.accent.hex,
         accent2Hex = card.accent2.hex,
+        appearance = card.appearance?.let(CardAppearanceCodec::encode),
     )
 
     private fun ReceivedContactEntity.toDomain(): ReceivedContact = ReceivedContact(
@@ -105,6 +105,7 @@ class RoomReceivedContactRepository @Inject constructor(private val dao: Receive
         card = CardPalette(
             accent = RgbColor.parse(accentHex) ?: CardPalette.Default.accent,
             accent2 = RgbColor.parse(accent2Hex) ?: CardPalette.Default.accent2,
+            appearance = appearance?.let(CardAppearanceCodec::decode),
         ),
     )
 }

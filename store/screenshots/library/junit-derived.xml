@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites tests="20" failures="0" errors="0" time="450.841" name="Derived from actual AndroidJUnitRunner status records">
+  <testsuite name="es.igarciadelamo.txoka.review.NativeReviewScreenshotsTest" tests="1" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.review.NativeReviewScreenshotsTest" name="captureNativeReviewScenes" />
+  </testsuite>
+  <testsuite name="es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest" tests="2" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest" name="everyProceduralAndBundledSvgMosaicRetainsBothInks" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.artwork.CardMosaicRenderingTest" name="maskResolutionIsBoundedWithoutChangingCardAspect" />
+  </testsuite>
+  <testsuite name="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" tests="6" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="nativeMaterialsFillTheCanvasAndReflectBothMotionAxes" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="glassCellAtlasRetainsAllTwentyFourSourcePanes" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="mosaicMaskChangesOnlyItsCoveredHalfOnEveryNativeMaterial" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="bundledGlassAndShellAtlasesContainUsableHeightDetail" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="effectPixelsRemainASeparateOverlayOnEveryNativeMaterial" />
+    <testcase classname="es.igarciadelamo.txoka.ui.components.CardMaterialRenderingTest" name="neutralCanvasReproducesApprovedRgbArtworkWithoutAnExtraScrim" />
+  </testsuite>
+  <testsuite name="es.igarciadelamo.txoka.ui.components.NativeSvgMaterialIntegrationTest" tests="1" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.ui.components.NativeSvgMaterialIntegrationTest" name="everySuppliedSvgKeepsItsNativeMaterialAndBothLightAxes" />
+  </testsuite>
+  <testsuite name="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" tests="8" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="insertsAndObservesOrderedByNewestFirst" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="updatesNotesAndDeletes" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="updatesEveryColumnAndTheCallerCarriesTheNote" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="findsMatchesByPhoneEmailOrHandle" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="clearReturnsExactRowsAndBulkRestoreKeepsTheirOriginalIds" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="bulkRestoreRollsBackEarlierRowsWhenALaterIdConflicts" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="deletesEveryCard" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.ReceivedContactDaoTest" name="returnsEveryContactWhenTheKeysPointAtDifferentRows" />
+  </testsuite>
+  <testsuite name="es.igarciadelamo.txoka.data.received.TxokaMigrationTest" tests="2" failures="0" errors="0">
+    <properties>
+      <property name="source.kind" value="Actual raw AndroidJUnitRunner status records; XML is derived, not runner-generated" />
+      <property name="source.log.sha256" value="8b3f1b6d27179e126634a6f1a2893b4e9a65696b58159c8393872bcf12bc3e13" />
+      <property name="app.source.sha" value="d9c1c01340a3cfba3db3a00e058a18745708d43c" />
+      <property name="qa.source.sha" value="bca1af283ab273494d727859a53cb2629529fc9e" />
+    </properties>
+    <testcase classname="es.igarciadelamo.txoka.data.received.TxokaMigrationTest" name="migratesVersion1AndKeepsStoredCards" />
+    <testcase classname="es.igarciadelamo.txoka.data.received.TxokaMigrationTest" name="migratesVersion2AndKeepsAllCardData" />
+  </testsuite>
+</testsuites>

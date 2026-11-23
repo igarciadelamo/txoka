@@ -24,13 +24,15 @@ fun ReceivedRoute(
     val snackbarHostState = remember { SnackbarHostState() }
     val clearedMessage = stringResource(R.string.library_cleared)
     val undoLabel = stringResource(R.string.action_undo)
+    val errorMessage = stringResource(R.string.library_operation_failed)
 
-    LaunchedEffect(viewModel, clearedMessage, undoLabel) {
+    LaunchedEffect(viewModel, clearedMessage, undoLabel, errorMessage) {
         viewModel.events.collect { event ->
             when (event) {
-                ReceivedListEvent.LibraryCleared -> {
+                ReceivedListEvent.OperationFailed -> snackbarHostState.showSnackbar(errorMessage)
+                ReceivedListEvent.LibraryCleared, ReceivedListEvent.RestoreFailed -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = clearedMessage,
+                        message = if (event == ReceivedListEvent.LibraryCleared) clearedMessage else errorMessage,
                         actionLabel = undoLabel,
                         duration = SnackbarDuration.Long,
                     )
@@ -47,6 +49,14 @@ fun ReceivedRoute(
         onOpenContact = onOpenContact,
         onClearLibrary = viewModel::clearLibrary,
         onBack = onBack,
+        onFilterChange = viewModel::onFilterChange,
+        onViewModeChange = viewModel::onViewModeChange,
+        onSaveCategory = viewModel::onSaveCategory,
+        onDeleteCategory = viewModel::onDeleteCategory,
+        onReorderCategories = viewModel::onReorderCategories,
+        onMoveCard = viewModel::onMoveCard,
+        onReorderCards = viewModel::onReorderCards,
+        onFavorite = viewModel::onFavorite,
         modifier = modifier,
     )
 }

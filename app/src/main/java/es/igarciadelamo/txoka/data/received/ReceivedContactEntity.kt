@@ -17,4 +17,5 @@ data class ReceivedContactEntity(
     val receivedAt: Long,
     val accentHex: String,
     val accent2Hex: String,
+    val appearance: String? = null,
 )
