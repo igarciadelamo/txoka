@@ -19,7 +19,7 @@ internal val CardBackground.label: Int
 
 internal val CardEffect.label: Int
     get() = when (this) {
-        CardEffect.NONE -> R.string.appearance_none
+        CardEffect.NONE -> R.string.appearance_no_effect
         CardEffect.WATER -> R.string.appearance_water
         CardEffect.EARTH -> R.string.appearance_earth
         CardEffect.WIND -> R.string.appearance_wind

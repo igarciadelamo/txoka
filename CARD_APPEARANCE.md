@@ -4,13 +4,6 @@ Txoka renders appearance locally. NFC and QR carry known identifiers and RGB val
 artwork, animation frames, shaders, fonts, sensor readings or calibration. The layer order is
 background, mosaic, elemental effect, then name and contact text.
 
-The [interactive design reference](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/)
-is a separately hosted browser demo. Its URL is public and unlisted; knowing the link grants access.
-It is not an APK, an authenticated preview or evidence of an NFC exchange. Its linked
-[design plan](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/plan.html)
-and [NFC contract](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/docs/nfc.html)
-also remain available for review. This document specifies the Android wire format.
-
 ## Local rendering
 
 - Background: two-colour or four-corner gradient, holographic reflection, stained glass, nacre,
@@ -23,6 +16,14 @@ also remain available for review. This document specifies the Android wire forma
   outline and moving sheen, without a metallic panel behind them.
 - Motion and playback are local. A device without motion sensors can still display the card and
   use manual controls. Sensor calibration, manual tilt and pause are not shared.
+
+In the Background tab, tap a colour on the miniature card to edit it. Two-colour palettes use
+the top-left and bottom-right handles. Enable four corners to edit the other two independently.
+A flat card has one fill colour. When a mosaic is present, the first ink colours the motif
+and the second fills the space around it. The full-size preview shows each edit. Layer tabs,
+mosaic labels and tilt readings use the editor's light or dark theme. The palette editor uses
+the existing NFC and QR colour fields. In the Effect tab, select **No effect** to clear an
+elemental effect while keeping the background, mosaic and lettering.
 
 Stained glass, nacre and brushed metal use shared local 480 × 303 RGB assets: `glass-color.rgb`,
 `nacre-color.rgb` and `metal-color.rgb`. These are direct edits of the approved reference with

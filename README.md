@@ -73,8 +73,6 @@ Release signing, coverage, instrumented tests and the NFC device plan are in
 [`TESTING.md`](TESTING.md). How the app is put together, what travels over the tag and why it looks
 the way it does are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
-The [interactive appearance demo](https://txoka-card-lab.olopopo.chatgpt.site/p/6744e651529f19ab8340aaf8fd7de3ef8db8/)
-is a public, unlisted browser design reference, with links to the plan and NFC contract.
 The native implementation and compact wire format are documented in
 [`CARD_APPEARANCE.md`](CARD_APPEARANCE.md).
 

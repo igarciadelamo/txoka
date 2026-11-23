@@ -147,6 +147,13 @@
     <string name="appearance_second_colour">Second colour</string>
     <string name="appearance_top_right">Top right</string>
     <string name="appearance_bottom_left">Bottom left</string>
+    <string name="appearance_top_left">Top left</string>
+    <string name="appearance_bottom_right">Bottom right</string>
+    <string name="appearance_edit_palette_colour">Edit %1$s, %2$s</string>
+    <string name="appearance_material_tints">Material tints</string>
+    <string name="appearance_material_tints_hint">The two tints follow the colours in the artwork.</string>
+    <string name="appearance_mosaic_and_background">Mosaic and background</string>
+    <string name="appearance_background_colour">Background colour</string>
     <string name="appearance_four_corners">Four corner colours</string>
     <string name="appearance_contact_text">Contact details</string>
     <string name="appearance_content">Content</string>
@@ -154,6 +161,7 @@
     <string name="appearance_text_colour">Text colour</string>
     <string name="appearance_default_text_colour">Use finish colour</string>
     <string name="appearance_none">None</string>
+    <string name="appearance_no_effect">No effect</string>
     <string name="appearance_none_symbol">∅</string>
     <string name="appearance_water">Water</string>
     <string name="appearance_earth">Earth</string>

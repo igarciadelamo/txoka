@@ -1,6 +1,7 @@
 package es.igarciadelamo.txoka.ui.profile
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,12 +25,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -211,14 +214,16 @@ private fun AppearanceSettingsPane(
 ) {
     Column(modifier = modifier) {
         LayerTabs(layer, onSelect = onLayerSelect)
+        val layerScroll = key(layer) { rememberScrollState() }
+        val scroll = if (session == null) layerScroll else key(session.target) { rememberScrollState() }
         Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(8.dp),
+            modifier = Modifier.fillMaxSize().verticalScroll(scroll).padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (session != null) {
                 CardColourPicker(
                     initial = session.opening.colourAt(session.target),
-                    title = stringResource(session.target.label),
+                    title = stringResource(session.target.labelFor(session.opening.editableAppearance())),
                     onPreview = onColourPreview,
                     onSelect = {
                         onCardChange(card.withColour(session.target, it))
@@ -249,19 +254,20 @@ private fun LayerTabs(selected: AppearanceLayer, onSelect: (AppearanceLayer) -> 
             .background(MaterialTheme.colorScheme.surfaceVariant),
     ) {
         AppearanceLayer.entries.forEach { layer ->
+            val isSelected = layer == selected
+            val colors = MaterialTheme.colorScheme
+            val container = if (isSelected) colors.primaryContainer else colors.surfaceVariant
             Box(
                 modifier = Modifier.weight(1f).height(48.dp)
-                    .background(
-                        if (layer == selected) {
-                            MaterialTheme.colorScheme.primaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        },
-                    )
-                    .selectable(layer == selected, role = Role.Tab, onClick = { onSelect(layer) }),
+                    .background(container)
+                    .selectable(isSelected, role = Role.Tab, onClick = { onSelect(layer) }),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(stringResource(layer.label), style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(layer.label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = contentColorFor(container),
+                )
             }
         }
     }
@@ -291,6 +297,7 @@ private fun BackgroundSettings(
     onChange: (CardPalette) -> Unit,
     onColour: (CardColourTarget) -> Unit,
 ) {
+    BackgroundPalette(card, appearance, onChange, onColour)
     TileGrid(CardBackground.entries.toList()) { background, modifier ->
         AppearanceTile(
             selected = appearance.background == background,
@@ -321,38 +328,6 @@ private fun BackgroundSettings(
             )
         }
     }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(stringResource(R.string.appearance_four_corners), modifier = Modifier.weight(1f))
-        Switch(
-            checked = appearance.topRight != null,
-            enabled = appearance.background != CardBackground.FLAT,
-            onCheckedChange = { enabled ->
-                onChange(
-                    card.copy(
-                        appearance = appearance.copy(
-                            topRight = if (enabled) card.accent2 else null,
-                            bottomLeft = if (enabled) card.accent else null,
-                        ),
-                    ),
-                )
-            },
-        )
-    }
-    val targets = if (appearance.topRight != null) {
-        listOf(
-            CardColourTarget.FIRST,
-            CardColourTarget.TOP_RIGHT,
-            CardColourTarget.BOTTOM_LEFT,
-            CardColourTarget.SECOND,
-        )
-    } else {
-        listOf(CardColourTarget.FIRST, CardColourTarget.SECOND)
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        targets.forEach { target ->
-            ColourButton(card.colourAt(target), stringResource(target.label), Modifier.weight(1f)) { onColour(target) }
-        }
-    }
 }
 
 @Composable
@@ -364,7 +339,11 @@ private fun EffectSettings(card: CardPalette, appearance: CardAppearance, onChan
             modifier = modifier,
             onClick = { onChange(card.copy(appearance = appearance.copy(effect = effect))) },
         ) {
-            EffectPreview(effect = effect, card = card)
+            if (effect == CardEffect.NONE) {
+                Text(stringResource(R.string.appearance_none_symbol), style = MaterialTheme.typography.headlineLarge)
+            } else {
+                EffectPreview(effect = effect, card = card)
+            }
         }
     }
 }
@@ -515,27 +494,28 @@ internal fun AppearanceTile(
     onClick: () -> Unit,
     preview: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier.clip(RoundedCornerShape(10.dp))
-            .background(if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-            .border(
-                1.dp,
-                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
-                RoundedCornerShape(10.dp),
-            )
-            .selectable(selected, role = Role.RadioButton, onClick = onClick).padding(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(10.dp),
+        color = if (selected) colors.primaryContainer else colors.surface,
+        border = BorderStroke(1.dp, if (selected) colors.primary else colors.outlineVariant),
     ) {
-        Box(
-            Modifier.fillMaxWidth().aspectRatio(1.586f).clip(RoundedCornerShape(6.dp)),
-            contentAlignment = Alignment.Center,
-        ) { preview() }
-        Text(
-            label,
-            style = MaterialTheme.typography.labelSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
-        )
+        Column(
+            modifier = Modifier.selectable(selected, role = Role.RadioButton, onClick = onClick).padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                Modifier.fillMaxWidth().aspectRatio(1.586f).clip(RoundedCornerShape(6.dp)),
+                contentAlignment = Alignment.Center,
+            ) { preview() }
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
+            )
+        }
     }
 }
 
