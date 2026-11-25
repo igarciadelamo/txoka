@@ -72,7 +72,10 @@ private val CardBorderDash = 8.dp
 /**
  * Content colour that reads on top of the card gradient, mirrored by the hub overlay actions.
  */
-fun Profile.cardContentColor(): Color = CardContrast.contentColor(card).toComposeColor()
+fun Profile.cardContentColor(): Color = card.cardContentColor()
+
+/** Same rule for anything drawn over a palette, such as the initials of a received card. */
+fun CardPalette.cardContentColor(): Color = CardContrast.contentColor(this).toComposeColor()
 
 /** Translucent decoration that never lowers the contrast of [cardContentColor]. */
 fun Profile.cardOverlayTint(): Color = if (cardContentColor() == Color.White) Color.Black else Color.White

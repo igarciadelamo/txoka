@@ -59,6 +59,7 @@ import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.Eyebrow
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
+import es.igarciadelamo.txoka.ui.components.cardContentColor
 import es.igarciadelamo.txoka.ui.components.contentWidth
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
@@ -323,7 +324,7 @@ private fun Avatar(contact: ReceivedContact) {
         Text(
             text = contact.initials(),
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.surface,
+            color = contact.card.cardContentColor(),
         )
     }
 }
