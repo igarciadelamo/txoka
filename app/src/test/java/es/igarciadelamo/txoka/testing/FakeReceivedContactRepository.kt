@@ -17,6 +17,9 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
     var saved: VCardPayload? = null
         private set
 
+    var noteUpdates: Int = 0
+        private set
+
     override val contacts: Flow<List<ReceivedContact>> = state
 
     override fun contact(id: Long): Flow<ReceivedContact?> = state.map { contacts ->
@@ -54,6 +57,7 @@ class FakeReceivedContactRepository(initial: List<ReceivedContact> = emptyList()
     }
 
     override suspend fun updateNote(id: Long, note: String) {
+        noteUpdates++
         state.update { contacts -> contacts.map { if (it.id == id) it.copy(note = note) else it } }
     }
 

@@ -4,12 +4,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.igarciadelamo.txoka.di.ApplicationScope
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +27,7 @@ data class ReceivedDetailUiState(
 class ReceivedDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ReceivedContactRepository,
+    @ApplicationScope private val appScope: CoroutineScope,
 ) : ViewModel() {
     private val contactId: Long = requireNotNull(savedStateHandle.get<Long>(ARG_ID)) { "Missing contact id" }
     private val noteDraft = MutableStateFlow<String?>(null)
@@ -50,11 +54,24 @@ class ReceivedDetailViewModel @Inject constructor(
     }
 
     fun saveNote() {
-        val draft = noteDraft.value ?: state.value.note
-        viewModelScope.launch {
-            repository.updateNote(contactId, draft)
-            noteDraft.value = null
+        val draft = noteDraft.value ?: return
+        viewModelScope.launch { repository.updateNote(contactId, draft) }
+    }
+
+    /**
+     * The screen can disappear before the note is saved, so the last draft is flushed from a scope
+     * that outlives the ViewModel.
+     */
+    internal fun flushNote() {
+        val draft = noteDraft.value ?: return
+        appScope.launch {
+            val stored = repository.contact(contactId).first()?.note ?: return@launch
+            if (stored != draft) repository.updateNote(contactId, draft)
         }
+    }
+
+    override fun onCleared() {
+        flushNote()
     }
 
     fun delete() {

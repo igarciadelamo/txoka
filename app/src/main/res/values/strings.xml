@@ -45,7 +45,6 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_email">Email</string>
-    <string name="action_save_note">Save note</string>
     <string name="delete_dialog_message">This cannot be undone.</string>
     <string name="delete_dialog_title">Delete contact?</string>
     <string name="delete_card_dialog_message">Your profile will be removed from this device. Received contacts are kept.</string>
@@ -94,7 +93,6 @@
         <item quantity="one">The card you received will be deleted from this phone.</item>
         <item quantity="other">The %d cards you received will be deleted from this phone.</item>
     </plurals>
-    <string name="note_saved">Saved</string>
     <string name="received_empty_body">Ask someone to share theirs over NFC.</string>
     <string name="received_empty_title">No cards yet</string>
     <string name="received_meta">Received %1$s</string>
