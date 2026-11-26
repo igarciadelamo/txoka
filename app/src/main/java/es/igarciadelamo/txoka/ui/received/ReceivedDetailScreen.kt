@@ -64,7 +64,6 @@ import es.igarciadelamo.txoka.ui.components.label
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
-import es.igarciadelamo.txoka.ui.theme.txoka
 import java.text.DateFormat
 import java.util.ArrayList
 import java.util.Date
@@ -73,9 +72,7 @@ import java.util.Date
 fun ReceivedDetailScreen(
     contact: ReceivedContact,
     note: String,
-    noteDirty: Boolean,
     onNoteChange: (String) -> Unit,
-    onSaveNote: () -> Unit,
     onDelete: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -113,9 +110,7 @@ fun ReceivedDetailScreen(
         DetailContent(
             contact = contact,
             note = note,
-            noteDirty = noteDirty,
             onNoteChange = onNoteChange,
-            onSaveNote = onSaveNote,
             modifier = Modifier
                 .weight(1f)
                 .navigationBarsPadding()
@@ -151,13 +146,10 @@ fun ReceivedDetailScreen(
 private fun DetailContent(
     contact: ReceivedContact,
     note: String,
-    noteDirty: Boolean,
     onNoteChange: (String) -> Unit,
-    onSaveNote: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var saved by remember(note) { mutableStateOf(false) }
     val locale = LocalConfiguration.current.locales[0]
     val received = remember(contact.receivedAt, locale) {
         DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(Date(contact.receivedAt))
@@ -192,16 +184,7 @@ private fun DetailContent(
 
         NotesCard(
             note = note,
-            noteDirty = noteDirty,
-            saved = saved,
-            onNoteChange = {
-                saved = false
-                onNoteChange(it)
-            },
-            onSave = {
-                onSaveNote()
-                saved = true
-            },
+            onNoteChange = onNoteChange,
         )
     }
 }
@@ -338,13 +321,7 @@ private fun SocialLinkRow(network: SocialNetwork, handle: String, onClick: () ->
 }
 
 @Composable
-private fun NotesCard(
-    note: String,
-    noteDirty: Boolean,
-    saved: Boolean,
-    onNoteChange: (String) -> Unit,
-    onSave: () -> Unit,
-) {
+private fun NotesCard(note: String, onNoteChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -353,20 +330,7 @@ private fun NotesCard(
             .padding(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Eyebrow(text = stringResource(R.string.received_note), modifier = Modifier.weight(1f))
-            if (saved) {
-                Text(
-                    text = stringResource(R.string.note_saved),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(MaterialTheme.txoka.successSoft)
-                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.txoka.success,
-                )
-            }
-        }
+        Eyebrow(text = stringResource(R.string.received_note))
         BasicTextField(
             value = note,
             onValueChange = onNoteChange,
@@ -390,13 +354,6 @@ private fun NotesCard(
                 }
             },
         )
-        TextButton(
-            onClick = onSave,
-            modifier = Modifier.align(Alignment.End),
-            enabled = noteDirty,
-        ) {
-            Text(text = stringResource(R.string.action_save_note), style = MaterialTheme.typography.labelLarge)
-        }
     }
 }
 
@@ -449,9 +406,7 @@ private fun ReceivedDetailScreenPreview() {
                 receivedAt = System.currentTimeMillis(),
             ),
             note = "Met at the Compose meetup.",
-            noteDirty = true,
             onNoteChange = {},
-            onSaveNote = {},
             onDelete = {},
             onBack = {},
         )

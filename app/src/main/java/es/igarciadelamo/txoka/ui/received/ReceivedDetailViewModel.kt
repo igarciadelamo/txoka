@@ -20,7 +20,6 @@ import javax.inject.Inject
 data class ReceivedDetailUiState(
     val contact: ReceivedContact? = null,
     val note: String = "",
-    val noteDirty: Boolean = false,
     val deleted: Boolean = false,
 )
 
@@ -42,7 +41,6 @@ class ReceivedDetailViewModel @Inject constructor(
         ReceivedDetailUiState(
             contact = contact,
             note = draft ?: contact?.note.orEmpty(),
-            noteDirty = draft != null && draft != contact?.note,
             deleted = isDeleted,
         )
     }.stateIn(

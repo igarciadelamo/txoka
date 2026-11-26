@@ -43,7 +43,6 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_delete">Borrar</string>
     <string name="action_email">Email</string>
-    <string name="action_save_note">Guardar nota</string>
     <string name="delete_dialog_message">No se puede deshacer.</string>
     <string name="delete_dialog_title">¿Borrar contacto?</string>
     <string name="delete_card_dialog_message">Tu perfil se eliminará de este dispositivo. Los contactos recibidos se conservan.</string>
@@ -93,7 +92,6 @@
         <item quantity="many">Se borrarán los %d de tarjetas recibidas en este teléfono.</item>
         <item quantity="other">Se borrarán las %d tarjetas recibidas en este teléfono.</item>
     </plurals>
-    <string name="note_saved">Guardada</string>
     <string name="received_empty_body">Pide a alguien que comparta la suya por NFC.</string>
     <string name="received_empty_title">Aún no hay tarjetas</string>
     <string name="received_meta">Recibida el %1$s</string>

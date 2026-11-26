@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -53,8 +52,6 @@ class ReceivedDetailViewModelTest {
         collect(viewModel)
 
         viewModel.onNoteChange("New note")
-        advanceUntilIdle()
-        assertTrue(viewModel.state.value.noteDirty)
         viewModel.flushNote()
         advanceUntilIdle()
 
@@ -86,19 +83,6 @@ class ReceivedDetailViewModelTest {
         advanceUntilIdle()
 
         assertEquals(0, repository.noteUpdates)
-    }
-
-    @Test
-    fun `the note stops being dirty once it is saved`() = runTest {
-        val repository = FakeReceivedContactRepository(listOf(contact))
-        val viewModel = viewModel(repository)
-        collect(viewModel)
-
-        viewModel.onNoteChange("New note")
-        viewModel.saveNote()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.state.value.noteDirty)
     }
 
     @Test

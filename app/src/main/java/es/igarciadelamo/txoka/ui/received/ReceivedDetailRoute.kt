@@ -29,9 +29,7 @@ fun ReceivedDetailRoute(
         ReceivedDetailScreen(
             contact = contact,
             note = state.note,
-            noteDirty = state.noteDirty,
             onNoteChange = viewModel::onNoteChange,
-            onSaveNote = viewModel::saveNote,
             onDelete = viewModel::delete,
             onBack = onBack,
             modifier = modifier,
