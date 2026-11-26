@@ -39,6 +39,7 @@ import es.igarciadelamo.txoka.ui.components.CardLayout
 import es.igarciadelamo.txoka.ui.components.ContactCard
 import es.igarciadelamo.txoka.ui.components.NfcWaves
 import es.igarciadelamo.txoka.ui.components.PrimaryButton
+import es.igarciadelamo.txoka.ui.components.cardContentColor
 import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
@@ -177,7 +178,7 @@ private fun SenderAvatar(payload: VCardPayload) {
         Text(
             text = payload.initials(),
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.surface,
+            color = payload.palette.cardContentColor(),
         )
     }
 }
