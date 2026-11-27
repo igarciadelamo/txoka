@@ -25,6 +25,7 @@ class ReceivedListViewModelTest {
             email = "marta@example.com",
             linkedin = "marta-ruiz",
             instagram = "marta.png",
+            note = "Met at the meetup",
         ),
         ReceivedContact(id = 2, name = "Ana López", phone = "+34600999888"),
         ReceivedContact(id = 3, name = "Luis Pérez", email = "luis@example.com"),
@@ -61,6 +62,24 @@ class ReceivedListViewModelTest {
         assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
 
         viewModel.onQueryChange("-ruiz")
+        advanceUntilIdle()
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
+    }
+
+    @Test
+    fun `ignores accents, phone separators and searches notes`() = runTest {
+        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        collect(viewModel)
+
+        viewModel.onQueryChange("lopez")
+        advanceUntilIdle()
+        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+
+        viewModel.onQueryChange("600 999 888")
+        advanceUntilIdle()
+        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+
+        viewModel.onQueryChange("meetup")
         advanceUntilIdle()
         assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
+import es.igarciadelamo.txoka.domain.received.matchesSearch
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,7 +40,7 @@ class ReceivedListViewModel @Inject constructor(private val repository: Received
     val state: StateFlow<ReceivedListUiState> = combine(repository.contacts, query) { contacts, search ->
         ReceivedListUiState(
             query = search,
-            contacts = contacts.filter { contact -> contact.matches(search) },
+            contacts = contacts.filter { contact -> contact.matchesSearch(search) },
             isLoading = false,
             hasContacts = contacts.isNotEmpty(),
         )
@@ -65,16 +66,6 @@ class ReceivedListViewModel @Inject constructor(private val repository: Received
             repository.restore(cleared.value)
             cleared.value = emptyList()
         }
-    }
-
-    private fun ReceivedContact.matches(search: String): Boolean {
-        val text = search.trim()
-        if (text.isEmpty()) return true
-        return name.contains(text, ignoreCase = true) ||
-            phone.orEmpty().contains(text) ||
-            email.orEmpty().contains(text, ignoreCase = true) ||
-            linkedin.orEmpty().contains(text, ignoreCase = true) ||
-            instagram.orEmpty().contains(text, ignoreCase = true)
     }
 
     private companion object {
