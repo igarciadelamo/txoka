@@ -101,6 +101,7 @@
     <string name="received_invalid_card">Esa etiqueta no es una tarjeta de contacto</string>
     <string name="section_social">Enlaces</string>
     <string name="social_handle_description">%1$s, %2$s</string>
+    <string name="social_link_open">Abrir el perfil de %1$s, %2$s</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_simulate_hint">Prueba la recepción sin NFC</string>
     <string name="settings_library">Biblioteca</string>
