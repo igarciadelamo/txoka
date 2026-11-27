@@ -98,12 +98,31 @@ class ReceivedDetailViewModelTest {
         assertNull(repository.contacts.first().firstOrNull())
     }
 
-    private fun kotlinx.coroutines.test.TestScope.viewModel(repository: FakeReceivedContactRepository) =
-        ReceivedDetailViewModel(
-            savedStateHandle = SavedStateHandle(mapOf("id" to 1L)),
-            repository = repository,
-            appScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler)),
-        )
+    @Test
+    fun `remembers the deleted contact with the pending draft`() = runTest {
+        val repository = FakeReceivedContactRepository(listOf(contact))
+        val deleted = DeletedContactStore()
+        val viewModel = viewModel(repository, deleted)
+        collect(viewModel)
+
+        viewModel.onNoteChange("Draft note")
+        advanceUntilIdle()
+        viewModel.delete()
+        advanceUntilIdle()
+
+        assertEquals(contact.copy(note = "Draft note"), deleted.contact.value)
+        assertNull(repository.contacts.first().firstOrNull())
+    }
+
+    private fun kotlinx.coroutines.test.TestScope.viewModel(
+        repository: FakeReceivedContactRepository,
+        deleted: DeletedContactStore = DeletedContactStore(),
+    ) = ReceivedDetailViewModel(
+        savedStateHandle = SavedStateHandle(mapOf("id" to 1L)),
+        repository = repository,
+        appScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler)),
+        deletedContacts = deleted,
+    )
 
     private fun kotlinx.coroutines.test.TestScope.collect(viewModel: ReceivedDetailViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect() }

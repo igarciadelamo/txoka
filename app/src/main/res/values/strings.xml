@@ -45,7 +45,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_email">Email</string>
-    <string name="delete_dialog_message">This cannot be undone.</string>
+    <string name="delete_dialog_message">You can undo this right after.</string>
     <string name="delete_dialog_title">Delete contact?</string>
     <string name="delete_card_dialog_message">Your profile will be removed from this device. Received contacts are kept.</string>
     <string name="delete_card_dialog_title">Delete your card?</string>
@@ -98,6 +98,7 @@
     <string name="received_meta">Received %1$s</string>
     <string name="received_saved">Contact saved</string>
     <string name="received_updated">Contact updated</string>
+    <string name="received_deleted">Contact deleted</string>
     <string name="received_invalid_card">That tag is not a contact card</string>
     <string name="section_social">Links</string>
     <string name="social_handle_description">%1$s, %2$s</string>

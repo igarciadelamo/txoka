@@ -28,6 +28,7 @@ class ReceivedDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ReceivedContactRepository,
     @ApplicationScope private val appScope: CoroutineScope,
+    private val deletedContacts: DeletedContactStore,
 ) : ViewModel() {
     private val contactId: Long = requireNotNull(savedStateHandle.get<Long>(ARG_ID)) { "Missing contact id" }
     private val noteDraft = MutableStateFlow<String?>(null)
@@ -75,8 +76,10 @@ class ReceivedDetailViewModel @Inject constructor(
     }
 
     fun delete() {
+        val contact = state.value.contact?.copy(note = state.value.note)
         viewModelScope.launch {
             repository.delete(contactId)
+            contact?.let(deletedContacts::remember)
             deleted.value = true
         }
     }
