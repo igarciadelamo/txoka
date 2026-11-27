@@ -1,6 +1,11 @@
 package es.igarciadelamo.txoka.nfc
 
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -48,6 +53,29 @@ class IncomingCardsTest {
         assertEquals(false, cards.offer(first.copy()))
 
         assertEquals(listOf(first), cards.queue.value)
+    }
+
+    @Test
+    fun `caps the pending queue`() {
+        val cards = IncomingCards()
+
+        repeat(IncomingCards.MAX_PENDING) { index ->
+            assertEquals(true, cards.offer(VCardPayload(name = "Person $index")))
+        }
+        assertEquals(false, cards.offer(VCardPayload(name = "One more")))
+
+        assertEquals(IncomingCards.MAX_PENDING, cards.queue.value.size)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `reports an invalid card`() = runTest {
+        val cards = IncomingCards()
+        val reported = async(UnconfinedTestDispatcher(testScheduler)) { cards.invalid.first() }
+
+        cards.reportInvalid()
+
+        assertEquals(Unit, reported.await())
     }
 
     @Test

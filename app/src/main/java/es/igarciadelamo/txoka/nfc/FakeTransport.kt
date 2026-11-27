@@ -3,9 +3,9 @@ package es.igarciadelamo.txoka.nfc
 import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.protocol.ContactTransport
 import es.igarciadelamo.txoka.domain.protocol.NdefMessage
-import es.igarciadelamo.txoka.domain.protocol.VCardParseResult
 import es.igarciadelamo.txoka.domain.protocol.VCardPayload
 import es.igarciadelamo.txoka.domain.protocol.VCardSerializer
+import es.igarciadelamo.txoka.domain.received.IncomingCard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import javax.inject.Inject
@@ -38,11 +38,7 @@ class FakeTransport @Inject constructor(
 
     private fun offer(card: VCardPayload) {
         val ndef = NdefMessage.encode(VCardSerializer.encode(card))
-        val decoded = NdefMessage.decode(ndef) ?: return
-        val parsed = VCardSerializer.decode(decoded)
-        if (parsed is VCardParseResult.Success) {
-            incomingCards.offer(parsed.payload)
-        }
+        IncomingCard.fromNdef(ndef)?.let { incomingCards.offer(it) }
     }
 
     private companion object {

@@ -14,8 +14,7 @@ import androidx.core.content.IntentCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import es.igarciadelamo.txoka.di.ApplicationScope
 import es.igarciadelamo.txoka.domain.profile.ShareRole
-import es.igarciadelamo.txoka.domain.protocol.VCardParseResult
-import es.igarciadelamo.txoka.domain.protocol.VCardSerializer
+import es.igarciadelamo.txoka.domain.received.IncomingCard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -107,11 +106,12 @@ class NfcReader @Inject constructor(
     }
 
     private fun offer(raw: ByteArray) {
-        val vCard = TxokaNdefMessage.decode(raw) ?: return
-        val parsed = VCardSerializer.decode(vCard)
-        if (parsed is VCardParseResult.Success && incomingCards.offer(parsed.payload)) {
-            roles.onCardReceived()
+        val payload = IncomingCard.fromNdef(raw)
+        if (payload == null) {
+            incomingCards.reportInvalid()
+            return
         }
+        if (incomingCards.offer(payload)) roles.onCardReceived()
     }
 
     private fun dispatchIntent(activity: Activity): PendingIntent {

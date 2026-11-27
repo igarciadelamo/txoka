@@ -27,6 +27,11 @@ fun TxokaApp(modifier: Modifier = Modifier, viewModel: ReceiveViewModel = hiltVi
     val snackbarHostState = remember { SnackbarHostState() }
     val savedMessage = stringResource(R.string.received_saved)
     val updatedMessage = stringResource(R.string.received_updated)
+    val invalidMessage = stringResource(R.string.received_invalid_card)
+
+    LaunchedEffect(viewModel, invalidMessage) {
+        viewModel.invalidCards.collect { snackbarHostState.showSnackbar(invalidMessage) }
+    }
 
     LaunchedEffect(viewModel, savedMessage, updatedMessage) {
         viewModel.outcome.collect { outcome ->
