@@ -39,6 +39,14 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `shows sharing only with a card and usable nfc`() {
+        assertFalse(SettingsUiState(nfc = NfcStatus.Enabled).showSharing)
+        assertTrue(SettingsUiState(hasProfile = true, nfc = NfcStatus.Enabled).showSharing)
+        assertTrue(SettingsUiState(hasProfile = true, nfc = NfcStatus.Disabled).showSharing)
+        assertFalse(SettingsUiState(hasProfile = true, nfc = NfcStatus.Unavailable).showSharing)
+    }
+
+    @Test
     fun `reflects the stored unlock setting`() = runTest {
         val viewModel = SettingsViewModel(
             profileRepository = FakeProfileRepository(null),
