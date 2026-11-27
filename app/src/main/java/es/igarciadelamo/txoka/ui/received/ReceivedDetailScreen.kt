@@ -6,6 +6,7 @@ import android.provider.ContactsContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.MoreVert
@@ -45,6 +48,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -277,7 +284,7 @@ private fun SocialLinks(contact: ReceivedContact) {
             SocialLinkRow(
                 network = network,
                 handle = handle,
-                onClick = {
+                onOpen = {
                     // The browser or the installed app handles the link: the app needs no internet.
                     context.startActivity(
                         Intent(Intent.ACTION_VIEW, SocialHandle.url(network, handle).toUri()),
@@ -289,13 +296,27 @@ private fun SocialLinks(contact: ReceivedContact) {
 }
 
 @Composable
-private fun SocialLinkRow(network: SocialNetwork, handle: String, onClick: () -> Unit) {
+private fun SocialLinkRow(network: SocialNetwork, handle: String, onOpen: () -> Unit) {
+    val description = stringResource(
+        R.string.social_link_open,
+        network.label(),
+        SocialHandle.display(network, handle),
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize()
             .clip(RoundedCornerShape(Corners.field))
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(role = Role.Button, onClick = onOpen)
+            // One merged node: the brand icon and the two labels would read as three things.
+            .clearAndSetSemantics {
+                contentDescription = description
+                role = Role.Button
+                onClick {
+                    onOpen()
+                    true
+                }
+            }
             .padding(horizontal = Spacing.xs, vertical = Spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
@@ -315,6 +336,20 @@ private fun SocialLinkRow(network: SocialNetwork, handle: String, onClick: () ->
                 text = SocialHandle.display(network, handle),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
             )
         }
     }
