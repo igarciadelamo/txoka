@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +34,7 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `lists every contact by default`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         collect(viewModel)
 
         assertEquals(3, viewModel.state.value.contacts.size)
@@ -42,7 +43,7 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `filters by name, phone and email`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         collect(viewModel)
 
         viewModel.onQueryChange("ana")
@@ -68,7 +69,7 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `ignores accents, phone separators and searches notes`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         collect(viewModel)
 
         viewModel.onQueryChange("lopez")
@@ -86,7 +87,7 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `returns nothing when the query does not match`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         collect(viewModel)
 
         viewModel.onQueryChange("zzz")
@@ -98,7 +99,7 @@ class ReceivedListViewModelTest {
 
     @Test
     fun `empties the library and puts it back on undo`() = runTest {
-        val viewModel = ReceivedListViewModel(FakeReceivedContactRepository(contacts))
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         val events = mutableListOf<ReceivedListEvent>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.events.collect { event -> events += event }
@@ -118,6 +119,59 @@ class ReceivedListViewModelTest {
         assertEquals(3, viewModel.state.value.contacts.size)
         assertEquals(true, viewModel.state.value.hasContacts)
     }
+
+    @Test
+    fun `undoes a single delete`() = runTest {
+        val repository = FakeReceivedContactRepository(contacts)
+        val deleted = DeletedContactStore()
+        val viewModel = ReceivedListViewModel(repository, deleted)
+        collect(viewModel)
+
+        deleted.remember(contacts.first())
+        advanceUntilIdle()
+        assertEquals(contacts.first(), viewModel.pendingDelete.value)
+
+        viewModel.undoDelete()
+        advanceUntilIdle()
+
+        assertNull(viewModel.pendingDelete.value)
+        assertEquals(4, viewModel.state.value.contacts.size)
+        assertTrue(viewModel.state.value.contacts.any { it.name == "Marta Ruiz" })
+    }
+
+    @Test
+    fun `discarding the delete clears the undo`() = runTest {
+        val repository = FakeReceivedContactRepository(contacts)
+        val deleted = DeletedContactStore()
+        val viewModel = ReceivedListViewModel(repository, deleted)
+        collect(viewModel)
+
+        deleted.remember(contacts.first())
+        viewModel.discardDelete()
+        advanceUntilIdle()
+
+        assertNull(viewModel.pendingDelete.value)
+        assertEquals(3, viewModel.state.value.contacts.size)
+    }
+
+    @Test
+    fun `emptying the library drops a pending single delete`() = runTest {
+        val repository = FakeReceivedContactRepository(contacts)
+        val deleted = DeletedContactStore()
+        val viewModel = ReceivedListViewModel(repository, deleted)
+        collect(viewModel)
+
+        deleted.remember(contacts.first())
+        viewModel.clearLibrary()
+        advanceUntilIdle()
+
+        assertNull(viewModel.pendingDelete.value)
+    }
+
+    private fun viewModel(
+        repository: FakeReceivedContactRepository,
+        deleted: DeletedContactStore = DeletedContactStore(),
+    ) = ReceivedListViewModel(repository, deleted)
 
     private fun kotlinx.coroutines.test.TestScope.collect(viewModel: ReceivedListViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect() }

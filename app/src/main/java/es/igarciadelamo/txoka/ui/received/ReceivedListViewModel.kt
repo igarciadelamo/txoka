@@ -30,12 +30,18 @@ sealed interface ReceivedListEvent {
 }
 
 @HiltViewModel
-class ReceivedListViewModel @Inject constructor(private val repository: ReceivedContactRepository) : ViewModel() {
+class ReceivedListViewModel @Inject constructor(
+    private val repository: ReceivedContactRepository,
+    private val deletedContacts: DeletedContactStore,
+) : ViewModel() {
     private val query = MutableStateFlow("")
     private val cleared = MutableStateFlow<List<ReceivedContact>>(emptyList())
     private val _events = MutableSharedFlow<ReceivedListEvent>(extraBufferCapacity = 1)
 
     val events: SharedFlow<ReceivedListEvent> = _events.asSharedFlow()
+
+    /** The last card removed from its detail screen, waiting for the undo snackbar. */
+    val pendingDelete: StateFlow<ReceivedContact?> = deletedContacts.contact
 
     val state: StateFlow<ReceivedListUiState> = combine(repository.contacts, query) { contacts, search ->
         ReceivedListUiState(
@@ -55,6 +61,7 @@ class ReceivedListViewModel @Inject constructor(private val repository: Received
     }
 
     fun clearLibrary() {
+        deletedContacts.clear()
         viewModelScope.launch {
             cleared.value = repository.deleteAll()
             _events.tryEmit(ReceivedListEvent.LibraryCleared)
@@ -67,6 +74,16 @@ class ReceivedListViewModel @Inject constructor(private val repository: Received
             cleared.value = emptyList()
         }
     }
+
+    fun undoDelete() {
+        val contact = deletedContacts.contact.value ?: return
+        viewModelScope.launch {
+            repository.restore(listOf(contact))
+            deletedContacts.clear()
+        }
+    }
+
+    fun discardDelete() = deletedContacts.clear()
 
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
