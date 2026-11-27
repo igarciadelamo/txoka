@@ -98,6 +98,7 @@
     <string name="received_meta">Received %1$s</string>
     <string name="received_saved">Contact saved</string>
     <string name="received_updated">Contact updated</string>
+    <string name="received_invalid_card">That tag is not a contact card</string>
     <string name="section_social">Links</string>
     <string name="social_handle_description">%1$s, %2$s</string>
     <string name="settings_about">About</string>

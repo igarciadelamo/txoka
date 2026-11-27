@@ -47,6 +47,8 @@ class ReceiveViewModel @Inject constructor(
     private val _outcome = MutableSharedFlow<SaveOutcome>(extraBufferCapacity = 1)
     val outcome: SharedFlow<SaveOutcome> = _outcome.asSharedFlow()
 
+    val invalidCards: SharedFlow<Unit> = incomingCards.invalid
+
     fun save(payload: VCardPayload) {
         if (payload !in incomingCards.queue.value) return
         viewModelScope.launch {
