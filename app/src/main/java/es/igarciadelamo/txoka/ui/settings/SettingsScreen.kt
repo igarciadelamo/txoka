@@ -91,8 +91,7 @@ fun SettingsScreen(
                 )
             }
 
-            // Sharing controls make no sense on a device without NFC hardware.
-            if (state.nfc != NfcStatus.Unavailable) {
+            if (state.showSharing) {
                 SharingGroup(
                     state = state,
                     onRequireUnlockChanged = onRequireUnlockChanged,

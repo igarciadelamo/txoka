@@ -23,7 +23,11 @@ data class SettingsUiState(
     val nfc: NfcStatus = NfcStatus.Enabled,
     val receivedCount: Int = 0,
     val isLoading: Boolean = true,
-)
+) {
+    /** There is nothing to protect without a card, and nothing to configure without NFC. */
+    val showSharing: Boolean
+        get() = hasProfile && nfc != NfcStatus.Unavailable
+}
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
