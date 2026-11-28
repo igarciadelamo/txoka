@@ -58,6 +58,7 @@ import es.igarciadelamo.txoka.domain.profile.CardPalette
 import es.igarciadelamo.txoka.domain.profile.RgbColor
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.ui.components.Eyebrow
+import es.igarciadelamo.txoka.ui.components.PrimaryButton
 import es.igarciadelamo.txoka.ui.components.TxokaAppBar
 import es.igarciadelamo.txoka.ui.components.cardContentColor
 import es.igarciadelamo.txoka.ui.components.contentWidth
@@ -76,6 +77,7 @@ fun ReceivedScreen(
     onQueryChange: (String) -> Unit,
     onOpenContact: (Long) -> Unit,
     onClearLibrary: () -> Unit,
+    onReceive: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -106,6 +108,8 @@ fun ReceivedScreen(
                 EmptyState(
                     isLoading = state.isLoading,
                     searching = state.query.isNotBlank(),
+                    canReceive = state.canReceive,
+                    onReceive = onReceive,
                     modifier = Modifier
                         .weight(1f)
                         .navigationBarsPadding(),
@@ -330,7 +334,13 @@ private fun Avatar(contact: ReceivedContact) {
 }
 
 @Composable
-private fun EmptyState(isLoading: Boolean, searching: Boolean, modifier: Modifier = Modifier) {
+private fun EmptyState(
+    isLoading: Boolean,
+    searching: Boolean,
+    canReceive: Boolean,
+    onReceive: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -355,6 +365,13 @@ private fun EmptyState(isLoading: Boolean, searching: Boolean, modifier: Modifie
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                     )
+                    if (canReceive) {
+                        PrimaryButton(
+                            text = stringResource(R.string.received_receive_action),
+                            onClick = onReceive,
+                            modifier = Modifier.padding(top = Spacing.lg),
+                        )
+                    }
                 }
             }
         }
@@ -400,6 +417,7 @@ private fun ReceivedScreenPreview() {
             onQueryChange = {},
             onOpenContact = {},
             onClearLibrary = {},
+            onReceive = {},
             onBack = {},
         )
     }

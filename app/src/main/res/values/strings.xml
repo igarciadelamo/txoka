@@ -50,6 +50,7 @@
     <string name="delete_card_dialog_message">Your profile will be removed from this device. Received contacts are kept.</string>
     <string name="delete_card_dialog_title">Delete your card?</string>
     <string name="received_empty">No contacts yet</string>
+    <string name="received_receive_action">Receive a card</string>
     <string name="received_note">Notes</string>
     <string name="received_search">Search contacts</string>
     <string name="received_title">Received</string>
@@ -64,8 +65,9 @@
     <string name="action_open_settings">Open NFC settings</string>
     <string name="share_require_unlock">Require device unlock</string>
     <string name="share_module_title">Share over NFC</string>
-    <string name="hub_empty_body">Create it once and share it by holding two phones together.</string>
-    <string name="hub_empty_title">Your card, one tap away</string>
+    <string name="hub_empty_body">Bring your phone close to another device to receive a contact. Create your card whenever you want to share yours.</string>
+    <string name="hub_empty_nfc_off_body">Turn NFC back on to receive a card, or create yours in the meantime.</string>
+    <string name="hub_empty_title">Ready to receive</string>
     <string name="hub_privacy_footer">No account · No tracking · No internet</string>
     <string name="hub_your_card">Your card</string>
     <string name="nfc_disabled_body">Turn NFC back on to keep sharing your card.</string>

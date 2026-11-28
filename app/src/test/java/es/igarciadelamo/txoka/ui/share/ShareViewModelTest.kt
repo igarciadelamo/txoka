@@ -37,9 +37,9 @@ class ShareViewModelTest {
     }
 
     @Test
-    fun `starts on the send role`() = runTest {
+    fun `starts on the send role when there is a card`() = runTest {
         val viewModel = ShareViewModel(
-            FakeProfileRepository(),
+            FakeProfileRepository(Profile(name = "Isidro", phone = "+34600123456")),
             FakeShareSettingsRepository(),
             ShareRoleController(backgroundScope),
             FakeNfcAvailability(),
@@ -48,6 +48,37 @@ class ShareViewModelTest {
 
         assertEquals(ShareRole.Send, viewModel.state.value.role.role)
         assertFalse(viewModel.state.value.role.returning)
+    }
+
+    @Test
+    fun `listens while there is no card`() = runTest {
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(),
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+
+        assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
+    }
+
+    @Test
+    fun `goes back to sending once a card is created`() = runTest {
+        val repository = FakeProfileRepository()
+        val viewModel = ShareViewModel(
+            repository,
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+        assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
+
+        repository.save(Profile(name = "Isidro", phone = "+34600123456"))
+        advanceUntilIdle()
+
+        assertEquals(ShareRole.Send, viewModel.state.value.role.role)
     }
 
     @Test
@@ -88,6 +119,23 @@ class ShareViewModelTest {
 
         assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
         assertFalse(viewModel.state.value.role.returning)
+    }
+
+    @Test
+    fun `enters receive mode when the library asks`() = runTest {
+        val viewModel = ShareViewModel(
+            FakeProfileRepository(Profile(name = "Isidro", phone = "+34600123456")),
+            FakeShareSettingsRepository(),
+            ShareRoleController(backgroundScope),
+            FakeNfcAvailability(),
+        )
+        advanceUntilIdle()
+        assertEquals(ShareRole.Send, viewModel.state.value.role.role)
+
+        viewModel.onReceiveRequested()
+        advanceUntilIdle()
+
+        assertEquals(ShareRole.Receive, viewModel.state.value.role.role)
     }
 
     @Test

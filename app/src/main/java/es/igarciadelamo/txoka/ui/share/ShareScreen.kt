@@ -118,7 +118,11 @@ fun ShareScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 if (profile == null) {
-                    EmptyHub(onCreateCard = onCreateCard)
+                    EmptyHub(
+                        nfc = nfc,
+                        onCreateCard = onCreateCard,
+                        onOpenNfcSettings = { context.startActivity(Intent(Settings.ACTION_NFC_SETTINGS)) },
+                    )
                 } else {
                     HubContent(
                         profile = profile,
@@ -333,7 +337,7 @@ private fun RoleOption(label: String, selected: Boolean, onClick: () -> Unit, mo
 }
 
 @Composable
-private fun EmptyHub(onCreateCard: () -> Unit) {
+private fun EmptyHub(nfc: NfcStatus, onCreateCard: () -> Unit, onOpenNfcSettings: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -341,14 +345,26 @@ private fun EmptyHub(onCreateCard: () -> Unit) {
     ) {
         EmptyIllustration()
         Text(
-            text = stringResource(R.string.hub_empty_title),
+            text = stringResource(
+                when (nfc) {
+                    NfcStatus.Enabled -> R.string.hub_empty_title
+                    NfcStatus.Disabled -> R.string.nfc_disabled_title
+                    NfcStatus.Unavailable -> R.string.nfc_unavailable_title
+                },
+            ),
             modifier = Modifier.padding(top = Spacing.sm),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
         )
         Text(
-            text = stringResource(R.string.hub_empty_body),
+            text = stringResource(
+                when (nfc) {
+                    NfcStatus.Enabled -> R.string.hub_empty_body
+                    NfcStatus.Disabled -> R.string.hub_empty_nfc_off_body
+                    NfcStatus.Unavailable -> R.string.nfc_unavailable_body
+                },
+            ),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -358,6 +374,11 @@ private fun EmptyHub(onCreateCard: () -> Unit) {
             onClick = onCreateCard,
             modifier = Modifier.padding(top = Spacing.md),
         )
+        if (nfc == NfcStatus.Disabled) {
+            TextButton(onClick = onOpenNfcSettings) {
+                Text(text = stringResource(R.string.action_open_settings))
+            }
+        }
     }
 }
 
@@ -465,7 +486,7 @@ private fun ShareScreenNoCardPreview() {
             profile = null,
             role = ShareRoleState(role = ShareRole.Receive),
             requireUnlock = false,
-            nfc = NfcStatus.Unavailable,
+            nfc = NfcStatus.Enabled,
             onOpenReceived = {},
             onOpenSettings = {},
             onCreateCard = {},

@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,6 +64,13 @@ class ShareViewModel @Inject constructor(
                 )
             }.collect { state -> _state.value = state }
         }
+        // Without a card there is nothing to send, so the hub listens until one is created.
+        viewModelScope.launch {
+            profileRepository.profile
+                .map { it != null }
+                .distinctUntilChanged()
+                .collect { hasCard -> roles.select(if (hasCard) ShareRole.Send else ShareRole.Receive) }
+        }
     }
 
     fun refreshNfcStatus() {
@@ -71,6 +80,9 @@ class ShareViewModel @Inject constructor(
     fun onRoleSelected(role: ShareRole) {
         roles.select(role)
     }
+
+    /** The library sent the user back asking to receive, so the hub takes over. */
+    fun onReceiveRequested() = roles.select(ShareRole.Receive)
 
     fun onCancelReturn() {
         roles.cancelReturn()
