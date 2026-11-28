@@ -5,18 +5,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
@@ -66,7 +66,6 @@ import es.igarciadelamo.txoka.ui.components.toComposeColor
 import es.igarciadelamo.txoka.ui.theme.Corners
 import es.igarciadelamo.txoka.ui.theme.Spacing
 import es.igarciadelamo.txoka.ui.theme.TxokaTheme
-import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -104,7 +103,7 @@ fun ReceivedScreen(
                     .contentWidth()
                     .padding(horizontal = Spacing.xl, vertical = Spacing.md),
             )
-            if (state.contacts.isEmpty()) {
+            if (state.items.isEmpty()) {
                 EmptyState(
                     isLoading = state.isLoading,
                     searching = state.query.isNotBlank(),
@@ -116,7 +115,7 @@ fun ReceivedScreen(
                 )
             } else {
                 ContactList(
-                    contacts = state.contacts,
+                    rows = state.items,
                     onOpenContact = onOpenContact,
                     modifier = Modifier
                         .weight(1f)
@@ -135,7 +134,7 @@ fun ReceivedScreen(
 
     if (confirmClear) {
         ClearLibraryDialog(
-            count = state.contacts.size,
+            count = state.libraryCount,
             onConfirm = {
                 confirmClear = false
                 onClearLibrary()
@@ -241,37 +240,32 @@ private fun SearchField(value: String, onValueChange: (String) -> Unit, modifier
 }
 
 @Composable
-private fun ContactList(
-    contacts: List<ReceivedContact>,
-    onOpenContact: (Long) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val zone = ZoneId.systemDefault()
-    val today = LocalDate.now(zone)
-    val groups = contacts.groupBy { contact ->
-        val date = Instant.ofEpochMilli(contact.receivedAt).atZone(zone).toLocalDate()
-        if (date == today) Group.Today else Group.Earlier
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = Spacing.xl),
+private fun ContactList(rows: List<ReceivedListItem>, onOpenContact: (Long) -> Unit, modifier: Modifier = Modifier) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = Spacing.xl),
     ) {
-        Group.entries.forEach { group ->
-            val items = groups[group].orEmpty()
-            if (items.isEmpty()) return@forEach
-            Eyebrow(
-                text = stringResource(group.label),
-                modifier = Modifier.padding(top = Spacing.md, bottom = Spacing.sm),
-            )
-            items.forEach { contact ->
-                ContactRow(contact = contact, onClick = { onOpenContact(contact.id) })
+        rows.forEach { row ->
+            when (row) {
+                is ReceivedListItem.Header -> item(key = "header-${row.group}", contentType = "header") {
+                    Eyebrow(
+                        text = stringResource(row.group.label),
+                        modifier = Modifier.padding(top = Spacing.md, bottom = Spacing.sm),
+                    )
+                }
+                is ReceivedListItem.Card -> item(key = row.contact.id, contentType = "card") {
+                    ContactRow(contact = row.contact, onClick = { onOpenContact(row.contact.id) })
+                }
             }
         }
     }
 }
+
+private val ReceivedGroup.label: Int
+    get() = when (this) {
+        ReceivedGroup.Today -> R.string.group_today
+        ReceivedGroup.Earlier -> R.string.group_earlier
+    }
 
 @Composable
 private fun ContactRow(contact: ReceivedContact, onClick: () -> Unit) {
@@ -378,11 +372,6 @@ private fun EmptyState(
     }
 }
 
-private enum class Group(val label: Int) {
-    Today(R.string.group_today),
-    Earlier(R.string.group_earlier),
-}
-
 private fun ReceivedContact.initials(): String = name
     .split(' ')
     .filter { it.isNotBlank() }
@@ -397,7 +386,7 @@ private fun ReceivedScreenPreview() {
     TxokaTheme {
         ReceivedScreen(
             state = ReceivedListUiState(
-                contacts = listOf(
+                items = listOf(
                     ReceivedContact(id = 1, name = "Marta Ruiz", phone = "+34 600 111 222", receivedAt = now),
                     ReceivedContact(
                         id = 2,
@@ -409,9 +398,10 @@ private fun ReceivedScreenPreview() {
                             accent2 = RgbColor(0xC0, 0x26, 0xD3),
                         ),
                     ),
-                ),
+                ).toLibraryItems(LocalDate.now(), ZoneId.systemDefault()),
                 isLoading = false,
                 hasContacts = true,
+                libraryCount = 2,
             ),
             snackbarHostState = snackbarHostState,
             onQueryChange = {},

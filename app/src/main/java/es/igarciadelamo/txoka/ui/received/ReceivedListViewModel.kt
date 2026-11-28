@@ -17,14 +17,19 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 data class ReceivedListUiState(
     val query: String = "",
-    val contacts: List<ReceivedContact> = emptyList(),
+    /** Headers and cards ready to draw, so the list stays lazy and grouping is testable. */
+    val items: List<ReceivedListItem> = emptyList(),
     val isLoading: Boolean = true,
     /** True while the library holds cards, even if the search hides all of them. */
     val hasContacts: Boolean = false,
+    /** Cards stored, regardless of the search, for the empty-library dialog. */
+    val libraryCount: Int = 0,
     /** Nothing to receive without a working adapter, so the action stays hidden. */
     val canReceive: Boolean = false,
 )
@@ -55,9 +60,12 @@ class ReceivedListViewModel @Inject constructor(
     ) { contacts, search, nfc ->
         ReceivedListUiState(
             query = search,
-            contacts = contacts.filter { contact -> contact.matchesSearch(search) },
+            items = contacts
+                .filter { contact -> contact.matchesSearch(search) }
+                .toLibraryItems(LocalDate.now(), ZoneId.systemDefault()),
             isLoading = false,
             hasContacts = contacts.isNotEmpty(),
+            libraryCount = contacts.size,
             canReceive = nfc == NfcStatus.Enabled,
         )
     }.stateIn(
