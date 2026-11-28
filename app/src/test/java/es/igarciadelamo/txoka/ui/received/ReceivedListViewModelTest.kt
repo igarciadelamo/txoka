@@ -40,8 +40,21 @@ class ReceivedListViewModelTest {
         val viewModel = viewModel(FakeReceivedContactRepository(contacts))
         collect(viewModel)
 
-        assertEquals(3, viewModel.state.value.contacts.size)
+        assertEquals(3, viewModel.state.value.names.size)
+        assertEquals(ReceivedListItem.Header(ReceivedGroup.Earlier), viewModel.state.value.items.first())
         assertEquals(false, viewModel.state.value.isLoading)
+    }
+
+    @Test
+    fun `keeps the stored count while the search filters the list`() = runTest {
+        val viewModel = viewModel(FakeReceivedContactRepository(contacts))
+        collect(viewModel)
+
+        viewModel.onQueryChange("ana")
+        advanceUntilIdle()
+
+        assertEquals(1, viewModel.state.value.names.size)
+        assertEquals(3, viewModel.state.value.libraryCount)
     }
 
     @Test
@@ -51,23 +64,23 @@ class ReceivedListViewModelTest {
 
         viewModel.onQueryChange("ana")
         advanceUntilIdle()
-        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Ana López"), viewModel.state.value.names)
 
         viewModel.onQueryChange("600999")
         advanceUntilIdle()
-        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Ana López"), viewModel.state.value.names)
 
         viewModel.onQueryChange("LUIS@")
         advanceUntilIdle()
-        assertEquals(listOf("Luis Pérez"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Luis Pérez"), viewModel.state.value.names)
 
         viewModel.onQueryChange("PNG")
         advanceUntilIdle()
-        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.names)
 
         viewModel.onQueryChange("-ruiz")
         advanceUntilIdle()
-        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.names)
     }
 
     @Test
@@ -77,15 +90,15 @@ class ReceivedListViewModelTest {
 
         viewModel.onQueryChange("lopez")
         advanceUntilIdle()
-        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Ana López"), viewModel.state.value.names)
 
         viewModel.onQueryChange("600 999 888")
         advanceUntilIdle()
-        assertEquals(listOf("Ana López"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Ana López"), viewModel.state.value.names)
 
         viewModel.onQueryChange("meetup")
         advanceUntilIdle()
-        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.contacts.map { it.name })
+        assertEquals(listOf("Marta Ruiz"), viewModel.state.value.names)
     }
 
     @Test
@@ -96,7 +109,7 @@ class ReceivedListViewModelTest {
         viewModel.onQueryChange("zzz")
         advanceUntilIdle()
 
-        assertEquals(emptyList<String>(), viewModel.state.value.contacts.map { it.name })
+        assertEquals(emptyList<String>(), viewModel.state.value.names)
         assertEquals(true, viewModel.state.value.hasContacts)
     }
 
@@ -112,14 +125,14 @@ class ReceivedListViewModelTest {
         viewModel.clearLibrary()
         advanceUntilIdle()
 
-        assertTrue(viewModel.state.value.contacts.isEmpty())
+        assertTrue(viewModel.state.value.names.isEmpty())
         assertEquals(false, viewModel.state.value.hasContacts)
         assertEquals(listOf(ReceivedListEvent.LibraryCleared), events)
 
         viewModel.undoClear()
         advanceUntilIdle()
 
-        assertEquals(3, viewModel.state.value.contacts.size)
+        assertEquals(3, viewModel.state.value.names.size)
         assertEquals(true, viewModel.state.value.hasContacts)
     }
 
@@ -138,8 +151,8 @@ class ReceivedListViewModelTest {
         advanceUntilIdle()
 
         assertNull(viewModel.pendingDelete.value)
-        assertEquals(4, viewModel.state.value.contacts.size)
-        assertTrue(viewModel.state.value.contacts.any { it.name == "Marta Ruiz" })
+        assertEquals(4, viewModel.state.value.names.size)
+        assertTrue(viewModel.state.value.names.contains("Marta Ruiz"))
     }
 
     @Test
@@ -154,7 +167,7 @@ class ReceivedListViewModelTest {
         advanceUntilIdle()
 
         assertNull(viewModel.pendingDelete.value)
-        assertEquals(3, viewModel.state.value.contacts.size)
+        assertEquals(3, viewModel.state.value.names.size)
     }
 
     @Test
@@ -192,6 +205,9 @@ class ReceivedListViewModelTest {
         deleted: DeletedContactStore = DeletedContactStore(),
         nfc: FakeNfcAvailability = FakeNfcAvailability(),
     ) = ReceivedListViewModel(repository, deleted, nfc)
+
+    private val ReceivedListUiState.names: List<String>
+        get() = items.filterIsInstance<ReceivedListItem.Card>().map { it.contact.name }
 
     private fun kotlinx.coroutines.test.TestScope.collect(viewModel: ReceivedListViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect() }
