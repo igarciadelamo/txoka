@@ -48,6 +48,7 @@
     <string name="delete_card_dialog_message">Tu perfil se eliminará de este dispositivo. Los contactos recibidos se conservan.</string>
     <string name="delete_card_dialog_title">¿Borrar tu tarjeta?</string>
     <string name="received_empty">Aún no hay contactos</string>
+    <string name="received_receive_action">Recibir una tarjeta</string>
     <string name="received_note">Notas</string>
     <string name="received_search">Buscar contactos</string>
     <string name="received_title">Recibidos</string>
@@ -62,8 +63,9 @@
     <string name="action_open_settings">Abrir ajustes de NFC</string>
     <string name="share_require_unlock">Pedir desbloqueo</string>
     <string name="share_module_title">Compartir por NFC</string>
-    <string name="hub_empty_body">Créala una vez y compártela acercando dos móviles.</string>
-    <string name="hub_empty_title">Tu tarjeta, a un toque</string>
+    <string name="hub_empty_body">Acerca tu móvil a otro dispositivo para recibir un contacto. Crea tu tarjeta cuando quieras compartir la tuya.</string>
+    <string name="hub_empty_nfc_off_body">Vuelve a activar el NFC para recibir una tarjeta, o crea la tuya mientras tanto.</string>
+    <string name="hub_empty_title">Listo para recibir</string>
     <string name="hub_privacy_footer">Sin cuenta · Sin rastreo · Sin internet</string>
     <string name="hub_your_card">Tu tarjeta</string>
     <string name="nfc_disabled_body">Vuelve a activar el NFC para seguir compartiendo tu tarjeta.</string>

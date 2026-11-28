@@ -2,6 +2,7 @@ package es.igarciadelamo.txoka.ui.share
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -16,9 +17,18 @@ fun ShareRoute(
     onCreateCard: () -> Unit,
     onEditProfile: () -> Unit,
     modifier: Modifier = Modifier,
+    receiveRequested: Boolean = false,
+    onReceiveRequestConsumed: () -> Unit = {},
     viewModel: ShareViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(receiveRequested) {
+        if (receiveRequested) {
+            viewModel.onReceiveRequested()
+            onReceiveRequestConsumed()
+        }
+    }
 
     LifecycleResumeEffect(Unit) {
         viewModel.refreshNfcStatus()

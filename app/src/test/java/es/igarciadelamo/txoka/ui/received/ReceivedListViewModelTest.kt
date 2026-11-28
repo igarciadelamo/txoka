@@ -1,6 +1,8 @@
 package es.igarciadelamo.txoka.ui.received
 
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
+import es.igarciadelamo.txoka.nfc.NfcStatus
+import es.igarciadelamo.txoka.testing.FakeNfcAvailability
 import es.igarciadelamo.txoka.testing.FakeReceivedContactRepository
 import es.igarciadelamo.txoka.testing.MainDispatcherRule
 import kotlinx.coroutines.flow.collect
@@ -9,6 +11,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -124,7 +127,7 @@ class ReceivedListViewModelTest {
     fun `undoes a single delete`() = runTest {
         val repository = FakeReceivedContactRepository(contacts)
         val deleted = DeletedContactStore()
-        val viewModel = ReceivedListViewModel(repository, deleted)
+        val viewModel = viewModel(repository, deleted)
         collect(viewModel)
 
         deleted.remember(contacts.first())
@@ -143,7 +146,7 @@ class ReceivedListViewModelTest {
     fun `discarding the delete clears the undo`() = runTest {
         val repository = FakeReceivedContactRepository(contacts)
         val deleted = DeletedContactStore()
-        val viewModel = ReceivedListViewModel(repository, deleted)
+        val viewModel = viewModel(repository, deleted)
         collect(viewModel)
 
         deleted.remember(contacts.first())
@@ -158,7 +161,7 @@ class ReceivedListViewModelTest {
     fun `emptying the library drops a pending single delete`() = runTest {
         val repository = FakeReceivedContactRepository(contacts)
         val deleted = DeletedContactStore()
-        val viewModel = ReceivedListViewModel(repository, deleted)
+        val viewModel = viewModel(repository, deleted)
         collect(viewModel)
 
         deleted.remember(contacts.first())
@@ -168,10 +171,27 @@ class ReceivedListViewModelTest {
         assertNull(viewModel.pendingDelete.value)
     }
 
-    private fun viewModel(
+    @Test
+    fun `offers the receive action only while nfc is on`() = runTest {
+        val nfc = FakeNfcAvailability(NfcStatus.Enabled)
+        val viewModel = viewModel(FakeReceivedContactRepository(emptyList()), nfc = nfc)
+        collect(viewModel)
+        assertTrue(viewModel.state.value.canReceive)
+
+        nfc.status = NfcStatus.Disabled
+        advanceUntilIdle()
+        assertFalse(viewModel.state.value.canReceive)
+
+        nfc.status = NfcStatus.Unavailable
+        advanceUntilIdle()
+        assertFalse(viewModel.state.value.canReceive)
+    }
+
+    private fun kotlinx.coroutines.test.TestScope.viewModel(
         repository: FakeReceivedContactRepository,
         deleted: DeletedContactStore = DeletedContactStore(),
-    ) = ReceivedListViewModel(repository, deleted)
+        nfc: FakeNfcAvailability = FakeNfcAvailability(),
+    ) = ReceivedListViewModel(repository, deleted, nfc)
 
     private fun kotlinx.coroutines.test.TestScope.collect(viewModel: ReceivedListViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect() }

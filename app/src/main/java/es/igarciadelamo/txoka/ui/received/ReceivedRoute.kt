@@ -18,6 +18,7 @@ import es.igarciadelamo.txoka.R
 fun ReceivedRoute(
     onBack: () -> Unit,
     onOpenContact: (Long) -> Unit,
+    onReceive: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReceivedListViewModel = hiltViewModel(),
 ) {
@@ -63,6 +64,7 @@ fun ReceivedRoute(
         onQueryChange = viewModel::onQueryChange,
         onOpenContact = onOpenContact,
         onClearLibrary = viewModel::clearLibrary,
+        onReceive = onReceive,
         onBack = onBack,
         modifier = modifier,
     )

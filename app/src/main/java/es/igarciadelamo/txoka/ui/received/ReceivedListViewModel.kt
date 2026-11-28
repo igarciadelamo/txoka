@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import es.igarciadelamo.txoka.domain.received.ReceivedContact
 import es.igarciadelamo.txoka.domain.received.ReceivedContactRepository
 import es.igarciadelamo.txoka.domain.received.matchesSearch
+import es.igarciadelamo.txoka.nfc.NfcAvailability
+import es.igarciadelamo.txoka.nfc.NfcStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,6 +25,8 @@ data class ReceivedListUiState(
     val isLoading: Boolean = true,
     /** True while the library holds cards, even if the search hides all of them. */
     val hasContacts: Boolean = false,
+    /** Nothing to receive without a working adapter, so the action stays hidden. */
+    val canReceive: Boolean = false,
 )
 
 sealed interface ReceivedListEvent {
@@ -33,6 +37,7 @@ sealed interface ReceivedListEvent {
 class ReceivedListViewModel @Inject constructor(
     private val repository: ReceivedContactRepository,
     private val deletedContacts: DeletedContactStore,
+    private val nfcAvailability: NfcAvailability,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
     private val cleared = MutableStateFlow<List<ReceivedContact>>(emptyList())
@@ -43,12 +48,17 @@ class ReceivedListViewModel @Inject constructor(
     /** The last card removed from its detail screen, waiting for the undo snackbar. */
     val pendingDelete: StateFlow<ReceivedContact?> = deletedContacts.contact
 
-    val state: StateFlow<ReceivedListUiState> = combine(repository.contacts, query) { contacts, search ->
+    val state: StateFlow<ReceivedListUiState> = combine(
+        repository.contacts,
+        query,
+        nfcAvailability.stateChanges(),
+    ) { contacts, search, nfc ->
         ReceivedListUiState(
             query = search,
             contacts = contacts.filter { contact -> contact.matchesSearch(search) },
             isLoading = false,
             hasContacts = contacts.isNotEmpty(),
+            canReceive = nfc == NfcStatus.Enabled,
         )
     }.stateIn(
         scope = viewModelScope,
